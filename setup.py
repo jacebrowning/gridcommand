@@ -21,7 +21,7 @@ setuptools.setup(
     version=__version__,
 
     description="GridCommand is TBA.",
-    url='http://pypi.python.org/pypi/GridCommand',
+    url='https://github.com/jacebrowning/gridcommand',
     author='Jace Browning',
     author_email='jacebrowning@gmail.com',
 

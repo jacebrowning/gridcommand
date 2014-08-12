@@ -3,6 +3,7 @@ GridCommand
 
 [![Build Status](http://img.shields.io/travis/jacebrowning/gridcommand/master.svg)](https://travis-ci.org/jacebrowning/gridcommand)
 [![Coverage Status](http://img.shields.io/coveralls/jacebrowning/gridcommand/master.svg)](https://coveralls.io/r/jacebrowning/gridcommand)
+[![Scrutinizer Code Quality](http://img.shields.io/scrutinizer/g/jacebrowning/gridcommand.svg)](https://scrutinizer-ci.com/g/jacebrowning/gridcommand/?branch=master)
 [![PyPI Version](http://img.shields.io/pypi/v/gridcommand.svg)](https://pypi.python.org/pypi/gridcommand)
 [![PyPI Downloads](http://img.shields.io/pypi/dm/gridcommand.svg)](https://pypi.python.org/pypi/gridcommand)
 
@@ -24,13 +25,13 @@ Installation
 
 GridCommand can be installed with 'pip':
 
-    pip install GridCommand
+    $ pip install GridCommand
 
 Or directly from the source code:
 
-    git clone https://github.com/jacebrowning/gridcommand.git
-    cd gridcommand
-    python setup.py install
+    $ git clone https://github.com/jacebrowning/gridcommand.git
+    $ cd gridcommand
+    $ python setup.py install
 
 
 
@@ -61,25 +62,25 @@ Installation
 
 Create a virtualenv:
 
-    make env
+    $ make env
 
 Run the tests:
 
-    make test
-    make tests  # includes integration tests
+    $ make test
+    $ make tests  # includes integration tests
 
 Build the documentation:
 
-    make doc
+    $ make doc
 
 Run static analysis:
 
-    make pep8
-    make pep257
-    make pylint
-    make check  # includes all checks
+    $ make pep8
+    $ make pep257
+    $ make pylint
+    $ make check  # includes all checks
 
 Prepare a release:
 
-    make dist  # dry run
-    make upload
+    $ make dist  # dry run
+    $ make upload
