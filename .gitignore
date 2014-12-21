@@ -4,6 +4,12 @@
 __pycache__
 .ipynb_checkpoints
 
+# Temporary Django files
+*.log
+local_settings.py
+*.db
+*.sqlite3
+
 # Temporary OS files
 Icon*
 
