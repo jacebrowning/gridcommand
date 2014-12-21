@@ -20,7 +20,7 @@ setuptools.setup(
     name=__project__,
     version=__version__,
 
-    description="GridCommand is TBA.",
+    description="TBD",
     url='https://github.com/jacebrowning/gridcommand',
     author='Jace Browning',
     author_email='jacebrowning@gmail.com',
@@ -30,7 +30,7 @@ setuptools.setup(
     entry_points={'console_scripts': []},
 
     long_description=(README + '\n' + CHANGES),
-    license='MIT',
+    license='LGPL',
     classifiers=[
         'Development Status :: 1 - Planning',
         'Natural Language :: English',
@@ -38,5 +38,5 @@ setuptools.setup(
         'Programming Language :: Python :: 3.3',
     ],
 
-    install_requires=[],
+    install_requires=open('requirements.txt').readlines(),
 )

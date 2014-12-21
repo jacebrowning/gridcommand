@@ -2,6 +2,7 @@
 *.pyc
 *.egg-info
 __pycache__
+.ipynb_checkpoints
 
 # Temporary OS files
 Icon*
@@ -25,6 +26,7 @@ docs/*.png
 
 # Testing and coverage results
 .coverage
+pyunit.xml
 
 # Build and release directories
 build

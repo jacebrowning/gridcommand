@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """Package for GridCommand."""
 
 __project__ = 'GridCommand'

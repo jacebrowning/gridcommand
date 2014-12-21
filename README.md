@@ -1,14 +1,12 @@
 GridCommand
-===========
+======
+TBD
 
 [![Build Status](http://img.shields.io/travis/jacebrowning/gridcommand/master.svg)](https://travis-ci.org/jacebrowning/gridcommand)
 [![Coverage Status](http://img.shields.io/coveralls/jacebrowning/gridcommand/master.svg)](https://coveralls.io/r/jacebrowning/gridcommand)
 [![Scrutinizer Code Quality](http://img.shields.io/scrutinizer/g/jacebrowning/gridcommand.svg)](https://scrutinizer-ci.com/g/jacebrowning/gridcommand/?branch=master)
-[![PyPI Version](http://img.shields.io/pypi/v/gridcommand.svg)](https://pypi.python.org/pypi/gridcommand)
-[![PyPI Downloads](http://img.shields.io/pypi/dm/gridcommand.svg)](https://pypi.python.org/pypi/gridcommand)
-
-GridCommand is TBA.
-
+[![PyPI Version](http://img.shields.io/pypi/v/GridCommand.svg)](https://pypi.python.org/pypi/GridCommand)
+[![PyPI Downloads](http://img.shields.io/pypi/dm/GridCommand.svg)](https://pypi.python.org/pypi/GridCommand)
 
 
 Getting Started
@@ -17,30 +15,37 @@ Getting Started
 Requirements
 ------------
 
-* Python 3.3+
-
+* Python 3.4+
 
 Installation
 ------------
 
-GridCommand can be installed with 'pip':
+GridCommand can be installed with pip:
 
-    $ pip install GridCommand
+```
+$ pip install GridCommand
+```
 
-Or directly from the source code:
+or directly from the source code:
 
-    $ git clone https://github.com/jacebrowning/gridcommand.git
-    $ cd gridcommand
-    $ python setup.py install
-
-
+```
+$ git clone https://github.com/jacebrowning/gridcommand.git
+$ cd gridcommand
+$ python setup.py install
+```
 
 Basic Usage
 ===========
 
-GridCommand doesn't do anything yet.
+After installation, abstract base classes can be imported from the package:
 
+```
+$ python
+>>> import gridcommand
+gridcommand.__version__
+```
 
+GridCommand doesn't do anything, it's a template.
 
 For Contributors
 ================
@@ -48,7 +53,7 @@ For Contributors
 Requirements
 ------------
 
-* GNU Make:
+* Make:
     * Windows: http://cygwin.com/install.html
     * Mac: https://developer.apple.com/xcode
     * Linux: http://www.gnu.org/software/make (likely already installed)
@@ -56,31 +61,40 @@ Requirements
 * Pandoc: http://johnmacfarlane.net/pandoc/installing.html
 * Graphviz: http://www.graphviz.org/Download.php
 
-
 Installation
 ------------
 
 Create a virtualenv:
 
-    $ make env
+```
+$ make env
+```
 
 Run the tests:
 
-    $ make test
-    $ make tests  # includes integration tests
+```
+$ make test
+$ make tests  # includes integration tests
+```
 
 Build the documentation:
 
-    $ make doc
+```
+$ make doc
+```
 
 Run static analysis:
 
-    $ make pep8
-    $ make pep257
-    $ make pylint
-    $ make check  # includes all checks
+```
+$ make pep8
+$ make pep257
+$ make pylint
+$ make check  # includes all checks
+```
 
 Prepare a release:
 
-    $ make dist  # dry run
-    $ make upload
+```
+$ make dist  # dry run
+$ make upload
+```
