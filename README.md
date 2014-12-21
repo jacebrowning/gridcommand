@@ -7,7 +7,7 @@ GridCommand
 [![PyPI Version](http://img.shields.io/pypi/v/gridcommand.svg)](https://pypi.python.org/pypi/gridcommand)
 [![PyPI Downloads](http://img.shields.io/pypi/dm/gridcommand.svg)](https://pypi.python.org/pypi/gridcommand)
 
-GridCommand is TBA.
+This a prototype Kivy client for GridCommand.
 
 
 
