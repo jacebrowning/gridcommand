@@ -54,6 +54,10 @@ ROOT_URLCONF = 'gridcommand.urls'
 
 WSGI_APPLICATION = 'gridcommand.wsgi.application'
 
+REST_FRAMEWORK = {
+    'PAGINATE_BY': 10
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases

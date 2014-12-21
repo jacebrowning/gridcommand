@@ -4,20 +4,21 @@ from rest_framework import serializers
 from games.models import Game
 
 
-class GameSerializer(serializers.ModelSerializer):
+class GameSerializer(serializers.HyperlinkedModelSerializer):
 
     owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:
         model = Game
-        fields = ('id', 'code', 'owner')
+        fields = ('url', 'code', 'owner')
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.HyperlinkedModelSerializer):
 
-    games = serializers.PrimaryKeyRelatedField(many=True,
-                                               queryset=Game.objects.all())
+    games = serializers.HyperlinkedRelatedField(many=True,
+                                                view_name='game-detail',
+                                                read_only=True)
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'games')
+        fields = ('url', 'username', 'games')
