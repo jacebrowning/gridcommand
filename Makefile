@@ -90,16 +90,16 @@ $(PIP):
 	$(SYS_VIRTUALENV) --python $(SYS_PYTHON) $(ENV)
 
 .PHONY: depends
-depends: .depends-ci .depends-dev
+depends: depends-ci depends-dev
 
-.PHONY: .depends-ci
-.depends-ci: env Makefile $(DEPENDS_CI)
+.PHONY: depends-ci
+depends-ci: env Makefile $(DEPENDS_CI)
 $(DEPENDS_CI): Makefile
 	$(PIP) install $(PIP_CACHE) --upgrade pep8 pep257 pylint coverage
 	touch $(DEPENDS_CI)  # flag to indicate dependencies are installed
 
-.PHONY: .depends-dev
-.depends-dev: env Makefile $(DEPENDS_DEV)
+.PHONY: depends-dev
+depends-dev: env Makefile $(DEPENDS_DEV)
 $(DEPENDS_DEV): Makefile
 	$(PIP) install $(PIP_CACHE) --upgrade pep8radius pygments docutils pdoc
 	touch $(DEPENDS_DEV)  # flag to indicate dependencies are installed
@@ -110,7 +110,7 @@ $(DEPENDS_DEV): Makefile
 doc: readme apidocs uml
 
 .PHONY: readme
-readme: .depends-dev docs/README-github.html docs/README-pypi.html
+readme: depends-dev docs/README-github.html docs/README-pypi.html
 docs/README-github.html: README.md
 	pandoc -f markdown_github -t html -o docs/README-github.html README.md
 	cp -f docs/README-github.html docs/README.html  # default format is GitHub
@@ -120,12 +120,12 @@ README.rst: README.md
 	pandoc -f markdown_github -t rst -o README.rst README.md
 
 .PHONY: apidocs
-apidocs: .depends-dev apidocs/$(PACKAGE)/index.html
+apidocs: depends-dev apidocs/$(PACKAGE)/index.html
 apidocs/$(PACKAGE)/index.html: $(SOURCES)
 	$(PDOC) --html --overwrite $(PACKAGE) --html-dir apidocs
 
 .PHONY: uml
-uml: .depends-dev docs/*.png
+uml: depends-dev docs/*.png
 docs/*.png: $(SOURCES)
 	$(PYREVERSE) $(PACKAGE) -p $(PACKAGE) -f ALL -o png --ignore test
 	- mv -f classes_$(PACKAGE).png docs/classes.png
@@ -143,25 +143,25 @@ read: doc
 check: pep8 pep257 pylint
 
 .PHONY: pep8
-pep8: .depends-ci
+pep8: depends-ci
 	$(PEP8) $(PACKAGE) --ignore=E501
 
 .PHONY: pep257
-pep257: .depends-ci
+pep257: depends-ci
 	$(PEP257) $(PACKAGE)
 
 .PHONY: pylint
-pylint: .depends-dev
+pylint: depends-dev
 	$(PYLINT) $(PACKAGE) --rcfile=.pylintrc
 
 .PHONY: fix
-fix: .depends-dev
+fix: depends-dev
 	$(PEP8RADIUS) --docformatter --in-place
 
 # Testing ######################################################################
 
 .PHONY: test
-test: .depends-ci
+test: depends-ci
 	$(COVERAGE) erase
 	$(COVERAGE) run --source='.' $(PACKAGE)/manage.py test --verbosity=2
 	$(COVERAGE) report --fail-under=100
