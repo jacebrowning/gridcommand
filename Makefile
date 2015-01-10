@@ -4,17 +4,10 @@ ifndef TRAVIS
 	PYTHON_MINOR := 4
 endif
 
-# Test runner settings
-ifndef TEST_RUNNER
-	# options are: nose, pytest
-	TEST_RUNNER := nose
-endif
-
 # Project settings
 PROJECT := GridCommand
 PACKAGE := gridcommand
-SOURCES := Makefile setup.py $(shell find $(PACKAGE) -name '*.py')
-EGG_INFO := $(subst -,_,$(PROJECT)).egg-info
+SOURCES := Makefile requirements.txt
 
 # System paths
 PLATFORM := $(shell python -c 'import sys; print(sys.platform)')
@@ -61,33 +54,35 @@ NOSE := $(BIN)/nosetests
 PYTEST := $(BIN)/py.test
 COVERAGE := $(BIN)/coverage
 
-# Remove if you don't want pip to cache downloads
-PIP_CACHE_DIR := .cache
-PIP_CACHE := --download-cache $(PIP_CACHE_DIR)
-
 # Flags for PHONY targets
+INSTALLED :=$(ENV)/.installed
 DEPENDS_CI := $(ENV)/.depends-ci
 DEPENDS_DEV := $(ENV)/.depends-dev
 ALL := $(ENV)/.all
 
-# Main Targets ###############################################################
+# Main Targets #################################################################
 
 .PHONY: all
 all: depends doc $(ALL)
 $(ALL): $(SOURCES)
-	$(MAKE) check
+	# TODO: add: pep257 pylint
+	$(MAKE) pep8
 	touch $(ALL)  # flag to indicate all setup steps were successful
 
 .PHONY: ci
-ci: check test tests
+# TODO: add: pep257 pylint test
+ci: pep8
 
-# Development Installation ###################################################
+# Development Installation #####################################################
+
+MANAGE := $(PYTHON) $(PACKAGE)/manage.py
+DB := $(PACKAGE)/db.sqlite3
 
 .PHONY: env
-env: .virtualenv $(EGG_INFO)
-$(EGG_INFO): Makefile setup.py requirements.txt
-	VIRTUAL_ENV=$(ENV) $(PYTHON) setup.py develop
-	touch $(EGG_INFO)  # flag to indicate package is installed
+env: .virtualenv $(INSTALLED)
+$(INSTALLED): requirements.txt
+	VIRTUAL_ENV=$(ENV) $(PIP) install -r requirements.txt
+	touch $(INSTALLED)  # flag to indicate project is installed
 
 .PHONY: .virtualenv
 .virtualenv: $(PIP)
@@ -95,27 +90,27 @@ $(PIP):
 	$(SYS_VIRTUALENV) --python $(SYS_PYTHON) $(ENV)
 
 .PHONY: depends
-depends: depends-ci depends-dev
+depends: .depends-ci .depends-dev
 
-.PHONY: depends-ci
-depends-ci: env Makefile $(DEPENDS_CI)
+.PHONY: .depends-ci
+.depends-ci: env Makefile $(DEPENDS_CI)
 $(DEPENDS_CI): Makefile
-	$(PIP) install $(PIP_CACHE) --upgrade pep8 pep257 pylint $(TEST_RUNNER) coverage
+	$(PIP) install $(PIP_CACHE) --upgrade pep8 pep257 pylint coverage
 	touch $(DEPENDS_CI)  # flag to indicate dependencies are installed
 
-.PHONY: depends-dev
-depends-dev: env Makefile $(DEPENDS_DEV)
+.PHONY: .depends-dev
+.depends-dev: env Makefile $(DEPENDS_DEV)
 $(DEPENDS_DEV): Makefile
-	$(PIP) install $(PIP_CACHE) --upgrade pep8radius pygments docutils pdoc wheel
+	$(PIP) install $(PIP_CACHE) --upgrade pep8radius pygments docutils pdoc
 	touch $(DEPENDS_DEV)  # flag to indicate dependencies are installed
 
-# Documentation ##############################################################
+# Documentation ################################################################
 
 .PHONY: doc
 doc: readme apidocs uml
 
 .PHONY: readme
-readme: depends-dev docs/README-github.html docs/README-pypi.html
+readme: .depends-dev docs/README-github.html docs/README-pypi.html
 docs/README-github.html: README.md
 	pandoc -f markdown_github -t html -o docs/README-github.html README.md
 	cp -f docs/README-github.html docs/README.html  # default format is GitHub
@@ -125,12 +120,12 @@ README.rst: README.md
 	pandoc -f markdown_github -t rst -o README.rst README.md
 
 .PHONY: apidocs
-apidocs: depends-dev apidocs/$(PACKAGE)/index.html
+apidocs: .depends-dev apidocs/$(PACKAGE)/index.html
 apidocs/$(PACKAGE)/index.html: $(SOURCES)
 	$(PDOC) --html --overwrite $(PACKAGE) --html-dir apidocs
 
 .PHONY: uml
-uml: depends-dev docs/*.png
+uml: .depends-dev docs/*.png
 docs/*.png: $(SOURCES)
 	$(PYREVERSE) $(PACKAGE) -p $(PACKAGE) -f ALL -o png --ignore test
 	- mv -f classes_$(PACKAGE).png docs/classes.png
@@ -142,58 +137,36 @@ read: doc
 	$(OPEN) docs/README-pypi.html
 	$(OPEN) docs/README-github.html
 
-# Static Analysis ############################################################
+# Static Analysis ##############################################################
 
 .PHONY: check
 check: pep8 pep257 pylint
 
 .PHONY: pep8
-pep8: depends-ci
+pep8: .depends-ci
 	$(PEP8) $(PACKAGE) --ignore=E501
 
 .PHONY: pep257
-pep257: depends-ci
+pep257: .depends-ci
 	$(PEP257) $(PACKAGE)
 
 .PHONY: pylint
-pylint: depends-ci
+pylint: .depends-dev
 	$(PYLINT) $(PACKAGE) --rcfile=.pylintrc
 
 .PHONY: fix
-fix: depends-dev
+fix: .depends-dev
 	$(PEP8RADIUS) --docformatter --in-place
 
-# Testing ####################################################################
+# Testing ######################################################################
 
 .PHONY: test
-test: test-$(TEST_RUNNER)
+test: .depends-ci
+	$(COVERAGE) erase
+	$(COVERAGE) run --source='.' $(PACKAGE)/manage.py test --verbosity=2
+	$(COVERAGE) report --fail-under=100
 
-.PHONY: tests
-tests: tests-$(TEST_RUNNER)
-
-# nosetest commands
-
-.PHONY: test-nose
-test-nose: depends-ci
-	$(NOSE) --config=.noserc
-
-.PHONY: tests-nose
-tests-nose: depends-ci
-	TEST_INTEGRATION=1 $(NOSE) --config=.noserc --cover-package=$(PACKAGE) -xv
-
-# pytest commands
-
-.PHONY: test-pytest
-test-pytest: depends-ci
-	$(COVERAGE) run --source $(PACKAGE) -m py.test $(PACKAGE) --doctest-modules
-	$(COVERAGE) report --show-missing --fail-under=100
-
-.PHONY: tests-pytest
-tests-pytest: depends-ci
-	TEST_INTEGRATION=1 $(MAKE) test
-	$(COVERAGE) report --show-missing --fail-under=100
-
-# Cleanup ####################################################################
+# Cleanup ######################################################################
 
 .PHONY: clean
 clean: .clean-dist .clean-test .clean-doc .clean-build
@@ -204,13 +177,13 @@ clean-env: clean
 	rm -rf $(ENV)
 
 .PHONY: clean-all
-clean-all: clean clean-env .clean-workspace .clean-cache
+clean-all: clean clean-env .clean-workspace
 
 .PHONY: .clean-build
 .clean-build:
-	find $(PACKAGE) -name '*.pyc' -delete
-	find $(PACKAGE) -name '__pycache__' -delete
-	rm -rf $(EGG_INFO)
+	find . -name '*.pyc' -delete
+	find . -name '__pycache__' -delete
+	rm -rf *.egg-info
 
 .PHONY: .clean-doc
 .clean-doc:
@@ -224,52 +197,47 @@ clean-all: clean clean-env .clean-workspace .clean-cache
 .clean-dist:
 	rm -rf dist build
 
-.PHONY: .clean-cache
-.clean-cache:
-	rm -rf $(PIP_CACHE_DIR)
-
 .PHONY: .clean-workspace
 .clean-workspace:
 	rm -rf *.sublime-workspace
+	rm -rf .settings
 
-# Release ####################################################################
+# Server #######################################################################
 
-.PHONY: register
-register: doc
-	$(PYTHON) setup.py register
+.PHONY: db
+db: env $(DB)
+$(DB):
+	$(MANAGE) syncdb --noinput
+	$(MANAGE) createsuperuser --user admin --email admin@localhost
 
-.PHONY: dist
-dist: check doc test tests
-	$(PYTHON) setup.py sdist
-	$(PYTHON) setup.py bdist_wheel
-	$(MAKE) read
+.PHONY: clean-db
+clean-db:
+	rm -f $(DB)
 
-.PHONY: upload
-upload: .git-no-changes doc
-	$(PYTHON) setup.py register sdist upload
-	$(PYTHON) setup.py bdist_wheel upload
+.PHONY: migrate
+migrate: db
+	$(MANAGE) migrate
 
-.PHONY: .git-no-changes
-.git-no-changes:
-	@if git diff --name-only --exit-code;         \
-	then                                          \
-		echo Git working copy is clean...;        \
-	else                                          \
-		echo ERROR: Git working copy is dirty!;   \
-		echo Commit your changes and try again.;  \
-		exit -1;                                  \
-	fi;
+.PHONY: run
+run: migrate
+	$(MANAGE) runserver
 
-# System Installation ########################################################
+.PHONY: launch
+launch: migrate
+	eval "sleep 1; $(OPEN) http://127.0.0.1:8000" &
+	$(MAKE) run
 
-.PHONY: develop
-develop:
-	$(SYS_PYTHON) setup.py develop
+.PHONY: run-private
+run-private: run
 
-.PHONY: install
-install:
-	$(SYS_PYTHON) setup.py install
+.PHONY: launch-private
+launch-private: launch
 
-.PHONY: download
-download:
-	pip install $(PROJECT)
+.PHONY: run-public
+run-public: migrate
+	$(MANAGE) runserver 0.0.0.0:8000
+
+.PHONY: launch-public
+launch-public: migrate
+	eval "sleep 1; $(OPEN) http://localhost:8000" &
+	$(MAKE) run-public

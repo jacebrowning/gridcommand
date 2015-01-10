@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='game',
             name='owner',
-            field=models.ForeignKey(default='admin', to=settings.AUTH_USER_MODEL, related_name='games'),
+            field=models.ForeignKey(default=0, to=settings.AUTH_USER_MODEL, related_name='games'),
             preserve_default=False,
         ),
     ]
