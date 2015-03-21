@@ -208,6 +208,11 @@ clean-all: clean clean-env .clean-workspace
 db: env $(DB)
 $(DB):
 	$(MANAGE) syncdb --noinput
+	@echo
+	@echo "##################################################"
+	@echo "# enter 'password' as the default 'admin' password"
+	@echo "##################################################"
+	@echo
 	$(MANAGE) createsuperuser --user admin --email admin@localhost
 
 .PHONY: clean-db
