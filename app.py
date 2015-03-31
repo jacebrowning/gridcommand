@@ -1,8 +1,14 @@
+# TODO: add unique player colors
+# TODO: add pin requirement
+# TODO: switch to api route
+# TODO: refactor serialization
+# TODO: add rounds
+
 import os
 import string
 import random
 
-from flask import request, url_for, redirect
+from flask import request, url_for
 from flask.ext.api import FlaskAPI, status, exceptions
 import yorm
 
@@ -15,6 +21,7 @@ app = FlaskAPI(__name__)
 class Move(yorm.extended.AttributeDictionary):
 
     def __init__(self, begin, end, count=0):
+        super().__init__()
         self.begin = begin
         self.end = end
         self.count = count
@@ -37,23 +44,24 @@ class Move(yorm.extended.AttributeDictionary):
 class Moves(yorm.extended.SortedList):
 
     def serialize(self, game, player):
-        print(self)
         return [url_for('.moves_detail', _external=True,
-                key=game.key, color=player.color,
-                a=move.begin, b=move.end) for move in self]
+                        key=game.key, color=player.color,
+                        a=move.begin, b=move.end) for move in self]
 
     def get(self, begin, end):
         move = Move(begin, end)
         for move2 in self:
             if move == move2:
                 return move2
-        else:
-            self.append(move)
-            return move
+        self.append(move)
+        return move
 
     def set(self, begin, end, count):
         move = self.get(begin, end)
-        move.count = count
+        if count is not None:
+            move.count = count
+        if not move.count:
+            self.delete(begin, end)
         return move
 
     def delete(self, begin, end):
@@ -62,7 +70,6 @@ class Moves(yorm.extended.SortedList):
             self.remove(move)
         except ValueError:
             pass
-        print(self)
 
 
 @yorm.attr(color=yorm.standard.String)
@@ -71,6 +78,7 @@ class Moves(yorm.extended.SortedList):
 class Player(yorm.extended.AttributeDictionary):
 
     def __init__(self, color):
+        super().__init__()
         self.color = color
         self.moves = []
         self.done = False
@@ -87,7 +95,7 @@ class Players(yorm.container.List):
 
     def serialize(self, game):
         return [url_for('.players_detail', _external=True,
-                key=game.key, color=player.color) for player in self]
+                        key=game.key, color=player.color) for player in self]
 
     def find(self, color):
         for player in self:
@@ -130,7 +138,7 @@ class Games(dict):
 
     def serialize(self):
         return [url_for('.games_detail',
-                _external=True, key=key) for key in self]
+                        _external=True, key=key) for key in self]
 
     def find(self, key):
         try:
@@ -144,8 +152,8 @@ class Games(dict):
 games = Games()
 if os.path.exists("games"):
     for filename in os.listdir("games"):
-        key = filename.split('.')[0]
-        games[key] = Game(key)
+        _key = filename.split('.')[0]
+        games[_key] = Game(_key)
 
 
 # routes ###############################################################
@@ -260,10 +268,7 @@ def moves_detail(key, color, a, b):
         return move.serialize(game, player)
 
     if request.method == 'PUT':
-        move = player.moves.get(a, b)
-        move.count = request.data.get('count', move.count)
-        if not move.count:
-            player.moves.delete(a, b)
+        move = player.moves.set(a, b, request.data.get('count'))
         yorm.update_file(game)  # TODO: remove when unnecessary
         return move.serialize(game, player)
 
