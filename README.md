@@ -15,7 +15,7 @@ Getting Started
 Requirements
 ------------
 
-* Python 3.4+
+* Python 3.3+
 
 Installation
 ------------
@@ -37,12 +37,12 @@ $ python setup.py install
 Basic Usage
 ===========
 
-After installation, abstract base classes can be imported from the package:
+After installation, the package can imported:
 
 ```
 $ python
 >>> import gridcommand
-gridcommand.__version__
+>>> gridcommand.__version__
 ```
 
 GridCommand doesn't do anything, it's a template.

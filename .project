@@ -3,7 +3,6 @@
 	<name>GridCommand</name>
 	<comment></comment>
 	<projects>
-		<project>YORM</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -17,7 +16,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1427818092681</id>
+			<id>1398478527151</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -26,7 +25,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1427818092682</id>
+			<id>1398478527152</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -35,7 +34,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1427818092684</id>
+			<id>1398478527153</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -44,7 +43,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1427818092687</id>
+			<id>1398478527154</id>
 			<name></name>
 			<type>22</type>
 			<matcher>
@@ -53,7 +52,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1427818092692</id>
+			<id>1398478527155</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -62,7 +61,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1427818092693</id>
+			<id>1398478527156</id>
 			<name></name>
 			<type>22</type>
 			<matcher>
@@ -71,7 +70,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1427818092697</id>
+			<id>1398478527157</id>
 			<name></name>
 			<type>22</type>
 			<matcher>
@@ -80,7 +79,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1427818092701</id>
+			<id>1398478527158</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -89,7 +88,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1427818092704</id>
+			<id>1398478527159</id>
 			<name></name>
 			<type>26</type>
 			<matcher>

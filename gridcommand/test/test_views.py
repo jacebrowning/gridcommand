@@ -1,3 +1,4 @@
+"""Unit tests for the `views` module."""
 # pytest: disable=C0103
 
 from .conftest import load

@@ -1,4 +1,4 @@
-"""pytest configuration."""
+"""Configuration for pytest."""
 # pylint: disable=W0613
 
 import os

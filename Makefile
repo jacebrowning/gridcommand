@@ -1,13 +1,18 @@
+# Project settings
+PROJECT := GridCommand
+PACKAGE := gridcommand
+SOURCES := Makefile setup.py $(shell find $(PACKAGE) -name '*.py')
+EGG_INFO := $(subst -,_,$(PROJECT)).egg-info
+
 # Python settings
 ifndef TRAVIS
 	PYTHON_MAJOR := 3
 	PYTHON_MINOR := 4
 endif
 
-# Project settings
-PROJECT := GridCommand
-PACKAGE := gridcommand
-SOURCES := Makefile requirements.txt
+# Testake settings
+UNIT_TEST_COVERAGE := 31
+INTEGRATION_TEST_COVERAGE := 31
 
 # System paths
 PLATFORM := $(shell python -c 'import sys; print(sys.platform)')
@@ -55,7 +60,6 @@ PYTEST := $(BIN)/py.test
 COVERAGE := $(BIN)/coverage
 
 # Flags for PHONY targets
-INSTALLED :=$(ENV)/.installed
 DEPENDS_CI := $(ENV)/.depends-ci
 DEPENDS_DEV := $(ENV)/.depends-dev
 ALL := $(ENV)/.all
@@ -65,29 +69,29 @@ ALL := $(ENV)/.all
 .PHONY: all
 all: depends doc $(ALL)
 $(ALL): $(SOURCES)
-	# TODO: add: pep257 pylint
-	$(MAKE) pep8
+	$(MAKE) check
 	touch $(ALL)  # flag to indicate all setup steps were successful
 
 .PHONY: ci
-# TODO: add: pep257 pylint test
-ci: pep8
+ci: pep8 pylint test tests  # TODO: re-enable checks
+
+.PHONY: run
+run: env
+	$(PYTHON) app.py
 
 # Development Installation #####################################################
 
-MANAGE := $(PYTHON) $(PACKAGE)/manage.py
-DB := $(PACKAGE)/db.sqlite3
-
 .PHONY: env
-env: .virtualenv $(INSTALLED)
-$(INSTALLED): requirements.txt
-	VIRTUAL_ENV=$(ENV) $(PIP) install -r requirements.txt
-	touch $(INSTALLED)  # flag to indicate project is installed
+env: .virtualenv $(EGG_INFO)
+$(EGG_INFO): Makefile setup.py requirements.txt
+	VIRTUAL_ENV=$(ENV) $(PYTHON) setup.py develop
+	touch $(EGG_INFO)  # flag to indicate package is installed
 
 .PHONY: .virtualenv
 .virtualenv: $(PIP)
 $(PIP):
 	$(SYS_VIRTUALENV) --python $(SYS_PYTHON) $(ENV)
+	$(PIP) install --upgrade pip
 
 .PHONY: depends
 depends: depends-ci depends-dev
@@ -95,13 +99,13 @@ depends: depends-ci depends-dev
 .PHONY: depends-ci
 depends-ci: env Makefile $(DEPENDS_CI)
 $(DEPENDS_CI): Makefile
-	$(PIP) install $(PIP_CACHE) --upgrade pep8 pep257 pylint pytest coverage
+	$(PIP) install --upgrade pep8 pep257 pylint pytest coverage
 	touch $(DEPENDS_CI)  # flag to indicate dependencies are installed
 
 .PHONY: depends-dev
 depends-dev: env Makefile $(DEPENDS_DEV)
 $(DEPENDS_DEV): Makefile
-	$(PIP) install $(PIP_CACHE) --upgrade pep8radius pygments docutils pdoc
+	$(PIP) install --upgrade pep8radius pygments docutils pdoc wheel
 	touch $(DEPENDS_DEV)  # flag to indicate dependencies are installed
 
 # Documentation ################################################################
@@ -110,12 +114,11 @@ $(DEPENDS_DEV): Makefile
 doc: readme apidocs uml
 
 .PHONY: readme
-readme: depends-dev docs/README-github.html docs/README-pypi.html
-docs/README-github.html: README.md
-	pandoc -f markdown_github -t html -o docs/README-github.html README.md
-	cp -f docs/README-github.html docs/README.html  # default format is GitHub
-docs/README-pypi.html: README.rst
-	$(RST2HTML) README.rst docs/README-pypi.html
+readme: depends-dev README-github.html README-pypi.html
+README-github.html: README.md
+	pandoc -f markdown_github -t html -o README-github.html README.md
+README-pypi.html: README.rst
+	$(RST2HTML) README.rst README-pypi.html
 README.rst: README.md
 	pandoc -f markdown_github -t rst -o README.rst README.md
 
@@ -134,25 +137,28 @@ docs/*.png: $(SOURCES)
 .PHONY: read
 read: doc
 	$(OPEN) apidocs/$(PACKAGE)/index.html
-	$(OPEN) docs/README-pypi.html
-	$(OPEN) docs/README-github.html
+	$(OPEN) README-pypi.html
+	$(OPEN) README-github.html
 
 # Static Analysis ##############################################################
 
 .PHONY: check
-check: pep8 pep257 pylint
+check: pep8 pylint pep257
 
 .PHONY: pep8
 pep8: depends-ci
-	$(PEP8) $(PACKAGE) --ignore=E402,E501
+	# E501: line too long (checked by PyLint)
+	$(PEP8) $(PACKAGE) --ignore=E501
 
 .PHONY: pep257
 pep257: depends-ci
-	$(PEP257) $(PACKAGE)
+	# D102: docstring missing (checked by PyLint)
+	# D202: No blank lines allowed *after* function docstring
+	$(PEP257) $(PACKAGE) --ignore=D102,D202
 
 .PHONY: pylint
-pylint: depends-dev
-	$(PYLINT) $(PACKAGE) --rcfile=.pylintrc
+pylint: depends-ci
+	$(PYLINT) $(PACKAGE) --rcfile=.pylintrc --disable=C
 
 .PHONY: fix
 fix: depends-dev
@@ -161,10 +167,20 @@ fix: depends-dev
 # Testing ######################################################################
 
 .PHONY: test
-test: depends-ci
-	$(COVERAGE) erase
-	$(COVERAGE) run --source='.' $(PACKAGE)/manage.py test --verbosity=2
-	$(COVERAGE) report --fail-under=100
+test: depends-ci .clean-test
+	$(COVERAGE) run --source $(PACKAGE) --module py.test $(PACKAGE) --doctest-modules
+	$(COVERAGE) html --directory .coverage-html
+	$(COVERAGE) report --show-missing --fail-under=$(UNIT_TEST_COVERAGE)
+
+.PHONY: tests
+tests: depends-ci .clean-test
+	TEST_INTEGRATION=1 $(COVERAGE) run --source $(PACKAGE) --module py.test $(PACKAGE) --doctest-modules
+	$(COVERAGE) html --directory .coverage-html
+	$(COVERAGE) report --show-missing --fail-under=$(INTEGRATION_TEST_COVERAGE)
+
+.PHONY: read-coverage
+read-coverage:
+	$(OPEN) .coverage-html/index.html
 
 # Cleanup ######################################################################
 
@@ -181,17 +197,17 @@ clean-all: clean clean-env .clean-workspace
 
 .PHONY: .clean-build
 .clean-build:
-	find . -name '*.pyc' -delete
-	find . -name '__pycache__' -delete
-	rm -rf *.egg-info
+	find $(PACKAGE) -name '*.pyc' -delete
+	find $(PACKAGE) -name '__pycache__' -delete
+	rm -rf $(EGG_INFO)
 
 .PHONY: .clean-doc
 .clean-doc:
-	rm -rf README.rst apidocs docs/*.html docs/*.png
+	rm -rf README.rst apidocs *.html docs/*.png
 
 .PHONY: .clean-test
 .clean-test:
-	rm -rf .coverage
+	rm -rf .coverage .coverage-html
 
 .PHONY: .clean-dist
 .clean-dist:
@@ -200,49 +216,45 @@ clean-all: clean clean-env .clean-workspace
 .PHONY: .clean-workspace
 .clean-workspace:
 	rm -rf *.sublime-workspace
-	rm -rf .settings
 
-# Server #######################################################################
+# Release ######################################################################
 
-.PHONY: db
-db: env $(DB)
-$(DB):
-	$(MANAGE) syncdb --noinput
-	@echo
-	@echo "##################################################"
-	@echo "# enter 'password' as the default 'admin' password"
-	@echo "##################################################"
-	@echo
-	$(MANAGE) createsuperuser --user admin --email admin@localhost
+.PHONY: register
+register: doc
+	$(PYTHON) setup.py register
 
-.PHONY: clean-db
-clean-db:
-	rm -f $(DB)
+.PHONY: dist
+dist: check doc test tests
+	$(PYTHON) setup.py sdist
+	$(PYTHON) setup.py bdist_wheel
+	$(MAKE) read
 
-.PHONY: migrate
-migrate: db
-	$(MANAGE) migrate
+.PHONY: upload
+upload: .git-no-changes doc
+	$(PYTHON) setup.py register sdist upload
+	$(PYTHON) setup.py bdist_wheel upload
 
-.PHONY: run
-run: migrate
-	$(MANAGE) runserver
+.PHONY: .git-no-changes
+.git-no-changes:
+	@if git diff --name-only --exit-code;         \
+	then                                          \
+		echo Git working copy is clean...;        \
+	else                                          \
+		echo ERROR: Git working copy is dirty!;   \
+		echo Commit your changes and try again.;  \
+		exit -1;                                  \
+	fi;
 
-.PHONY: launch
-launch: migrate
-	eval "sleep 1; $(OPEN) http://127.0.0.1:8000" &
-	$(MAKE) run
+# System Installation ##########################################################
 
-.PHONY: run-private
-run-private: run
+.PHONY: develop
+develop:
+	$(SYS_PYTHON) setup.py develop
 
-.PHONY: launch-private
-launch-private: launch
+.PHONY: install
+install:
+	$(SYS_PYTHON) setup.py install
 
-.PHONY: run-public
-run-public: migrate
-	$(MANAGE) runserver 0.0.0.0:8000
-
-.PHONY: launch-public
-launch-public: migrate
-	eval "sleep 1; $(OPEN) http://localhost:8000" &
-	$(MAKE) run-public
+.PHONY: download
+download:
+	pip install $(PROJECT)

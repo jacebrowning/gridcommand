@@ -4,12 +4,6 @@
 __pycache__
 .ipynb_checkpoints
 
-# Temporary Django files
-*.log
-local_settings.py
-*.db
-*.sqlite3
-
 # Temporary OS files
 Icon*
 
@@ -20,7 +14,7 @@ env
 # Generated documentation
 docs/gen
 apidocs
-docs/*.html
+/*.html
 *.rst
 docs/*.png
 
@@ -32,6 +26,7 @@ docs/*.png
 
 # Testing and coverage results
 .coverage
+.coverage-html
 pyunit.xml
 
 # Build and release directories
@@ -43,5 +38,3 @@ dist
 
 # Eclipse
 .settings
-
-games

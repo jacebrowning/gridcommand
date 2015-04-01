@@ -28,7 +28,7 @@ class Move(yorm.extended.AttributeDictionary):
             return False
         return self.end < other.end
 
-    def serialize(self, game, player):
+    def serialize(self):
         return {'count': self.count}
 
 
@@ -98,7 +98,7 @@ class Players(yorm.container.List):
 
 @yorm.attr(players=Players)
 @yorm.attr(started=yorm.standard.Boolean)
-@yorm.sync("games/{self.key}.yml")
+@yorm.sync("data/games/{self.key}.yml")
 class Game:
 
     KEY_CHARS = string.ascii_lowercase + string.digits
@@ -145,8 +145,8 @@ games = Games()
 
 
 def load():
-    if os.path.exists("games"):
-        for filename in os.listdir("games"):
+    _path = os.path.join("data", "games")
+    if os.path.exists(_path):
+        for filename in os.listdir(_path):
             _key = filename.split('.')[0]
             games[_key] = Game(_key)
-

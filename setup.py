@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
-"""
-Setup script for GridCommand.
-"""
+"""Setup script for GridCommand."""
 
 import setuptools
 

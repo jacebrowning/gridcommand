@@ -112,7 +112,7 @@ def moves_list(key, color):
                                 request.data.get('end'),
                                 request.data.get('count'))
         yorm.update_file(game)  # TODO: remove when unnecessary
-        return move.serialize(game, player)
+        return move.serialize()
 
 
 @app.route(MOVES_DETAIL_URL, methods=['GET', 'PUT', 'DELETE'])
@@ -123,12 +123,12 @@ def moves_detail(key, color, begin, end):
     if request.method == 'GET':
         move = player.moves.get(begin, end)
         yorm.update_file(game)  # TODO: remove when unnecessary
-        return move.serialize(game, player)
+        return move.serialize()
 
     if request.method == 'PUT':
         move = player.moves.set(begin, end, request.data.get('count'))
         yorm.update_file(game)  # TODO: remove when unnecessary
-        return move.serialize(game, player)
+        return move.serialize()
 
     if request.method == 'DELETE':
         player.moves.delete(begin, end)
