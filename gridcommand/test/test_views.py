@@ -8,12 +8,20 @@ from .conftest import load
 
 class TestIndex:
 
-    def test_version(self, client):
+    def test_redirect(self, client):
         response = client.get('/')
+
+        assert 302 == response.status_code
+
+
+class TestRoot:
+
+    def test_version(self, client):
+        response = client.get('/api/')
 
         assert 200 == response.status_code
         assert {'version': 1,
-                'games': "http://localhost/games/"} == load(response)
+                'games': "http://localhost/api/games/"} == load(response)
 
 
 class TestGames:
@@ -22,14 +30,14 @@ class TestGames:
         game = models.Game('my_game')
         views.games[game.key] = game
 
-        response = client.get('/games/my_game/')
+        response = client.get('/api/games/my_game/')
 
         assert 200 == response.status_code
-        assert {'players': "http://localhost/games/my_game/players/",
+        assert {'players': "http://localhost/api/games/my_game/players/",
                 'started': False} == load(response)
 
     def test_get_missing_game(self, client):
-        response = client.get('/games/my_game/')
+        response = client.get('/api/games/my_game/')
 
         assert 404 == response.status_code
         assert {'message':
@@ -42,7 +50,7 @@ class TestPlayers:
         game = models.Game('my_game')
         views.games[game.key] = game
 
-        response = client.get('/games/my_game/players/red/')
+        response = client.get('/api/games/my_game/players/red/')
 
         assert 404 == response.status_code
         assert {'message':

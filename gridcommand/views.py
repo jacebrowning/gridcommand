@@ -1,22 +1,34 @@
-from flask import request, url_for
+from flask import request, url_for, redirect
 from flask.ext.api import FlaskAPI, status, exceptions  # pylint: disable=E0611,F0401
 import yorm
 
 from .models import games
 
+ROOT_URL = "/api/"
+
+GAMES_LIST_URL = ROOT_URL + "games/"
+GAMES_DETAIL_URL = GAMES_LIST_URL + "<string:key>/"
+
+PLAYERS_LIST_URL = GAMES_DETAIL_URL + "players/"
+PLAYERS_DETAIL_URL = PLAYERS_LIST_URL + "<string:color>/"
+
+MOVES_LIST_URL = PLAYERS_DETAIL_URL + "moves/"
+MOVES_DETAIL_URL = MOVES_LIST_URL + "<int:begin>-<int:end>/"
 
 app = FlaskAPI(__name__)
 
 
 @app.route('/')
 def index():
+    """Redirect the index to the API."""
+    return redirect(url_for('.root'))
+
+
+@app.route(ROOT_URL)
+def root():
     """Display the server version."""
     return {'version': 1,
             'games': url_for('.games_list', _external=True)}
-
-
-GAMES_LIST_URL = "/games/"
-GAMES_DETAIL_URL = GAMES_LIST_URL + "<string:key>/"
 
 
 @app.route(GAMES_LIST_URL, methods=['GET', 'POST'])
@@ -53,10 +65,6 @@ def games_detail(key):
         return '', status.HTTP_204_NO_CONTENT
 
 
-PLAYERS_LIST_URL = GAMES_DETAIL_URL + "players/"
-PLAYERS_DETAIL_URL = PLAYERS_LIST_URL + "<string:color>/"
-
-
 @app.route(PLAYERS_LIST_URL, methods=['GET', 'POST'])
 def players_list(key):
     """List or create players."""
@@ -91,10 +99,6 @@ def players_detail(key, color):
         game.players.delete(color)
         yorm.update_file(game)  # TODO: remove when unnecessary
         return '', status.HTTP_204_NO_CONTENT
-
-
-MOVES_LIST_URL = PLAYERS_DETAIL_URL + "moves/"
-MOVES_DETAIL_URL = MOVES_LIST_URL + "<int:begin>-<int:end>/"
 
 
 @app.route(MOVES_LIST_URL, methods=['GET', 'POST'])

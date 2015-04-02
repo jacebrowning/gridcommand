@@ -37,7 +37,7 @@ class Moves(yorm.extended.SortedList):
     def serialize(self, game, player):
         return [url_for('.moves_detail', _external=True,
                         key=game.key, color=player.color,
-                        a=move.begin, b=move.end) for move in self]
+                        begin=move.begin, end=move.end) for move in self]
 
     def get(self, begin, end):
         move = Move(begin, end)
