@@ -1,7 +1,8 @@
 """Unit tests for the `views` module."""
 # pylint: disable=R0201,C0103,C0111
 
-from gridcommand import models, views
+from gridcommand import models
+from gridcommand import data
 
 from .conftest import load
 
@@ -28,7 +29,7 @@ class TestGames:
 
     def test_get_existing_game(self, client):
         game = models.Game('my_game')
-        views.games[game.key] = game
+        data.games[game.key] = game
 
         response = client.get('/api/games/my_game/')
 
@@ -48,7 +49,7 @@ class TestPlayers:
 
     def test_get_missing_player(self, client):
         game = models.Game('my_game')
-        views.games[game.key] = game
+        data.games[game.key] = game
 
         response = client.get('/api/games/my_game/players/red/')
 

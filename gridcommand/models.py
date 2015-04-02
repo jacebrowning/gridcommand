@@ -1,6 +1,5 @@
 """Classes representing game objects."""
 
-import os
 import string
 import random
 
@@ -185,15 +184,3 @@ class Games(dict):
             raise exc("The game '{}' does not exist.".format(key)) from None
         else:
             return player
-
-
-games = Games()  # pylint: disable=C0103
-
-
-def load():
-    """Add previously stored data to the application."""
-    _path = os.path.join("data", "games")
-    if os.path.exists(_path):
-        for filename in os.listdir(_path):
-            _key = filename.split('.')[0]
-            games[_key] = Game(_key)

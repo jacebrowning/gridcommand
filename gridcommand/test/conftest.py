@@ -7,7 +7,8 @@ import pytest
 
 import yorm
 
-from gridcommand import views
+from gridcommand import app
+from gridcommand import data
 
 ENV = 'TEST_INTEGRATION'  # environment variable to enable integration tests
 REASON = "'{0}' variable not set".format(ENV)
@@ -27,8 +28,8 @@ def pytest_runtest_setup(item):
 @pytest.fixture
 def client(request):
     """Fixture to create a test client for the application."""
-    test_client = views.app.test_client()
-    views.games.clear()
+    test_client = app.test_client()
+    data.games.clear()
     return test_client
 
 

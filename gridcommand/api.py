@@ -4,7 +4,7 @@ from flask import request, url_for, redirect
 from flask.ext.api import FlaskAPI, status, exceptions  # pylint: disable=E0611,F0401
 import yorm
 
-from .models import games
+from .data import games
 
 ROOT_URL = "/api/"
 

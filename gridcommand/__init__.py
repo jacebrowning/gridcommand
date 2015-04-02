@@ -11,3 +11,9 @@ PYTHON_VERSION = 3, 4
 
 if not sys.version_info >= PYTHON_VERSION:  # pragma: no cover (manual test)
     exit("Python {}.{}+ is required.".format(*PYTHON_VERSION))
+
+try:
+    from .api import app
+    from . import data
+except ImportError:  # pragma: no cover (manual test)
+    pass

@@ -77,7 +77,7 @@ ci: check test tests
 
 .PHONY: run
 run: env
-	$(PYTHON) app.py
+	$(PYTHON) main.py
 
 # Development Installation #####################################################
 
