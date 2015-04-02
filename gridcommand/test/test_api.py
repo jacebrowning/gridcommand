@@ -35,6 +35,7 @@ class TestGames:
 
         assert 200 == response.status_code
         assert {'players': "http://localhost/api/games/my_game/players/",
+                'round': 0,
                 'started': False} == load(response)
 
     def test_get_missing_game(self, client):

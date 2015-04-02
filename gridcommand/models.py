@@ -139,6 +139,7 @@ class Players(yorm.container.List):
 
 @yorm.attr(players=Players)
 @yorm.attr(started=yorm.standard.Boolean)
+@yorm.attr(round=yorm.standard.Integer)
 @yorm.sync("data/games/{self.key}.yml")
 class Game:
 
@@ -150,7 +151,18 @@ class Game:
     def __init__(self, key=None):
         self.key = key or self._generate_key()
         self.players = Players()
-        self.started = False
+        self._started = False
+        self.round = 0
+
+    @property
+    def started(self):
+        return self._started
+
+    @started.setter
+    def started(self, status):
+        self._started = status
+        if status:
+            self.round = self.round or 1
 
     @staticmethod
     def _generate_key():
@@ -161,7 +173,8 @@ class Game:
         players_url = url_for('.players_list', _external=True,
                               key=self.key)
         return {'players': players_url,
-                'started': self.started}
+                'started': self.started,
+                'round': self.round}
 
 
 class Games(dict):

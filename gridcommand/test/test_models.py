@@ -3,7 +3,7 @@
 
 import pytest
 
-from gridcommand.models import Move, Player, Players, Games
+from gridcommand.models import Move, Player, Players, Game, Games
 
 
 class TestMove:
@@ -75,6 +75,15 @@ class TestPlayers:
         assert player in players
         players.delete(player.color)
         assert player not in players
+
+
+class TestGame:
+
+    def test_starting_triggers_round_1(self):
+        game = Game()
+        assert 0 == game.round
+        game.started = True
+        assert 1 == game.round
 
 
 class TestGames:
