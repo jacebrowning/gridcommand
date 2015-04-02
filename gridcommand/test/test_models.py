@@ -1,5 +1,5 @@
 """Unit tests for the `models` module."""
-# pylint: disable=R0201,C0103
+# pylint: disable=R0201,C0103,C0111
 
 import pytest
 

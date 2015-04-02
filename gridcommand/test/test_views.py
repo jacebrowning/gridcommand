@@ -1,5 +1,5 @@
 """Unit tests for the `views` module."""
-# pylint: disable=R0201,C0103
+# pylint: disable=R0201,C0103,C0111
 
 from gridcommand import models, views
 

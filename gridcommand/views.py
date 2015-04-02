@@ -1,3 +1,5 @@
+"""API routes for the game."""
+
 from flask import request, url_for, redirect
 from flask.ext.api import FlaskAPI, status, exceptions  # pylint: disable=E0611,F0401
 import yorm
@@ -15,7 +17,7 @@ PLAYERS_DETAIL_URL = PLAYERS_LIST_URL + "<string:color>/"
 MOVES_LIST_URL = PLAYERS_DETAIL_URL + "moves/"
 MOVES_DETAIL_URL = MOVES_LIST_URL + "<int:begin>-<int:end>/"
 
-app = FlaskAPI(__name__)
+app = FlaskAPI(__name__)  # pylint: disable=C0103
 
 
 @app.route('/')
@@ -26,7 +28,7 @@ def index():
 
 @app.route(ROOT_URL)
 def root():
-    """Display the server version."""
+    """Get the API version."""
     return {'version': 1,
             'games': url_for('.games_list', _external=True)}
 
@@ -46,7 +48,7 @@ def games_list():
 
 @app.route(GAMES_DETAIL_URL, methods=['GET', 'PUT', 'DELETE'])
 def games_detail(key):
-    """Retrieve, update or delete games instances."""
+    """Retrieve, update or delete a game."""
 
     if request.method == 'GET':
         game = games.find(key, exc=exceptions.NotFound)
@@ -67,7 +69,7 @@ def games_detail(key):
 
 @app.route(PLAYERS_LIST_URL, methods=['GET', 'POST'])
 def players_list(key):
-    """List or create players."""
+    """List or create players for a game."""
     game = games.find(key, exc=exceptions.NotFound)
 
     if request.method == 'GET':
@@ -82,6 +84,7 @@ def players_list(key):
 
 @app.route(PLAYERS_DETAIL_URL, methods=['GET', 'PUT', 'DELETE'])
 def players_detail(key, color):
+    """Retrieve, update or delete a game's player."""
     game = games.find(key, exc=exceptions.NotFound)
 
     if request.method == 'GET':
@@ -103,6 +106,7 @@ def players_detail(key, color):
 
 @app.route(MOVES_LIST_URL, methods=['GET', 'POST'])
 def moves_list(key, color):
+    """List or create moves for a player."""
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
 
@@ -120,6 +124,7 @@ def moves_list(key, color):
 
 @app.route(MOVES_DETAIL_URL, methods=['GET', 'PUT', 'DELETE'])
 def moves_detail(key, color, begin, end):
+    """Retrieve, update or delete a players's move."""
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
 

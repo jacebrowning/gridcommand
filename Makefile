@@ -73,7 +73,7 @@ $(ALL): $(SOURCES)
 	touch $(ALL)  # flag to indicate all setup steps were successful
 
 .PHONY: ci
-ci: pep8 pylint test tests  # TODO: re-enable checks
+ci: check test tests
 
 .PHONY: run
 run: env
@@ -147,18 +147,19 @@ check: pep8 pylint pep257
 
 .PHONY: pep8
 pep8: depends-ci
-	# E501: line too long (checked by PyLint)
+# E501: line too long (checked by PyLint)
 	$(PEP8) $(PACKAGE) --ignore=E501
 
 .PHONY: pep257
 pep257: depends-ci
-	# D102: docstring missing (checked by PyLint)
-	# D202: No blank lines allowed *after* function docstring
+# D102: docstring missing (checked by PyLint)
+# D202: No blank lines allowed *after* function docstring
 	$(PEP257) $(PACKAGE) --ignore=D102,D202
 
 .PHONY: pylint
 pylint: depends-ci
-	$(PYLINT) $(PACKAGE) --rcfile=.pylintrc --disable=C
+# C0111: Missing method docstring (warning displayed in editors)
+	$(PYLINT) $(PACKAGE) --rcfile=.pylintrc --disable=C0111
 
 .PHONY: fix
 fix: depends-dev

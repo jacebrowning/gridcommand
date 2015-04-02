@@ -1,3 +1,5 @@
+"""Classes representing game objects."""
+
 import os
 import string
 import random
@@ -10,6 +12,8 @@ import yorm
 @yorm.attr(end=yorm.standard.Integer)
 @yorm.attr(count=yorm.standard.Integer)
 class Move(yorm.extended.AttributeDictionary):
+
+    """A planned transfer of tokens from one cell to another."""
 
     def __init__(self, begin, end, count=0):
         super().__init__()
@@ -33,6 +37,8 @@ class Move(yorm.extended.AttributeDictionary):
 
 @yorm.attr(all=Move)
 class Moves(yorm.extended.SortedList):
+
+    """A collection of moves for a player."""
 
     def serialize(self, game, player):
         return [url_for('.moves_detail', _external=True,
@@ -68,6 +74,8 @@ class Moves(yorm.extended.SortedList):
 @yorm.attr(done=yorm.standard.Boolean)
 class Player(yorm.extended.AttributeDictionary):
 
+    """A entity that plans moves during a round."""
+
     def __init__(self, color):
         super().__init__()
         self.color = color
@@ -86,6 +94,8 @@ class Player(yorm.extended.AttributeDictionary):
 
 @yorm.attr(all=Player)
 class Players(yorm.container.List):
+
+    """A collection players in a game."""
 
     COLORS = (
         'red',
@@ -133,6 +143,8 @@ class Players(yorm.container.List):
 @yorm.sync("data/games/{self.key}.yml")
 class Game:
 
+    """An individual game instance."""
+
     KEY_CHARS = string.ascii_lowercase + string.digits
     KEY_LENGTH = 8
 
@@ -155,6 +167,8 @@ class Game:
 
 class Games(dict):
 
+    """A collection of all games in the application."""
+
     def serialize(self):
         return [url_for('.games_detail',
                         _external=True, key=key) for key in self]
@@ -173,10 +187,11 @@ class Games(dict):
             return player
 
 
-games = Games()
+games = Games()  # pylint: disable=C0103
 
 
 def load():
+    """Add previously stored data to the application."""
     _path = os.path.join("data", "games")
     if os.path.exists(_path):
         for filename in os.listdir(_path):
