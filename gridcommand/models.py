@@ -2,8 +2,7 @@ import os
 import string
 import random
 
-from flask import url_for
-from flask.ext.api import exceptions  # pylint: disable=E0611,F0401
+from flask import url_for  # TODO: remove this import
 import yorm
 
 
@@ -75,6 +74,9 @@ class Player(yorm.extended.AttributeDictionary):
         self.moves = Moves()
         self.done = False
 
+    def __eq__(self, other):
+        return self.color == other.color
+
     def serialize(self, game):
         moves_url = url_for('.moves_list', _external=True,
                             key=game.key, color=self.color)
@@ -85,15 +87,45 @@ class Player(yorm.extended.AttributeDictionary):
 @yorm.attr(all=Player)
 class Players(yorm.container.List):
 
+    COLORS = (
+        'red',
+        'blue',
+        'teal',
+        'purple',
+        'yellow',
+        'orange',
+        'green',
+        'pink',
+    )
+
+    @property
+    def maximum(self):
+        return len(self.COLORS)
+
     def serialize(self, game):
         return [url_for('.players_detail', _external=True,
                         key=game.key, color=player.color) for player in self]
 
-    def find(self, color):
+    def create(self, exc=RuntimeError):
+        colors = [player.color for player in self]
+        for color in self.COLORS:
+            if color not in colors:
+                player = Player(color)
+                self.append(player)
+                return player
+        raise exc("The maximum number of players is {}.".format(self.maximum))
+
+    def find(self, color, exc=ValueError):
         for player in self:
             if player.color == color:
                 return player
-        raise exceptions.NotFound()
+        if exc:
+            raise exc("The player '{}' does not exist.".format(color))
+
+    def delete(self, color):
+        player = self.find(color, exc=None)
+        if player:
+            self.remove(player)
 
 
 @yorm.attr(players=Players)
@@ -120,11 +152,6 @@ class Game:
         return {'players': players_url,
                 'started': self.started}
 
-    def create_player(self):
-        player = Player('red')
-        self.players.append(player)
-        return player
-
 
 class Games(dict):
 
@@ -132,11 +159,16 @@ class Games(dict):
         return [url_for('.games_detail',
                         _external=True, key=key) for key in self]
 
-    def find(self, key):
+    def create(self):
+        game = Game()
+        self[game.key] = game
+        return game
+
+    def find(self, key, exc=ValueError):
         try:
             player = self[key]
         except KeyError:
-            raise exceptions.NotFound() from None
+            raise exc("The game '{}' does not exist.".format(key)) from None
         else:
             return player
 

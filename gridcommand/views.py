@@ -1,8 +1,8 @@
 from flask import request, url_for
-from flask.ext.api import FlaskAPI, status  # pylint: disable=E0611,F0401
+from flask.ext.api import FlaskAPI, status, exceptions  # pylint: disable=E0611,F0401
 import yorm
 
-from .models import games, Game
+from .models import games
 
 
 app = FlaskAPI(__name__)
@@ -27,8 +27,7 @@ def games_list():
         return games.serialize()
 
     if request.method == 'POST':
-        game = Game()
-        games[game.key] = game
+        game = games.create()
         yorm.update_file(game)  # TODO: remove when unnecessary
         return game.serialize(), status.HTTP_201_CREATED
 
@@ -38,12 +37,12 @@ def games_detail(key):
     """Retrieve, update or delete games instances."""
 
     if request.method == 'GET':
-        game = games.find(key)
+        game = games.find(key, exc=exceptions.NotFound)
         yorm.update_file(game)  # TODO: remove when unnecessary
         return game.serialize()
 
     if request.method == 'PUT':
-        game = games.find(key)
+        game = games.find(key, exc=exceptions.NotFound)
         game.started = request.data.get('started', game.started)
         yorm.update_file(game)  # TODO: remove when unnecessary
         return game.serialize()
@@ -61,35 +60,35 @@ PLAYERS_DETAIL_URL = PLAYERS_LIST_URL + "<string:color>/"
 @app.route(PLAYERS_LIST_URL, methods=['GET', 'POST'])
 def players_list(key):
     """List or create players."""
-    game = games.find(key)
+    game = games.find(key, exc=exceptions.NotFound)
 
     if request.method == 'GET':
         yorm.update_file(game)  # TODO: remove when unnecessary
         return game.players.serialize(game)
 
     if request.method == 'POST':
-        player = game.create_player()
+        player = game.players.create(exc=exceptions.PermissionDenied)
         yorm.update_file(game)  # TODO: remove when unnecessary
         return player.serialize(game), status.HTTP_201_CREATED
 
 
 @app.route(PLAYERS_DETAIL_URL, methods=['GET', 'PUT', 'DELETE'])
 def players_detail(key, color):
-    game = games.find(key)
+    game = games.find(key, exc=exceptions.NotFound)
 
     if request.method == 'GET':
-        player = game.players.find(color)
+        player = game.players.find(color, exc=exceptions.NotFound)
         yorm.update_file(game)  # TODO: remove when unnecessary
         return player.serialize(game)
 
     if request.method == 'PUT':
-        player = game.players.find(color)
+        player = game.players.find(color, exc=exceptions.NotFound)
         player.done = request.data.get('done', player.done)
         yorm.update_file(game)  # TODO: remove when unnecessary
         return player.serialize(game)
 
     if request.method == 'DELETE':
-        game.players.pop(color, None)
+        game.players.delete(color)
         yorm.update_file(game)  # TODO: remove when unnecessary
         return '', status.HTTP_204_NO_CONTENT
 
@@ -100,8 +99,8 @@ MOVES_DETAIL_URL = MOVES_LIST_URL + "<int:begin>-<int:end>/"
 
 @app.route(MOVES_LIST_URL, methods=['GET', 'POST'])
 def moves_list(key, color):
-    game = games.find(key)
-    player = game.players.find(color)
+    game = games.find(key, exc=exceptions.NotFound)
+    player = game.players.find(color, exc=exceptions.NotFound)
 
     if request.method == 'GET':
         yorm.update_file(game)  # TODO: remove when unnecessary
@@ -117,8 +116,8 @@ def moves_list(key, color):
 
 @app.route(MOVES_DETAIL_URL, methods=['GET', 'PUT', 'DELETE'])
 def moves_detail(key, color, begin, end):
-    game = games.find(key)
-    player = game.players.find(color)
+    game = games.find(key, exc=exceptions.NotFound)
+    player = game.players.find(color, exc=exceptions.NotFound)
 
     if request.method == 'GET':
         move = player.moves.get(begin, end)

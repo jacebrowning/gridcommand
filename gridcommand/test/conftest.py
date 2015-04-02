@@ -27,6 +27,7 @@ def pytest_runtest_setup(item):
 @pytest.fixture
 def client(request):
     test_client = views.app.test_client()
+    views.games.clear()
     return test_client
 
 
