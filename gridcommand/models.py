@@ -41,7 +41,7 @@ class Moves(yorm.extended.SortedList):
 
     def serialize(self, game, player):
         return [url_for('.moves_detail', _external=True,
-                        key=game.key, color=player.color,
+                        key=game.key, color=player.color, code=player.code,
                         begin=move.begin, end=move.end) for move in self]
 
     def get(self, begin, end):
@@ -171,7 +171,7 @@ class Game:
     def started(self, status):
         self._started = status
         if status:
-            self.round = self.round or 1
+            self.round = 1
 
     @staticmethod
     def _generate_key():
