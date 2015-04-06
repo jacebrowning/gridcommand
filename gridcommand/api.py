@@ -2,7 +2,7 @@
 
 from flask import request, url_for, redirect
 from flask.ext.api import FlaskAPI, status, exceptions  # pylint: disable=E0611,F0401
-import yorm
+import yorm  # TODO: remove this import
 
 from .data import games
 
@@ -13,8 +13,10 @@ GAMES_DETAIL_URL = GAMES_LIST_URL + "<string:key>/"
 
 PLAYERS_LIST_URL = GAMES_DETAIL_URL + "players/"
 PLAYERS_DETAIL_URL = PLAYERS_LIST_URL + "<string:color>/"
+PLAYERS_AUTH_URL = PLAYERS_DETAIL_URL + "<string:code>/"
 
-MOVES_LIST_URL = PLAYERS_DETAIL_URL + "moves/"
+
+MOVES_LIST_URL = PLAYERS_AUTH_URL + "moves/"
 MOVES_DETAIL_URL = MOVES_LIST_URL + "<int:begin>-<int:end>/"
 
 app = FlaskAPI(__name__)  # pylint: disable=C0103
@@ -77,7 +79,10 @@ def players_list(key):
         return game.players.serialize(game)
 
     if request.method == 'POST':
-        player = game.players.create(exc=exceptions.PermissionDenied)
+        code = str(request.data.get('code', ''))
+        if not code:
+            raise exceptions.ParseError("Player 'code' must be specified.")
+        player = game.players.create(code, exc=exceptions.PermissionDenied)
         yorm.update_file(game)  # TODO: remove when unnecessary
         return player.serialize(game), status.HTTP_201_CREATED
 
@@ -104,11 +109,30 @@ def players_detail(key, color):
         return '', status.HTTP_204_NO_CONTENT
 
 
+@app.route(PLAYERS_AUTH_URL, methods=['GET', 'PUT'])
+def players_auth(key, color, code):
+    """Retrieve a game's player with authentication."""
+    game = games.find(key, exc=exceptions.NotFound)
+    player = game.players.find(color, exc=exceptions.NotFound)
+    player.authenticate(code, exc=exceptions.AuthenticationFailed)
+
+    if request.method == 'GET':
+        yorm.update_file(game)  # TODO: remove when unnecessary
+        return player.serialize(game, auth=True)
+
+    if request.method == 'PUT':
+        player.code = request.data.get('code', player.code)
+        player.done = request.data.get('done', player.done)
+        yorm.update_file(game)  # TODO: remove when unnecessary
+        return player.serialize(game, auth=True)
+
+
 @app.route(MOVES_LIST_URL, methods=['GET', 'POST'])
-def moves_list(key, color):
+def moves_list(key, color, code):
     """List or create moves for a player."""
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
+    player.authenticate(code, exc=exceptions.AuthenticationFailed)
 
     if request.method == 'GET':
         yorm.update_file(game)  # TODO: remove when unnecessary
@@ -123,10 +147,11 @@ def moves_list(key, color):
 
 
 @app.route(MOVES_DETAIL_URL, methods=['GET', 'PUT', 'DELETE'])
-def moves_detail(key, color, begin, end):
+def moves_detail(key, color, code, begin, end):
     """Retrieve, update or delete a players's move."""
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
+    player.authenticate(code, exc=exceptions.AuthenticationFailed)
 
     if request.method == 'GET':
         move = player.moves.get(begin, end)

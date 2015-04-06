@@ -35,13 +35,19 @@ class TestPlayer:
         assert player1 == player2
         assert player1 != player3
 
+    def test_authentication(self):
+        player = Player('red', '1234')
+        player.authenticate('1234')
+        with pytest.raises(ValueError):
+            player.authenticate('5678')
+
 
 class TestPlayers:
 
     def test_create_unique_colors(self):
         players = Players()
-        player1 = players.create()
-        player2 = players.create()
+        player1 = players.create('abc')
+        player2 = players.create('123')
         assert player1.color != player2.color
 
     def test_create_maximum_players(self):

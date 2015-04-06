@@ -8,6 +8,7 @@ import pytest
 import yorm
 
 from gridcommand import app
+from gridcommand import models
 from gridcommand import data
 
 ENV = 'TEST_INTEGRATION'  # environment variable to enable integration tests
@@ -28,9 +29,28 @@ def pytest_runtest_setup(item):
 @pytest.fixture
 def client(request):
     """Fixture to create a test client for the application."""
+    app.config['TESTING'] = True
+    app.config['DEBUG'] = True
     test_client = app.test_client()
     data.games.clear()
     return test_client
+
+
+@pytest.fixture
+def my_game():
+    """Fixture to create an empty game."""
+    game = models.Game('my_game')
+    data.games[game.key] = game
+    return game
+
+
+@pytest.fixture
+def my_player(my_game):  # pylint: disable=W0621
+    """Fixture to create a game with a player."""
+    player = my_game.players.create('my_code')
+    yorm.update_file(my_game)  # TODO: remove when unnecessary
+    assert 'red' == player.color
+    return player
 
 
 def load(response):

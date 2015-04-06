@@ -69,26 +69,35 @@ class Moves(yorm.extended.SortedList):
 
 
 @yorm.attr(color=yorm.standard.String)
+@yorm.attr(code=yorm.standard.String)
 @yorm.attr(moves=Moves)
 @yorm.attr(done=yorm.standard.Boolean)
 class Player(yorm.extended.AttributeDictionary):
 
-    """A entity that plans moves during a round."""
+    """An entity that plans moves during a round."""
 
-    def __init__(self, color):
+    def __init__(self, color, code=''):
         super().__init__()
         self.color = color
+        self.code = code
         self.moves = Moves()
         self.done = False
 
     def __eq__(self, other):
         return self.color == other.color
 
-    def serialize(self, game):
+    def authenticate(self, code, exc=ValueError):
+        if code != self.code:
+            raise exc("The code '{}' is invalid.".format(code))
+
+    def serialize(self, game, auth=False):
+        data = {'done': self.done}
         moves_url = url_for('.moves_list', _external=True,
-                            key=game.key, color=self.color)
-        return {'moves': moves_url,
-                'done': self.done}
+                            key=game.key, color=self.color, code=self.code)
+        if auth:
+            data['code'] = self.code
+            data['moves'] = moves_url
+        return data
 
 
 @yorm.attr(all=Player)
@@ -115,11 +124,11 @@ class Players(yorm.container.List):
         return [url_for('.players_detail', _external=True,
                         key=game.key, color=player.color) for player in self]
 
-    def create(self, exc=RuntimeError):
+    def create(self, code='', exc=RuntimeError):
         colors = [player.color for player in self]
         for color in self.COLORS:
             if color not in colors:
-                player = Player(color)
+                player = Player(color, code=code)
                 self.append(player)
                 return player
         raise exc("The maximum number of players is {}.".format(self.maximum))
