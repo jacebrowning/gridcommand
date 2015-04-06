@@ -160,18 +160,18 @@ class Game:
     def __init__(self, key=None):
         self.key = key or self._generate_key()
         self.players = Players()
-        self._started = False
-        self.round = 0
+        self.started = False
+        self._round = 0
 
     @property
-    def started(self):
-        return self._started
+    def round(self):
+        if self.started:
+            self._round = max(self._round, 1)
+        return self._round
 
-    @started.setter
-    def started(self, status):
-        self._started = status
-        if status:
-            self.round = 1
+    @round.setter
+    def round(self, number):
+        self._round = number
 
     @staticmethod
     def _generate_key():

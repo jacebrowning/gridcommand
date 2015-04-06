@@ -44,7 +44,7 @@ def games_list():
 
     if request.method == 'POST':
         game = games.create()
-        yorm.update_file(game)  # TODO: remove when unnecessary
+        yorm.update(game)  # TODO: remove when unnecessary
         return game.serialize(), status.HTTP_201_CREATED
 
 
@@ -54,18 +54,18 @@ def games_detail(key):
 
     if request.method == 'GET':
         game = games.find(key, exc=exceptions.NotFound)
-        yorm.update_file(game)  # TODO: remove when unnecessary
+        yorm.update(game)  # TODO: remove when unnecessary
         return game.serialize()
 
     if request.method == 'PUT':
         game = games.find(key, exc=exceptions.NotFound)
         game.started = request.data.get('started', game.started)
-        yorm.update_file(game)  # TODO: remove when unnecessary
+        yorm.update(game)  # TODO: remove when unnecessary
         return game.serialize()
 
     if request.method == 'DELETE':
         games.pop(key, None)
-        yorm.update_file(game)  # TODO: remove when unnecessary
+        yorm.update(game)  # TODO: remove when unnecessary
         return '', status.HTTP_204_NO_CONTENT
 
 
@@ -75,7 +75,7 @@ def players_list(key):
     game = games.find(key, exc=exceptions.NotFound)
 
     if request.method == 'GET':
-        yorm.update_file(game)  # TODO: remove when unnecessary
+        yorm.update(game)  # TODO: remove when unnecessary
         return game.players.serialize(game)
 
     if request.method == 'POST':
@@ -83,7 +83,7 @@ def players_list(key):
         if not code:
             raise exceptions.ParseError("Player 'code' must be specified.")
         player = game.players.create(code, exc=exceptions.PermissionDenied)
-        yorm.update_file(game)  # TODO: remove when unnecessary
+        yorm.update(game)  # TODO: remove when unnecessary
         return player.serialize(game), status.HTTP_201_CREATED
 
 
@@ -94,18 +94,18 @@ def players_detail(key, color):
 
     if request.method == 'GET':
         player = game.players.find(color, exc=exceptions.NotFound)
-        yorm.update_file(game)  # TODO: remove when unnecessary
+        yorm.update(game)  # TODO: remove when unnecessary
         return player.serialize(game)
 
     if request.method == 'PUT':
         player = game.players.find(color, exc=exceptions.NotFound)
         player.done = request.data.get('done', player.done)
-        yorm.update_file(game)  # TODO: remove when unnecessary
+        yorm.update(game)  # TODO: remove when unnecessary
         return player.serialize(game)
 
     if request.method == 'DELETE':
         game.players.delete(color)
-        yorm.update_file(game)  # TODO: remove when unnecessary
+        yorm.update(game)  # TODO: remove when unnecessary
         return '', status.HTTP_204_NO_CONTENT
 
 
@@ -117,13 +117,13 @@ def players_auth(key, color, code):
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
 
     if request.method == 'GET':
-        yorm.update_file(game)  # TODO: remove when unnecessary
+        yorm.update(game)  # TODO: remove when unnecessary
         return player.serialize(game, auth=True)
 
     if request.method == 'PUT':
         player.code = request.data.get('code', player.code)
         player.done = request.data.get('done', player.done)
-        yorm.update_file(game)  # TODO: remove when unnecessary
+        yorm.update(game)  # TODO: remove when unnecessary
         return player.serialize(game, auth=True)
 
 
@@ -135,14 +135,14 @@ def moves_list(key, color, code):
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
 
     if request.method == 'GET':
-        yorm.update_file(game)  # TODO: remove when unnecessary
+        yorm.update(game)  # TODO: remove when unnecessary
         return player.moves.serialize(game, player)
 
     if request.method == 'POST':
         move = player.moves.set(request.data.get('begin'),
                                 request.data.get('end'),
                                 request.data.get('count'))
-        yorm.update_file(game)  # TODO: remove when unnecessary
+        yorm.update(game)  # TODO: remove when unnecessary
         return move.serialize()
 
 
@@ -155,15 +155,15 @@ def moves_detail(key, color, code, begin, end):
 
     if request.method == 'GET':
         move = player.moves.get(begin, end)
-        yorm.update_file(game)  # TODO: remove when unnecessary
+        yorm.update(game)  # TODO: remove when unnecessary
         return move.serialize()
 
     if request.method == 'PUT':
         move = player.moves.set(begin, end, request.data.get('count'))
-        yorm.update_file(game)  # TODO: remove when unnecessary
+        yorm.update(game)  # TODO: remove when unnecessary
         return move.serialize()
 
     if request.method == 'DELETE':
         player.moves.delete(begin, end)
-        yorm.update_file(game)  # TODO: remove when unnecessary
+        yorm.update(game)  # TODO: remove when unnecessary
         return '', status.HTTP_204_NO_CONTENT
