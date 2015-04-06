@@ -1,5 +1,5 @@
 """Configuration for pytest."""
-# pylint: disable=W0613
+# pylint: disable=W0613,W0621
 
 import os
 import json
@@ -45,7 +45,7 @@ def my_game():
 
 
 @pytest.fixture
-def my_player(my_game):  # pylint: disable=W0621
+def my_player(my_game):
     """Fixture to create a game with a player."""
     player = my_game.players.create('my_code')
     yorm.update_file(my_game)  # TODO: remove when unnecessary
