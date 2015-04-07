@@ -1,14 +1,19 @@
 """Unit tests for the `models` module."""
 # pylint: disable=R0201,C0103,C0111
 
+from unittest.mock import Mock
+
 import pytest
 
-from gridcommand.models import Move, Player, Players, Game, Games
+from gridcommand.models import Move
+from gridcommand.models import Round, Rounds
+from gridcommand.models import Player, Players
+from gridcommand.models import Game, Games
 
 
 class TestMove:
 
-    def test_init_count_to_zero(self):
+    def test_init(self):
         move = Move(1, 2)
         assert 1 == move.begin
         assert 2 == move.end
@@ -24,6 +29,27 @@ class TestMove:
         assert Move(1, 2) != Move(1, 3)
         assert Move(1, 2) != Move(4, 2)
         assert Move(1, 2) != Move(5, 5)
+
+
+class TestRound:  # pylint: disable=W0622
+
+    def test_init(self):
+        round = Round()
+        assert False is round.done
+        assert not len(round.moves)
+
+
+class TestRounds:
+
+    def test_find_match(self):
+        rounds = Rounds()
+        rounds.append(Mock())
+        rounds.find(1)
+
+    def test_find_missing(self):
+        rounds = Rounds()
+        with pytest.raises(ValueError):
+            rounds.find(1)
 
 
 class TestPlayer:

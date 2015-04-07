@@ -3,6 +3,7 @@
 	<name>GridCommand</name>
 	<comment></comment>
 	<projects>
+		<project>YORM</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

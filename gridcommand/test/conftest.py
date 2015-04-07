@@ -48,9 +48,19 @@ def my_game():
 def my_player(my_game):
     """Fixture to create a game with a player."""
     player = my_game.players.create('my_code')
-    yorm.update_file(my_game)  # TODO: remove when unnecessary
+    yorm.update(my_game)  # TODO: remove when unnecessary
     assert 'red' == player.color
     return player
+
+
+@pytest.fixture
+def my_round(my_game):
+    """Fixture to create a round for a player."""
+    player = my_game.players.create('my_code')
+    round = models.Round()  # pylint: disable=W0622
+    player.rounds.append(round)
+    yorm.update(my_game)  # TODO: remove when unnecessary
+    return round
 
 
 def load(response):

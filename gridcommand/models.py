@@ -68,9 +68,46 @@ class Moves(yorm.extended.SortedList):
             pass
 
 
+@yorm.attr(moves=Moves)
+@yorm.attr(done=yorm.standard.Boolean)
+class Round(yorm.extended.AttributeDictionary):
+
+    """An individual round for a player."""
+
+    def __init__(self):
+        super().__init__()
+        self.moves = Moves()
+        self.done = False
+
+    def serialize(self, game, player, number):
+        moves_url = url_for('.moves_list', _external=True,
+                            key=game.key, color=player.color, code=player.code,
+                            number=number)
+        return {'moves': moves_url,
+                'done': self.done}
+
+
+@yorm.attr(all=Round)
+class Rounds(yorm.container.List):
+
+    """A list of rounds in a game for each player."""
+
+    def find(self, number, exc=ValueError):
+        try:
+            return self[number - 1]
+        except IndexError:
+            raise exc("The round '{}' does not exist.".format(number))
+
+    def serialize(self, game, player):
+
+        return [url_for('.rounds_detail', _external=True,
+                        key=game.key, color=player.color, code=player.code,
+                        number=index + 1) for index in range(len(self))]
+
+
 @yorm.attr(color=yorm.standard.String)
 @yorm.attr(code=yorm.standard.String)
-@yorm.attr(moves=Moves)
+@yorm.attr(rounds=Rounds)
 @yorm.attr(done=yorm.standard.Boolean)
 class Player(yorm.extended.AttributeDictionary):
 
@@ -80,7 +117,7 @@ class Player(yorm.extended.AttributeDictionary):
         super().__init__()
         self.color = color
         self.code = code
-        self.moves = Moves()
+        self.rounds = Rounds()
         self.done = False
 
     def __eq__(self, other):
@@ -91,12 +128,13 @@ class Player(yorm.extended.AttributeDictionary):
             raise exc("The code '{}' is invalid.".format(code))
 
     def serialize(self, game, auth=False):
-        data = {'done': self.done}
-        moves_url = url_for('.moves_list', _external=True,
-                            key=game.key, color=self.color, code=self.code)
+        data = {'color': self.color,
+                'round': len(self.rounds)}
+        rounds_url = url_for('.rounds_list', _external=True,
+                             key=game.key, color=self.color, code=self.code)
         if auth:
             data['code'] = self.code
-            data['moves'] = moves_url
+            data['rounds'] = rounds_url
         return data
 
 

@@ -3,6 +3,8 @@
 
 from .conftest import load
 
+GAMES = "http://localhost/api/games/"
+
 
 class TestIndex:
 
@@ -17,7 +19,7 @@ class TestRoot:
         response = client.get('/api/')
         assert 200 == response.status_code
         assert {'version': 1,
-                'games': "http://localhost/api/games/"} == load(response)
+                'games': GAMES} == load(response)
 
 
 class TestGame:
@@ -25,7 +27,7 @@ class TestGame:
     def test_get_existing_game(self, client, my_game):
         response = client.get('/api/games/my_game/')
         assert 200 == response.status_code
-        assert {'players': "http://localhost/api/games/my_game/players/",
+        assert {'players': GAMES + "my_game/players/",
                 'round': 0,
                 'started': False} == load(response)
 
@@ -37,6 +39,15 @@ class TestGame:
 
 
 class TestPlayers:
+
+    def test_post_player(self, client, my_game):
+        response = client.post('/api/games/my_game/players/',
+                               data={'code': "1234"})
+        assert 201 == response.status_code
+        assert {'color': "red",
+                'code': '1234',
+                'rounds': GAMES + "my_game/players/red/1234/rounds/",
+                'round': 0} == load(response)
 
     def test_post_player_with_invalid_coe(self, client, my_game):
         response = client.post('/api/games/my_game/players/')
@@ -50,14 +61,16 @@ class TestPlayer:
     def test_get_existing_player(self, client, my_player):
         response = client.get('/api/games/my_game/players/red/')
         assert 200 == response.status_code
-        assert {'done': False} == load(response)
+        assert {'color': "red",
+                'round': 0} == load(response)
 
     def test_get_existing_player_with_auth(self, client, my_player):
         response = client.get('/api/games/my_game/players/red/my_code/')
         assert 200 == response.status_code
-        assert {'code': 'my_code',
-                'moves': "http://localhost/api/games/my_game/players/red/my_code/moves/",
-                'done': False} == load(response)
+        assert {'color': "red",
+                'code': 'my_code',
+                'rounds': GAMES + "my_game/players/red/my_code/rounds/",
+                'round': 0} == load(response)
 
     def test_get_existing_player_bad_auth(self, client, my_player):
         response = client.get('/api/games/my_game/players/red/invalid/')
@@ -74,6 +87,24 @@ class TestPlayer:
         response = client.put('/api/games/my_game/players/red/my_code/',
                               data={'code': "1234"})
         assert 200 == response.status_code
-        assert {'code': '1234',
-                'moves': "http://localhost/api/games/my_game/players/red/1234/moves/",
+        assert {'color': "red",
+                'code': '1234',
+                'rounds': GAMES + "my_game/players/red/1234/rounds/",
+                'round': 0} == load(response)
+
+
+class TestRounds:
+
+    def test_get_all_rounds(self, client, my_round):
+        response = client.get('/api/games/my_game/players/red/my_code/rounds/')
+        assert 200 == response.status_code
+
+
+class TestRound:
+
+    def test_get_existing_round(self, client, my_round):
+        response = client.get('/api/games/'
+                              'my_game/players/red/my_code/rounds/1/')
+        assert 200 == response.status_code
+        assert {'moves': GAMES + "my_game/players/red/my_code/rounds/1/moves/",
                 'done': False} == load(response)
