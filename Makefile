@@ -194,7 +194,7 @@ clean-env: clean
 	rm -rf $(ENV)
 
 .PHONY: clean-all
-clean-all: clean clean-env .clean-workspace
+clean-all: clean clean-env .clean-cache .clean-workspace
 
 .PHONY: .clean-build
 .clean-build:
@@ -217,6 +217,10 @@ clean-all: clean clean-env .clean-workspace
 .PHONY: .clean-workspace
 .clean-workspace:
 	rm -rf *.sublime-workspace
+
+.PHONY: .clean-cache
+.clean-cache:
+	rm -rf data/*
 
 # Release ######################################################################
 
