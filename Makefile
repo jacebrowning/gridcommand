@@ -11,8 +11,8 @@ ifndef TRAVIS
 endif
 
 # Testake settings
-UNIT_TEST_COVERAGE := 73
-INTEGRATION_TEST_COVERAGE := 73
+UNIT_TEST_COVERAGE := 76
+INTEGRATION_TEST_COVERAGE := 76
 
 # System paths
 PLATFORM := $(shell python -c 'import sys; print(sys.platform)')

@@ -6,7 +6,6 @@ from unittest.mock import Mock
 import pytest
 
 from gridcommand.models import Move
-from gridcommand.models import Phase, Phases
 from gridcommand.models import Player, Players
 from gridcommand.models import Games
 
@@ -30,24 +29,31 @@ class TestMove:
         assert Move(1, 2) != Move(4, 2)
         assert Move(1, 2) != Move(5, 5)
 
+    def test_lt_if_begin_is_less(self):
+        assert Move(1, 1) < Move(2, 1)
+
+    def test_lt_if_begin_eq_and_end_less(self):
+        assert Move(1, 1) < Move(1, 2)
+
+    def test_sort(self):
+        moves = [Move(1, 2), Move(1, 5), Move(2, 3), Move(3, 4)]
+        assert moves == sorted(moves)
+
 
 class TestPhase:
 
-    def test_init(self):
-        phase = Phase()
+    def test_init(self, phase):
         assert False is phase.done
         assert not len(phase.moves)
 
 
 class TestPhases:
 
-    def test_find_match(self):
-        phases = Phases()
+    def test_find_match(self, phases):
         phases.append(Mock())
         phases.find(1)
 
-    def test_find_missing(self):
-        phases = Phases()
+    def test_find_missing(self, phases):
         with pytest.raises(ValueError):
             phases.find(1)
 
@@ -55,17 +61,13 @@ class TestPhases:
 class TestPlayer:
 
     def test_eq_if_colors_match(self):
-        player1 = Player('red')
-        player2 = Player('red')
-        player3 = Player('blue')
-        assert player1 == player2
-        assert player1 != player3
+        assert Player('red') == Player('red')
+        assert Player('red') != Player('blue')
 
-    def test_authentication(self):
-        player = Player('red', '1234')
-        player.authenticate('1234')
+    def test_authentication(self, player):
+        player.authenticate('my_code')
         with pytest.raises(ValueError):
-            player.authenticate('5678')
+            player.authenticate('invalid')
 
 
 class TestPlayers:
@@ -83,30 +85,28 @@ class TestPlayers:
                 players.create()
         assert 8 == len(players)
 
-    def test_create_reuse_after_removal(self):
-        players = Players()
-        player1 = players.create()
-        players.remove(player1)
-        player2 = players.create()
-        assert player1 == player2
+    def test_create_reuse_after_delete(self, players):
+        players.delete('blue')
+        player = players.create('1234')
+        assert 'blue' == player.color
 
-    def test_find_match(self):
-        players = Players()
-        player = players.create()
-        player2 = players.find(player.color)
-        assert player is player2
+    def test_find_match(self, players):
+        player = players.find('blue')
+        assert 'blue' == player.color
 
     def test_find_missing(self):
         players = Players()
         with pytest.raises(ValueError):
             players.find('red')
 
-    def test_delete(self):
-        players = Players()
-        player = players.create()
+    def test_delete(self, players):
+        player = players.find('blue')
         assert player in players
-        players.delete(player.color)
+        players.delete('blue')
         assert player not in players
+
+    def test_delete_missing(self, players):
+        players.delete('not-a-color')
 
 
 class TestGame:
