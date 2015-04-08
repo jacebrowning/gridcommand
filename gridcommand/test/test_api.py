@@ -100,11 +100,18 @@ class TestPlayers:
                 'phases': GAMES + "my_game/players/red/1234/phases/",
                 'phase': 0} == load(response)
 
-    def test_post_player_with_invalid_coe(self, client, game):
+    def test_post_player_with_invalid_code(self, client, game):
         response = client.post('/api/games/my_game/players/')
         assert 400 == response.status_code
         assert {'message':
                 "Player 'code' must be specified."} == load(response)
+
+    def test_post_player_after_game_start(self, client, game_started):
+        response = client.post('/api/games/my_game/players/',
+                               data={'code': "1234"})
+        assert 403 == response.status_code
+        assert {'message':
+                "Game has already started."} == load(response)
 
 
 class TestPlayer:

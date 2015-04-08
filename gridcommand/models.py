@@ -199,6 +199,16 @@ class Game:
         self.players = Players()
         self.phase = 0
 
+    @staticmethod
+    def _generate_key():
+        return ''.join(random.choice(Game.KEY_CHARS)
+                       for _ in range(Game.KEY_LENGTH))
+
+    def create_player(self, code, exc=ValueError):
+        if self.started:
+            raise exc("Game has already started.")
+        return self.players.create(code, exc=exc)
+
     @property
     def started(self):
         return self.phase > 0
@@ -207,11 +217,6 @@ class Game:
         if len(self.players) < 2:
             raise exc("At least 2 players are required.")
         self.phase = self.phase or 1
-
-    @staticmethod
-    def _generate_key():
-        return ''.join(random.choice(Game.KEY_CHARS)
-                       for _ in range(Game.KEY_LENGTH))
 
     def serialize(self):
         kwargs = {'_external': True, 'key': self.key}

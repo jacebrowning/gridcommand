@@ -99,7 +99,7 @@ def players_list(key):
         code = str(request.data.get('code', ''))
         if not code:
             raise exceptions.ParseError("Player 'code' must be specified.")
-        player = game.players.create(code, exc=exceptions.PermissionDenied)
+        player = game.create_player(code, exc=exceptions.PermissionDenied)
         yorm.update(game)  # TODO: remove when unnecessary
         return player.serialize(game, auth=True), status.HTTP_201_CREATED
 

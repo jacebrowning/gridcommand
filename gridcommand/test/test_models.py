@@ -116,6 +116,10 @@ class TestGame:
         game_players.start()
         assert 1 == game_players.phase
 
+    def test_create_player_after_start(self, game_started):
+        with pytest.raises(ValueError):
+            game_started.create_player('1234')
+
 
 class TestGames:
 
