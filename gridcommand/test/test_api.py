@@ -18,7 +18,7 @@ class TestIndex:
 class TestRoot:
 
     def test_version(self, client):
-        response = client.get('/api/')
+        response = client.get('/api')
         assert 200 == response.status_code
         assert {'version': 1,
                 'games': GAMES} == load(response)
@@ -45,7 +45,7 @@ class TestGames:
 class TestGame:
 
     def test_get_existing_game(self, client, game):
-        response = client.get('/api/games/my_game/')
+        response = client.get('/api/games/my_game')
         assert 200 == response.status_code
         assert {'key': "my_game",
                 'players': GAMES + "my_game/players/",
@@ -53,7 +53,7 @@ class TestGame:
                 'phase': 0} == load(response)
 
     def test_get_missing_game(self, client):
-        response = client.get('/api/games/my_game/')
+        response = client.get('/api/games/my_game')
         assert 404 == response.status_code
         assert {'message':
                 "The game 'my_game' does not exist."} == load(response)
@@ -88,8 +88,8 @@ class TestPlayers:
     def test_get_players(self, client, game_players):
         response = client.get('/api/games/my_game/players/')
         assert 200 == response.status_code
-        assert [GAMES + "my_game/players/red/",
-                GAMES + "my_game/players/blue/"] == load(response)
+        assert [GAMES + "my_game/players/red",
+                GAMES + "my_game/players/blue"] == load(response)
 
     def test_post_player(self, client, game):
         response = client.post('/api/games/my_game/players/',
@@ -97,7 +97,7 @@ class TestPlayers:
         assert 201 == response.status_code
         assert {'color': "red",
                 'code': '1234',
-                'phases': GAMES + "my_game/players/red/1234/phases/",
+                'phases': GAMES + "my_game/players/red-1234/phases/",
                 'phase': 0} == load(response)
 
     def test_post_player_with_invalid_code(self, client, game):
@@ -117,44 +117,44 @@ class TestPlayers:
 class TestPlayer:
 
     def test_get_existing_player(self, client, player):
-        response = client.get('/api/games/my_game/players/red/')
+        response = client.get('/api/games/my_game/players/red')
         assert 200 == response.status_code
         assert {'color': "red",
                 'phase': 0} == load(response)
 
     def test_get_existing_player_with_auth(self, client, player):
-        response = client.get('/api/games/my_game/players/red/my_code/')
+        response = client.get('/api/games/my_game/players/red-my_code')
         assert 200 == response.status_code
         assert {'color': "red",
                 'code': 'my_code',
-                'phases': GAMES + "my_game/players/red/my_code/phases/",
+                'phases': GAMES + "my_game/players/red-my_code/phases/",
                 'phase': 0} == load(response)
 
     def test_get_existing_player_bad_auth(self, client, player):
-        response = client.get('/api/games/my_game/players/red/invalid/')
+        response = client.get('/api/games/my_game/players/red-invalid')
         assert 401 == response.status_code
         assert {'message': "The code 'invalid' is invalid."}
 
     def test_get_missing_player(self, client, game):
-        response = client.get('/api/games/my_game/players/red/')
+        response = client.get('/api/games/my_game/players/red')
         assert 404 == response.status_code
         assert {'message':
                 "The player 'red' does not exist."} == load(response)
 
     def test_put_new_code(self, client, player):
-        response = client.put('/api/games/my_game/players/red/my_code/',
+        response = client.put('/api/games/my_game/players/red-my_code',
                               data={'code': "1234"})
         assert 200 == response.status_code
         assert {'color': "red",
                 'code': '1234',
-                'phases': GAMES + "my_game/players/red/1234/phases/",
+                'phases': GAMES + "my_game/players/red-1234/phases/",
                 'phase': 0} == load(response)
 
 
 class TestPhases:
 
     def test_get_all_phases(self, client, phase):
-        response = client.get('/api/games/my_game/players/red/my_code/phases/')
+        response = client.get('/api/games/my_game/players/red-my_code/phases/')
         assert 200 == response.status_code
 
 
@@ -162,7 +162,7 @@ class TestPhase:
 
     def test_get_existing_phase(self, client, phase):
         response = client.get('/api/games/'
-                              'my_game/players/red/my_code/phases/1/')
+                              'my_game/players/red-my_code/phases/1')
         assert 200 == response.status_code
-        assert {'moves': GAMES + "my_game/players/red/my_code/phases/1/moves/",
+        assert {'moves': GAMES + "my_game/players/red-my_code/phases/1/moves/",
                 'done': False} == load(response)

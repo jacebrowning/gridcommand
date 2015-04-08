@@ -7,21 +7,21 @@ import yorm  # TODO: remove this import
 
 from .data import games
 
-ROOT_URL = "/api/"
+ROOT_URL = "/api"
 
-GAMES_LIST_URL = ROOT_URL + "games/"
-GAMES_DETAIL_URL = GAMES_LIST_URL + "<string:key>/"
-GAMES_START_URL = GAMES_DETAIL_URL + "start"
+GAMES_LIST_URL = ROOT_URL + "/games/"
+GAMES_DETAIL_URL = GAMES_LIST_URL + "<string:key>"
+GAMES_START_URL = GAMES_DETAIL_URL + "/start"
 
-PLAYERS_LIST_URL = GAMES_DETAIL_URL + "players/"
-PLAYERS_DETAIL_URL = PLAYERS_LIST_URL + "<string:color>/"
-PLAYERS_AUTH_URL = PLAYERS_DETAIL_URL + "<string:code>/"
+PLAYERS_LIST_URL = GAMES_DETAIL_URL + "/players/"
+PLAYERS_DETAIL_URL = PLAYERS_LIST_URL + "<string:color>"
+PLAYERS_AUTH_URL = PLAYERS_DETAIL_URL + "-<string:code>"
 
-PHASES_LIST_URL = PLAYERS_AUTH_URL + "phases/"
-PHASES_DETAIL_URL = PHASES_LIST_URL + "<int:number>/"
+PHASES_LIST_URL = PLAYERS_AUTH_URL + "/phases/"
+PHASES_DETAIL_URL = PHASES_LIST_URL + "<int:number>"
 
-MOVES_LIST_URL = PHASES_DETAIL_URL + "moves/"
-MOVES_DETAIL_URL = MOVES_LIST_URL + "<int:begin>-<int:end>/"
+MOVES_LIST_URL = PHASES_DETAIL_URL + "/moves/"
+MOVES_DETAIL_URL = MOVES_LIST_URL + "<int:begin>-<int:end>"
 
 app = FlaskAPI(__name__)  # pylint: disable=C0103
 
