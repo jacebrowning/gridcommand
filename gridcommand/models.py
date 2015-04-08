@@ -70,9 +70,9 @@ class Moves(yorm.extended.SortedList):
 
 @yorm.attr(moves=Moves)
 @yorm.attr(done=yorm.standard.Boolean)
-class Round(yorm.extended.AttributeDictionary):
+class Phase(yorm.extended.AttributeDictionary):
 
-    """An individual round for a player."""
+    """An individual phase for a player."""
 
     def __init__(self):
         super().__init__()
@@ -87,37 +87,37 @@ class Round(yorm.extended.AttributeDictionary):
                 'done': self.done}
 
 
-@yorm.attr(all=Round)
-class Rounds(yorm.container.List):
+@yorm.attr(all=Phase)
+class Phases(yorm.container.List):
 
-    """A list of rounds in a game for each player."""
+    """A list of phases in a game for each player."""
 
     def find(self, number, exc=ValueError):
         try:
             return self[number - 1]
         except IndexError:
-            raise exc("The round '{}' does not exist.".format(number))
+            raise exc("The phase '{}' does not exist.".format(number))
 
     def serialize(self, game, player):
 
-        return [url_for('.rounds_detail', _external=True,
+        return [url_for('.phases_detail', _external=True,
                         key=game.key, color=player.color, code=player.code,
                         number=index + 1) for index in range(len(self))]
 
 
 @yorm.attr(color=yorm.standard.String)
 @yorm.attr(code=yorm.standard.String)
-@yorm.attr(rounds=Rounds)
+@yorm.attr(phases=Phases)
 @yorm.attr(done=yorm.standard.Boolean)
 class Player(yorm.extended.AttributeDictionary):
 
-    """An entity that plans moves during a round."""
+    """An entity that plans moves during a phase."""
 
     def __init__(self, color, code=''):
         super().__init__()
         self.color = color
         self.code = code
-        self.rounds = Rounds()
+        self.phases = Phases()
         self.done = False
 
     def __eq__(self, other):
@@ -129,12 +129,12 @@ class Player(yorm.extended.AttributeDictionary):
 
     def serialize(self, game, auth=False):
         data = {'color': self.color,
-                'round': len(self.rounds)}
-        rounds_url = url_for('.rounds_list', _external=True,
+                'phase': len(self.phases)}
+        phases_url = url_for('.phases_list', _external=True,
                              key=game.key, color=self.color, code=self.code)
         if auth:
             data['code'] = self.code
-            data['rounds'] = rounds_url
+            data['phases'] = phases_url
         return data
 
 
@@ -185,8 +185,7 @@ class Players(yorm.container.List):
 
 
 @yorm.attr(players=Players)
-@yorm.attr(started=yorm.standard.Boolean)
-@yorm.attr(round=yorm.standard.Integer)
+@yorm.attr(phase=yorm.standard.Integer)
 @yorm.sync("data/games/{self.key}.yml")
 class Game:
 
@@ -198,18 +197,16 @@ class Game:
     def __init__(self, key=None):
         self.key = key or self._generate_key()
         self.players = Players()
-        self.started = False
-        self._round = 0
+        self.phase = 0
 
     @property
-    def round(self):
-        if self.started:
-            self._round = max(self._round, 1)
-        return self._round
+    def started(self):
+        return self.phase > 0
 
-    @round.setter
-    def round(self, number):
-        self._round = number
+    def start(self, exc=ValueError):
+        if len(self.players) < 2:
+            raise exc("At least 2 players are required.")
+        self.phase = self.phase or 1
 
     @staticmethod
     def _generate_key():
@@ -217,11 +214,13 @@ class Game:
                        for _ in range(Game.KEY_LENGTH))
 
     def serialize(self):
-        players_url = url_for('.players_list', _external=True,
-                              key=self.key)
-        return {'players': players_url,
-                'started': self.started,
-                'round': self.round}
+        kwargs = {'_external': True, 'key': self.key}
+        players_url = url_for('.players_list', **kwargs)
+        start_url = url_for('.games_start', **kwargs)
+        return {'key': self.key,
+                'players': players_url,
+                'start': start_url,
+                'phase': self.phase}
 
 
 class Games(dict):

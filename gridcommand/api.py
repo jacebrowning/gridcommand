@@ -11,15 +11,16 @@ ROOT_URL = "/api/"
 
 GAMES_LIST_URL = ROOT_URL + "games/"
 GAMES_DETAIL_URL = GAMES_LIST_URL + "<string:key>/"
+GAMES_START_URL = GAMES_DETAIL_URL + "start"
 
 PLAYERS_LIST_URL = GAMES_DETAIL_URL + "players/"
 PLAYERS_DETAIL_URL = PLAYERS_LIST_URL + "<string:color>/"
 PLAYERS_AUTH_URL = PLAYERS_DETAIL_URL + "<string:code>/"
 
-ROUNDS_LIST_URL = PLAYERS_AUTH_URL + "rounds/"
-ROUNDS_DETAIL_URL = ROUNDS_LIST_URL + "<int:number>/"
+PHASES_LIST_URL = PLAYERS_AUTH_URL + "phases/"
+PHASES_DETAIL_URL = PHASES_LIST_URL + "<int:number>/"
 
-MOVES_LIST_URL = ROUNDS_DETAIL_URL + "moves/"
+MOVES_LIST_URL = PHASES_DETAIL_URL + "moves/"
 MOVES_DETAIL_URL = MOVES_LIST_URL + "<int:begin>-<int:end>/"
 
 app = FlaskAPI(__name__)  # pylint: disable=C0103
@@ -40,10 +41,10 @@ def root():
 
 @app.route(GAMES_LIST_URL, methods=['GET', 'POST'])
 def games_list():
-    """List or create games."""
+    """Create a new game."""
 
     if request.method == 'GET':
-        return games.serialize()
+        raise exceptions.PermissionDenied("Games list is hidden.")
 
     elif request.method == 'POST':
         game = games.create()
@@ -54,28 +55,35 @@ def games_list():
         assert None
 
 
-@app.route(GAMES_DETAIL_URL, methods=['GET', 'PUT', 'DELETE'])
+@app.route(GAMES_DETAIL_URL, methods=['GET'])
 def games_detail(key):
-    """Retrieve, update or delete a game."""
+    """Retrieve a game instance."""
 
     if request.method == 'GET':
         game = games.find(key, exc=exceptions.NotFound)
         yorm.update(game)  # TODO: remove when unnecessary
         return game.serialize()
 
-    elif request.method == 'PUT':
-        game = games.find(key, exc=exceptions.NotFound)
-        game.started = request.data.get('started', game.started)
-        yorm.update(game)  # TODO: remove when unnecessary
-        return game.serialize()
+    else:  # pragma: no cover
+        assert None
 
-    elif request.method == 'DELETE':
-        games.pop(key, None)
-        yorm.update(game)  # TODO: remove when unnecessary
-        return '', status.HTTP_204_NO_CONTENT
+
+@app.route(GAMES_START_URL, methods=['GET', 'POST'])
+def games_start(key):
+    """Start a game."""
+    game = games.find(key, exc=exceptions.NotFound)
+
+    if request.method == 'GET':
+        pass
+
+    elif request.method == 'POST':
+        game.start(exc=exceptions.PermissionDenied)
 
     else:  # pragma: no cover
         assert None
+
+    yorm.update(game)  # TODO: remove when unnecessary
+    return {'started': game.started}
 
 
 @app.route(PLAYERS_LIST_URL, methods=['GET', 'POST'])
@@ -145,32 +153,32 @@ def players_auth(key, color, code):
         assert None
 
 
-@app.route(ROUNDS_LIST_URL, methods=['GET'])
-def rounds_list(key, color, code):
-    """List rounds for a player."""
+@app.route(PHASES_LIST_URL, methods=['GET'])
+def phases_list(key, color, code):
+    """List phases for a player."""
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
 
     if request.method == 'GET':
         yorm.update(game)  # TODO: remove when unnecessary
-        return player.rounds.serialize(game, player)
+        return player.phases.serialize(game, player)
 
     else:  # pragma: no cover
         assert None
 
 
-@app.route(ROUNDS_DETAIL_URL, methods=['GET'])
-def rounds_detail(key, color, code, number):
-    """Retrieve a players's round."""
+@app.route(PHASES_DETAIL_URL, methods=['GET'])
+def phases_detail(key, color, code, number):
+    """Retrieve a players's phase."""
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
 
     if request.method == 'GET':
-        round = player.rounds.find(number, exc=exceptions.NotFound)  # pylint:disable=W0622
+        phase = player.phases.find(number, exc=exceptions.NotFound)
         yorm.update(game)  # TODO: remove when unnecessary
-        return round.serialize(game, player, number)
+        return phase.serialize(game, player, number)
 
     else:  # pragma: no cover
         assert None
@@ -182,14 +190,14 @@ def moves_list(key, color, code, number):
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
-    round = player.rounds.find(number, exc=exceptions.NotFound)  # pylint:disable=W0622
+    phase = player.phases.find(number, exc=exceptions.NotFound)
 
     if request.method == 'GET':
         yorm.update(game)  # TODO: remove when unnecessary
-        return round.moves.serialize(game, player)
+        return phase.moves.serialize(game, player)
 
     elif request.method == 'POST':
-        move = round.moves.set(request.data.get('begin'),
+        move = phase.moves.set(request.data.get('begin'),
                                request.data.get('end'),
                                request.data.get('count'))
         yorm.update(game)  # TODO: remove when unnecessary
@@ -205,20 +213,20 @@ def moves_detail(key, color, code, number, begin, end):
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
-    round = player.rounds.find(number, exc=exceptions.NotFound)  # pylint:disable=W0622
+    phase = player.phases.find(number, exc=exceptions.NotFound)
 
     if request.method == 'GET':
-        move = round.moves.get(begin, end)
+        move = phase.moves.get(begin, end)
         yorm.update(game)  # TODO: remove when unnecessary
         return move.serialize()
 
     elif request.method == 'PUT':
-        move = round.moves.set(begin, end, request.data.get('count'))
+        move = phase.moves.set(begin, end, request.data.get('count'))
         yorm.update(game)  # TODO: remove when unnecessary
         return move.serialize()
 
     elif request.method == 'DELETE':
-        round.moves.delete(begin, end)
+        phase.moves.delete(begin, end)
         yorm.update(game)  # TODO: remove when unnecessary
         return '', status.HTTP_204_NO_CONTENT
 

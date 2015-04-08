@@ -6,9 +6,9 @@ from unittest.mock import Mock
 import pytest
 
 from gridcommand.models import Move
-from gridcommand.models import Round, Rounds
+from gridcommand.models import Phase, Phases
 from gridcommand.models import Player, Players
-from gridcommand.models import Game, Games
+from gridcommand.models import Games
 
 
 class TestMove:
@@ -31,25 +31,25 @@ class TestMove:
         assert Move(1, 2) != Move(5, 5)
 
 
-class TestRound:  # pylint: disable=W0622
+class TestPhase:
 
     def test_init(self):
-        round = Round()
-        assert False is round.done
-        assert not len(round.moves)
+        phase = Phase()
+        assert False is phase.done
+        assert not len(phase.moves)
 
 
-class TestRounds:
+class TestPhases:
 
     def test_find_match(self):
-        rounds = Rounds()
-        rounds.append(Mock())
-        rounds.find(1)
+        phases = Phases()
+        phases.append(Mock())
+        phases.find(1)
 
     def test_find_missing(self):
-        rounds = Rounds()
+        phases = Phases()
         with pytest.raises(ValueError):
-            rounds.find(1)
+            phases.find(1)
 
 
 class TestPlayer:
@@ -111,11 +111,10 @@ class TestPlayers:
 
 class TestGame:
 
-    def test_starting_triggers_round_1(self):
-        game = Game()
-        assert 0 == game.round
-        game.started = True
-        assert 1 == game.round
+    def test_start_triggers_phase_1(self, game_players):
+        assert 0 == game_players.phase
+        game_players.start()
+        assert 1 == game_players.phase
 
 
 class TestGames:

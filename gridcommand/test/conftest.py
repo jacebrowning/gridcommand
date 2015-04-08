@@ -37,7 +37,7 @@ def client(request):
 
 
 @pytest.fixture
-def my_game():
+def game():
     """Fixture to create an empty game."""
     game = models.Game('my_game')
     data.games[game.key] = game
@@ -45,22 +45,49 @@ def my_game():
 
 
 @pytest.fixture
-def my_player(my_game):
-    """Fixture to create a game with a player."""
-    player = my_game.players.create('my_code')
-    yorm.update(my_game)  # TODO: remove when unnecessary
+def game_player(game):
+    """Fixture to create a game with one player."""
+    game.players.create('my_code')
+    yorm.update(game)  # TODO: remove when unnecessary
+    return game
+
+
+@pytest.fixture
+def game_players(game):
+    """Fixture to create a game with two players."""
+    game.players.create('my_code')
+    game.players.create('my_code')
+    yorm.update(game)  # TODO: remove when unnecessary
+    return game
+
+
+@pytest.fixture
+def game_started(game):
+    """Fixture to create a started game."""
+    game.players.create('my_code')
+    game.players.create('my_code')
+    game.start()
+    yorm.update(game)  # TODO: remove when unnecessary
+    return game
+
+
+@pytest.fixture
+def player(game):
+    """Fixture to create a player for a game."""
+    player = game.players.create('my_code')
+    yorm.update(game)  # TODO: remove when unnecessary
     assert 'red' == player.color
     return player
 
 
 @pytest.fixture
-def my_round(my_game):
-    """Fixture to create a round for a player."""
-    player = my_game.players.create('my_code')
-    round = models.Round()  # pylint: disable=W0622
-    player.rounds.append(round)
-    yorm.update(my_game)  # TODO: remove when unnecessary
-    return round
+def phase(game):
+    """Fixture to create a phase for a player."""
+    player = game.players.create('my_code')
+    phase = models.Phase()
+    player.phases.append(phase)
+    yorm.update(game)  # TODO: remove when unnecessary
+    return phase
 
 
 def load(response):
