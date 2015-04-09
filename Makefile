@@ -77,7 +77,27 @@ ci: check test tests
 
 .PHONY: run
 run: env
-	$(PYTHON) main.py
+	$(PYTHON) main.py --debug
+
+.PHONY: launch
+launch: env
+	eval "sleep 1; $(OPEN) http://127.0.0.1:5000" &
+	$(MAKE) run
+
+.PHONY: run-private
+run-private: run
+
+.PHONY: launch-private
+launch-private: launch
+
+.PHONY: run-public
+run-public: env
+	$(PYTHON) main.py --public
+
+.PHONY: launch-public
+launch-public: env
+	eval "sleep 1; $(OPEN) http://localhost:8000" &
+	$(MAKE) run-public
 
 # Development Installation #####################################################
 
