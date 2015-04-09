@@ -108,7 +108,6 @@ class Phases(yorm.container.List):
 @yorm.attr(color=yorm.standard.String)
 @yorm.attr(code=yorm.standard.String)
 @yorm.attr(phases=Phases)
-@yorm.attr(done=yorm.standard.Boolean)
 class Player(yorm.extended.AttributeDictionary):
 
     """An entity that plans moves during a phase."""
@@ -118,7 +117,6 @@ class Player(yorm.extended.AttributeDictionary):
         self.color = color
         self.code = code
         self.phases = Phases()
-        self.done = False
 
     def __eq__(self, other):
         return self.color == other.color
@@ -221,7 +219,11 @@ class Game:
     def start(self, exc=ValueError):
         if len(self.players) < 2:
             raise exc("At least 2 players are required.")
-        self.phase = self.phase or 1
+        if not self.phase:
+            self._advance()
+
+    def _advance(self):
+        self.phase += 1
 
     def serialize(self):
         kwargs = {'_external': True, 'key': self.key}
