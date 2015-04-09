@@ -1,11 +1,8 @@
-"""Data used by the running application."""
+"""Data persistence for the application."""
 
 import os
 
 from .models import Game, Games
-
-
-games = Games()  # pylint: disable=C0103
 
 
 def load():
@@ -15,3 +12,5 @@ def load():
         for filename in os.listdir(_path):
             _key = filename.split('.')[0]
             games[_key] = Game(_key)
+
+games = Games()  # pylint: disable=C0103

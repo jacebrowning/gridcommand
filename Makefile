@@ -11,8 +11,8 @@ ifndef TRAVIS
 endif
 
 # Testake settings
-UNIT_TEST_COVERAGE := 79
-INTEGRATION_TEST_COVERAGE := 79
+UNIT_TEST_COVERAGE := 81
+INTEGRATION_TEST_COVERAGE := 81
 
 # System paths
 PLATFORM := $(shell python -c 'import sys; print(sys.platform)')
@@ -148,7 +148,8 @@ check: pep8 pylint pep257
 .PHONY: pep8
 pep8: depends-ci
 # E501: line too long (checked by PyLint)
-	$(PEP8) $(PACKAGE) --ignore=E501
+# E402: module level import not at the top of file (delayed import for routes)
+	$(PEP8) $(PACKAGE) --ignore=E501,E402
 
 .PHONY: pep257
 pep257: depends-ci
@@ -159,7 +160,8 @@ pep257: depends-ci
 .PHONY: pylint
 pylint: depends-ci
 # C0111: Missing method docstring (warning displayed in editors)
-	$(PYLINT) $(PACKAGE) --rcfile=.pylintrc --disable=C0111
+# R0801: Similar lines (checked by Scrutinizer)
+	$(PYLINT) $(PACKAGE) --rcfile=.pylintrc --disable=C0111,R0801
 
 .PHONY: fix
 fix: depends-dev
@@ -169,13 +171,13 @@ fix: depends-dev
 
 .PHONY: test
 test: depends-ci .clean-test
-	$(COVERAGE) run --source $(PACKAGE) --module py.test $(PACKAGE) --doctest-modules
+	$(COVERAGE) run --source $(PACKAGE) --module py.test tests --doctest-modules
 	$(COVERAGE) html --directory .coverage-html
 	$(COVERAGE) report --show-missing --fail-under=$(UNIT_TEST_COVERAGE)
 
 .PHONY: tests
 tests: depends-ci .clean-test
-	TEST_INTEGRATION=1 $(COVERAGE) run --source $(PACKAGE) --module py.test $(PACKAGE) --doctest-modules
+	TEST_INTEGRATION=1 $(COVERAGE) run --source $(PACKAGE) --module py.test tests --doctest-modules
 	$(COVERAGE) html --directory .coverage-html
 	$(COVERAGE) report --show-missing --fail-under=$(INTEGRATION_TEST_COVERAGE)
 

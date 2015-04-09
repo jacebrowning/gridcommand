@@ -2,8 +2,7 @@
 
 """Entry point for GridCommand."""
 
-from gridcommand import app
-from gridcommand import data
+from gridcommand import app, data
 
 
 if __name__ == "__main__":
