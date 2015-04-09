@@ -11,8 +11,8 @@ ifndef TRAVIS
 endif
 
 # Testake settings
-UNIT_TEST_COVERAGE := 76
-INTEGRATION_TEST_COVERAGE := 76
+UNIT_TEST_COVERAGE := 79
+INTEGRATION_TEST_COVERAGE := 79
 
 # System paths
 PLATFORM := $(shell python -c 'import sys; print(sys.platform)')
@@ -193,8 +193,12 @@ clean: .clean-dist .clean-test .clean-doc .clean-build
 clean-env: clean
 	rm -rf $(ENV)
 
+.PHONY: clean-data
+clean-data:
+	rm -rf data/*
+
 .PHONY: clean-all
-clean-all: clean clean-env .clean-cache .clean-workspace
+clean-all: clean clean-env clean-data .clean-workspace
 
 .PHONY: .clean-build
 .clean-build:
@@ -217,10 +221,6 @@ clean-all: clean clean-env .clean-cache .clean-workspace
 .PHONY: .clean-workspace
 .clean-workspace:
 	rm -rf *.sublime-workspace
-
-.PHONY: .clean-cache
-.clean-cache:
-	rm -rf data/*
 
 # Release ######################################################################
 

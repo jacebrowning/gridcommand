@@ -57,7 +57,7 @@ def games_list():
 
 @app.route(GAMES_DETAIL_URL, methods=['GET'])
 def games_detail(key):
-    """Retrieve a game instance."""
+    """Retrieve a game's status."""
 
     if request.method == 'GET':
         game = games.find(key, exc=exceptions.NotFound)
@@ -88,7 +88,7 @@ def games_start(key):
 
 @app.route(PLAYERS_LIST_URL, methods=['GET', 'POST'])
 def players_list(key):
-    """List or create players for a game."""
+    """List or create players."""
     game = games.find(key, exc=exceptions.NotFound)
 
     if request.method == 'GET':
@@ -107,9 +107,9 @@ def players_list(key):
         assert None
 
 
-@app.route(PLAYERS_DETAIL_URL, methods=['GET', 'PUT', 'DELETE'])
+@app.route(PLAYERS_DETAIL_URL, methods=['GET'])
 def players_detail(key, color):
-    """Retrieve, update or delete a game's player."""
+    """Retrieve a player.."""
     game = games.find(key, exc=exceptions.NotFound)
 
     if request.method == 'GET':
@@ -117,24 +117,13 @@ def players_detail(key, color):
         yorm.update(game)  # TODO: remove when unnecessary
         return player.serialize(game)
 
-    elif request.method == 'PUT':
-        player = game.players.find(color, exc=exceptions.NotFound)
-        player.done = request.data.get('done', player.done)
-        yorm.update(game)  # TODO: remove when unnecessary
-        return player.serialize(game)
-
-    elif request.method == 'DELETE':
-        game.players.delete(color)
-        yorm.update(game)  # TODO: remove when unnecessary
-        return '', status.HTTP_204_NO_CONTENT
-
     else:  # pragma: no cover
         assert None
 
 
-@app.route(PLAYERS_AUTH_URL, methods=['GET', 'PUT'])
+@app.route(PLAYERS_AUTH_URL, methods=['GET', 'DELETE'])
 def players_auth(key, color, code):
-    """Retrieve a game's player with authentication."""
+    """Retrieve or delete an authenticated player."""
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
@@ -143,11 +132,10 @@ def players_auth(key, color, code):
         yorm.update(game)  # TODO: remove when unnecessary
         return player.serialize(game, auth=True)
 
-    elif request.method == 'PUT':
-        player.code = request.data.get('code', player.code)
-        player.done = request.data.get('done', player.done)
+    elif request.method == 'DELETE':
+        game.delete_player(color, exc=exceptions.PermissionDenied)
         yorm.update(game)  # TODO: remove when unnecessary
-        return player.serialize(game, auth=True)
+        return '', status.HTTP_204_NO_CONTENT
 
     else:  # pragma: no cover
         assert None

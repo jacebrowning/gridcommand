@@ -111,4 +111,5 @@ def phase(game):
 def load(response):
     """Convert a response's binary data (JSON) to a dictionary."""
     text = response.data.decode('utf-8')
-    return json.loads(text)
+    if text:
+        return json.loads(text)

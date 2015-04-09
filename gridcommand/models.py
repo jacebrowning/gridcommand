@@ -209,6 +209,11 @@ class Game:
             raise exc("Game has already started.")
         return self.players.create(code, exc=exc)
 
+    def delete_player(self, color, exc=ValueError):
+        if self.started:
+            raise exc("Game has already started.")
+        self.players.delete(color)
+
     @property
     def started(self):
         return self.phase > 0

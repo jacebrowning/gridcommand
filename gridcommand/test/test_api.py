@@ -122,7 +122,16 @@ class TestPlayer:
         assert {'color': "red",
                 'phase': 0} == load(response)
 
-    def test_get_existing_player_with_auth(self, client, player):
+    def test_get_missing_player(self, client, game):
+        response = client.get('/api/games/my_game/players/red')
+        assert 404 == response.status_code
+        assert {'message':
+                "The player 'red' does not exist."} == load(response)
+
+
+class TestPlayerAuth:
+
+    def test_get_existing_player(self, client, player):
         response = client.get('/api/games/my_game/players/red-my_code')
         assert 200 == response.status_code
         assert {'color': "red",
@@ -130,25 +139,20 @@ class TestPlayer:
                 'phases': GAMES + "my_game/players/red-my_code/phases/",
                 'phase': 0} == load(response)
 
-    def test_get_existing_player_bad_auth(self, client, player):
+    def test_get_existing_player_with_bad_auth(self, client, player):
         response = client.get('/api/games/my_game/players/red-invalid')
         assert 401 == response.status_code
         assert {'message': "The code 'invalid' is invalid."}
 
-    def test_get_missing_player(self, client, game):
-        response = client.get('/api/games/my_game/players/red')
-        assert 404 == response.status_code
-        assert {'message':
-                "The player 'red' does not exist."} == load(response)
+    def test_delete_player(self, client, player):
+        response = client.delete('/api/games/my_game/players/red-my_code')
+        assert 204 == response.status_code
+        assert None is load(response)
 
-    def test_put_new_code(self, client, player):
-        response = client.put('/api/games/my_game/players/red-my_code',
-                              data={'code': "1234"})
-        assert 200 == response.status_code
-        assert {'color': "red",
-                'code': '1234',
-                'phases': GAMES + "my_game/players/red-1234/phases/",
-                'phase': 0} == load(response)
+    def test_delete_player_after_game_start(self, client, game_started):
+        response = client.delete('/api/games/my_game/players/red-my_code')
+        assert 403 == response.status_code
+        assert {'message': "Game has already started."} == load(response)
 
 
 class TestPhases:

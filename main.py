@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""Entry point for GridCommand."""
+
 from gridcommand import app
 from gridcommand import data
 

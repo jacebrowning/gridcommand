@@ -120,6 +120,10 @@ class TestGame:
         with pytest.raises(ValueError):
             game_started.create_player('1234')
 
+    def test_delete_player_after_start(self, game_started):
+        with pytest.raises(ValueError):
+            game_started.delete_player('red')
+
 
 class TestGames:
 
