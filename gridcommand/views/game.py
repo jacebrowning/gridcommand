@@ -3,7 +3,6 @@
 
 from flask import request
 from flask.ext.api import status, exceptions  # pylint: disable=E0611,F0401
-import yorm  # TODO: remove this import
 
 from ..data import games
 
@@ -25,7 +24,6 @@ def games_list():
 
     elif request.method == 'POST':
         game = games.create()
-        yorm.update(game)  # TODO: remove when unnecessary
         return game.serialize(), status.HTTP_201_CREATED
 
     else:  # pragma: no cover
@@ -38,7 +36,6 @@ def games_detail(key):
 
     if request.method == 'GET':
         game = games.find(key, exc=exceptions.NotFound)
-        yorm.update(game)  # TODO: remove when unnecessary
         return game.serialize()
 
     else:  # pragma: no cover
@@ -59,5 +56,4 @@ def games_start(key):
     else:  # pragma: no cover
         assert None
 
-    yorm.update(game)  # TODO: remove when unnecessary
     return {'started': game.started}

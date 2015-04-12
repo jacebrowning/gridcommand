@@ -7,8 +7,8 @@ from .move import Moves
 
 
 @yorm.attr(moves=Moves)
-@yorm.attr(done=yorm.standard.Boolean)
-class Phase(yorm.extended.AttributeDictionary):
+@yorm.attr(done=yorm.converters.Boolean)
+class Phase(yorm.converters.AttributeDictionary):
 
     """An individual phase for a player."""
 
@@ -26,7 +26,7 @@ class Phase(yorm.extended.AttributeDictionary):
 
 
 @yorm.attr(all=Phase)
-class Phases(yorm.container.List):
+class Phases(yorm.converters.List):
 
     """A list of phases in a game for each player."""
 

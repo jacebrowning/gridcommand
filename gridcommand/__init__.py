@@ -15,6 +15,6 @@ if not sys.version_info >= PYTHON_VERSION:  # pragma: no cover (manual test)
 try:
     from .views import app
     from . import data
-except ImportError:  # pragma: no cover (manual test)
+except (ImportError, AttributeError):  # pragma: no cover (manual test)
     import logging
     logging.exception("dependencies:")

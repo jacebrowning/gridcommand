@@ -10,7 +10,7 @@ from .player import Players
 
 
 @yorm.attr(players=Players)
-@yorm.attr(phase=yorm.standard.Integer)
+@yorm.attr(phase=yorm.converters.Integer)
 @yorm.sync("data/games/{self.key}.yml")
 class Game:
 

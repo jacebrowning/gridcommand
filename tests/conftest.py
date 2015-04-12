@@ -8,6 +8,7 @@ from unittest.mock import patch
 import pytest
 import yorm
 
+from gridcommand.common import logger
 from gridcommand import app
 from gridcommand import models
 from gridcommand import data
@@ -18,6 +19,9 @@ REASON = "'{0}' variable not set".format(ENV)
 GAME_KEY = 'my_game'
 PLAYER_CODE = 'my_code'
 PLAYERS_COLORS = ['red', 'blue']
+
+
+log = logger(__name__)
 
 
 def pytest_runtest_setup(item):
@@ -44,6 +48,7 @@ def client(request):
 @pytest.fixture
 def game():
     """Fixture to create an empty game."""
+    log.info("creating an empty game...")
     game = models.Game(GAME_KEY)
     data.games[game.key] = game
     return game
@@ -52,9 +57,9 @@ def game():
 @pytest.fixture
 def game_player(game):
     """Fixture to create a game with one player."""
+    log.info("adding a player to a game...")
     with patch.object(models.Players, 'COLORS', PLAYERS_COLORS):
         game.players.create(PLAYER_CODE)
-    yorm.update(game)  # TODO: remove when unnecessary
     return game
 
 
@@ -64,7 +69,6 @@ def game_players(game):
     with patch.object(models.Players, 'COLORS', PLAYERS_COLORS):
         game.players.create(PLAYER_CODE)
         game.players.create(PLAYER_CODE)
-    yorm.update(game)  # TODO: remove when unnecessary
     return game
 
 
@@ -74,7 +78,6 @@ def game_started(game):
     game.players.create(PLAYER_CODE)
     game.players.create(PLAYER_CODE)
     game.start()
-    yorm.update(game)  # TODO: remove when unnecessary
     return game
 
 
@@ -82,7 +85,6 @@ def game_started(game):
 def player(game):
     """Fixture to create a player for a game."""
     player = game.players.create(PLAYER_CODE)
-    yorm.update(game)  # TODO: remove when unnecessary
     return player
 
 
@@ -99,12 +101,12 @@ def phases(player):
 
 
 @pytest.fixture
-def phase(game):
+def phase(game_player):
     """Fixture to create a phase for a player."""
-    player = game.players.create(PLAYER_CODE)
+    log.info("adding a phase to a player...")
     phase = models.Phase()
-    player.phases.append(phase)
-    yorm.update(game)  # TODO: remove when unnecessary
+    log.debug("appending phase...")
+    game.players[0].phases.append(phase)
     return phase
 
 

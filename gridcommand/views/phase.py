@@ -3,7 +3,6 @@
 
 from flask import request
 from flask.ext.api import exceptions  # pylint: disable=E0611,F0401
-import yorm  # TODO: remove this import
 
 from ..data import games
 
@@ -23,7 +22,6 @@ def phases_list(key, color, code):
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
 
     if request.method == 'GET':
-        yorm.update(game)  # TODO: remove when unnecessary
         return player.phases.serialize(game, player)
 
     else:  # pragma: no cover
@@ -39,7 +37,6 @@ def phases_detail(key, color, code, number):
 
     if request.method == 'GET':
         phase = player.phases.find(number, exc=exceptions.NotFound)
-        yorm.update(game)  # TODO: remove when unnecessary
         return phase.serialize(game, player, number)
 
     else:  # pragma: no cover

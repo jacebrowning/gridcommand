@@ -4,10 +4,10 @@ from flask import url_for  # TODO: remove this import
 import yorm
 
 
-@yorm.attr(begin=yorm.standard.Integer)
-@yorm.attr(end=yorm.standard.Integer)
-@yorm.attr(count=yorm.standard.Integer)
-class Move(yorm.extended.AttributeDictionary):
+@yorm.attr(begin=yorm.converters.Integer)
+@yorm.attr(end=yorm.converters.Integer)
+@yorm.attr(count=yorm.converters.Integer)
+class Move(yorm.converters.AttributeDictionary):
 
     """A planned transfer of tokens from one cell to another."""
 
@@ -32,7 +32,7 @@ class Move(yorm.extended.AttributeDictionary):
 
 
 @yorm.attr(all=Move)
-class Moves(yorm.extended.SortedList):
+class Moves(yorm.converters.SortedList):
 
     """A collection of moves for a player."""
 
