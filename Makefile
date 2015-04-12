@@ -119,7 +119,7 @@ depends: depends-ci depends-dev
 .PHONY: depends-ci
 depends-ci: env Makefile $(DEPENDS_CI)
 $(DEPENDS_CI): Makefile
-	$(PIP) install --upgrade pep8 pep257 pylint pytest coverage
+	$(PIP) install --upgrade pep8 pep257 pylint coverage pytest pytest-cov
 	touch $(DEPENDS_CI)  # flag to indicate dependencies are installed
 
 .PHONY: depends-dev
@@ -189,21 +189,21 @@ fix: depends-dev
 
 # Testing ######################################################################
 
+PYTEST_OPTS := --doctest-modules --cov=$(PACKAGE) --cov-report=term-missing --cov-report=html
+
 .PHONY: test
 test: depends-ci .clean-test
-	$(COVERAGE) run --source $(PACKAGE) --module py.test tests --doctest-modules
-	$(COVERAGE) html --directory .coverage-html
-	$(COVERAGE) report --show-missing --fail-under=$(UNIT_TEST_COVERAGE)
+	$(PYTEST) $(PYTEST_OPTS) tests
+	$(COVERAGE) report --fail-under=$(UNIT_TEST_COVERAGE) > /dev/null
 
 .PHONY: tests
 tests: depends-ci .clean-test
-	TEST_INTEGRATION=1 $(COVERAGE) run --source $(PACKAGE) --module py.test tests --doctest-modules
-	$(COVERAGE) html --directory .coverage-html
-	$(COVERAGE) report --show-missing --fail-under=$(INTEGRATION_TEST_COVERAGE)
+	TEST_INTEGRATION=1 $(PYTEST) $(PYTEST_OPTS) tests
+	$(COVERAGE) report --fail-under=$(INTEGRATION_TEST_COVERAGE) > /dev/null
 
 .PHONY: read-coverage
 read-coverage:
-	$(OPEN) .coverage-html/index.html
+	$(OPEN) htmlcov/index.html
 
 # Cleanup ######################################################################
 
@@ -234,7 +234,7 @@ clean-all: clean clean-env clean-data .clean-workspace
 
 .PHONY: .clean-test
 .clean-test:
-	rm -rf .coverage .coverage-html
+	rm -rf .coverage htmlcov
 
 .PHONY: .clean-dist
 .clean-dist:
