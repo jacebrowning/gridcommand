@@ -84,6 +84,7 @@ def game_started(game):
 @pytest.fixture
 def player(game):
     """Fixture to create a player for a game."""
+    log.info("adding a player to a game...")
     player = game.players.create(PLAYER_CODE)
     return player
 
@@ -91,13 +92,8 @@ def player(game):
 @pytest.fixture
 def players(game_players):
     """Fixture to create two players for a game."""
+    assert len(game_players.players) == 2
     return game_players.players
-
-
-@pytest.fixture
-def phases(player):
-    """Fixture to create empty phases for a player."""
-    return player.phases
 
 
 @pytest.fixture
@@ -106,8 +102,16 @@ def phase(game_player):
     log.info("adding a phase to a player...")
     phase = models.Phase()
     log.debug("appending phase...")
-    game.players[0].phases.append(phase)
+    game_player.players[0].phases.append(phase)
     return phase
+
+
+@pytest.fixture
+def phases(game_player):
+    """Fixture to create phases for a player."""
+    game_player.players[0].phases.append(models.Phase())
+    game_player.players[0].phases.append(models.Phase())
+    return game_player.players[0].phases
 
 
 def load(response):
