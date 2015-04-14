@@ -60,6 +60,9 @@ class Players(yorm.converters.List):
         'pink',
     )
 
+    def __repr__(self):
+        return "<{} player{}>".format(len(self), "" if len(self) == 1 else "s")
+
     @property
     def maximum(self):
         return len(self.COLORS)

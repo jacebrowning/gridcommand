@@ -6,7 +6,11 @@ import random
 from flask import url_for  # TODO: remove this import
 import yorm
 
+from .. import common
 from .player import Players
+from .phase import Phase
+
+log = common.logger(__name__)
 
 
 @yorm.attr(players=Players)
@@ -23,6 +27,9 @@ class Game:
         self.key = key or self._generate_key()
         self.players = Players()
         self.phase = 0
+
+    def __repr__(self):
+        return "<game: {}>".format(self.key)
 
     @staticmethod
     def _generate_key():
@@ -46,11 +53,18 @@ class Game:
     def start(self, exc=ValueError):
         if len(self.players) < 2:
             raise exc("At least 2 players are required.")
-        if not self.phase:
-            self._advance()
+        if self.phase == 0:
+            self.advance()
 
-    def _advance(self):
+    def advance(self):
+        log.info("starting the next phase...")
         self.phase += 1
+
+        # TODO: rework this into a proper loop: for player in self.players
+        for index in range(len(self.players)):
+            if self.players[index].phases.current:
+                self.players[index].phases.current.done = True
+            self.players[index].phases.append(Phase())
 
     def serialize(self):
         kwargs = {'_external': True, 'key': self.key}

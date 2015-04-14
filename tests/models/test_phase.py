@@ -3,6 +3,8 @@
 
 import pytest
 
+from gridcommand.models.phase import Phases
+
 
 class TestPhase:
 
@@ -12,6 +14,12 @@ class TestPhase:
 
 
 class TestPhases:
+
+    def test_current(self, phases):
+        assert phases.current
+
+    def test_current_none(self):
+        assert None is Phases().current
 
     def test_find_match(self, phases):
         phases.find(1)

@@ -1,0 +1,12 @@
+phase: 1
+players:
+- code: '1234'
+  color: red
+  phases:
+  - done: false
+    moves: []
+- code: '5678'
+  color: blue
+  phases:
+  - done: false
+    moves: []

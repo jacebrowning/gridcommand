@@ -17,6 +17,11 @@ class Move(yorm.converters.AttributeDictionary):
         self.end = end
         self.count = count
 
+    def __repr__(self):
+        return "<move: {} from {} to {}>".format(self.count,
+                                                 self.begin,
+                                                 self.end)
+
     def __eq__(self, other):
         return self.begin == other.begin and self.end == other.end
 
@@ -35,6 +40,9 @@ class Move(yorm.converters.AttributeDictionary):
 class Moves(yorm.converters.SortedList):
 
     """A collection of moves for a player."""
+
+    def __repr__(self):
+        return "<{} move{}>".format(len(self), "" if len(self) == 1 else "s")
 
     def serialize(self, game, player):
         return [url_for('.moves_detail', _external=True,

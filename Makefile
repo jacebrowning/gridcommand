@@ -11,8 +11,8 @@ ifndef TRAVIS
 endif
 
 # Testake settings
-UNIT_TEST_COVERAGE := 81
-INTEGRATION_TEST_COVERAGE := 81
+UNIT_TEST_COVERAGE := 82
+INTEGRATION_TEST_COVERAGE := 82
 
 # System paths
 PLATFORM := $(shell python -c 'import sys; print(sys.platform)')
@@ -189,7 +189,10 @@ fix: depends-dev
 
 # Testing ######################################################################
 
-PYTEST_OPTS := --doctest-modules --cov=$(PACKAGE) --cov-report=term-missing --cov-report=html
+PYTEST_CORE_OPTS := --doctest-modules
+PYTEST_COV_OPTS := --cov=$(PACKAGE) --cov-report=term-missing --cov-report=html
+PYTEST_CAPTURELOG_OPTS := --log-format="%(name)-25s %(lineno)4d %(levelname)8s: %(message)s"
+PYTEST_OPTS := $(PYTEST_CORE_OPTS) $(PYTEST_COV_OPTS) $(PYTEST_CAPTURELOG_OPTS)
 
 .PHONY: test
 test: depends-ci .clean-test
@@ -217,7 +220,7 @@ clean-env: clean
 
 .PHONY: clean-data
 clean-data:
-	rm -rf data/*
+	cd data && git clean -fX
 
 .PHONY: clean-all
 clean-all: clean clean-env clean-data .clean-workspace

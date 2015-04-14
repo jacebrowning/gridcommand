@@ -17,6 +17,9 @@ class Phase(yorm.converters.AttributeDictionary):
         self.moves = Moves()
         self.done = False
 
+    def __repr__(self):
+        return "<phase>"
+
     def serialize(self, game, player, number):
         moves_url = url_for('.moves_list', _external=True,
                             key=game.key, color=player.color, code=player.code,
@@ -29,6 +32,17 @@ class Phase(yorm.converters.AttributeDictionary):
 class Phases(yorm.converters.List):
 
     """A list of phases in a game for each player."""
+
+    def __repr__(self):
+        return "<{} phase{}>".format(len(self), "" if len(self) == 1 else "s")
+
+    @property
+    def current(self):
+        """Get the most recent phase."""
+        try:
+            return self[-1]
+        except IndexError:
+            return None
 
     def find(self, number, exc=ValueError):
         try:
