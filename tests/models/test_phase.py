@@ -1,9 +1,9 @@
 """Unit tests for the `models.phase` module."""
 # pylint: disable=R0201,C0103,C0111
 
-from unittest.mock import Mock
-
 import pytest
+
+from gridcommand.models.phase import Phases
 
 
 class TestPhase:
@@ -15,10 +15,15 @@ class TestPhase:
 
 class TestPhases:
 
+    def test_current(self, phases):
+        assert phases.current
+
+    def test_current_none(self):
+        assert None is Phases().current
+
     def test_find_match(self, phases):
-        phases.append(Mock())
         phases.find(1)
 
-    def test_find_missing(self, phases):
+    def test_find_missing(self, player):
         with pytest.raises(ValueError):
-            phases.find(1)
+            player.phases.find(1)

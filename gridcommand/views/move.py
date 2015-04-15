@@ -3,7 +3,6 @@
 
 from flask import request
 from flask.ext.api import status, exceptions  # pylint: disable=E0611,F0401
-import yorm  # TODO: remove this import
 
 from ..data import games
 
@@ -24,14 +23,12 @@ def moves_list(key, color, code, number):
     phase = player.phases.find(number, exc=exceptions.NotFound)
 
     if request.method == 'GET':
-        yorm.update(game)  # TODO: remove when unnecessary
         return phase.moves.serialize(game, player)
 
     elif request.method == 'POST':
         move = phase.moves.set(request.data.get('begin'),
                                request.data.get('end'),
                                request.data.get('count'))
-        yorm.update(game)  # TODO: remove when unnecessary
         return move.serialize()
 
     else:  # pragma: no cover
@@ -48,17 +45,14 @@ def moves_detail(key, color, code, number, begin, end):
 
     if request.method == 'GET':
         move = phase.moves.get(begin, end)
-        yorm.update(game)  # TODO: remove when unnecessary
         return move.serialize()
 
     elif request.method == 'PUT':
         move = phase.moves.set(begin, end, request.data.get('count'))
-        yorm.update(game)  # TODO: remove when unnecessary
         return move.serialize()
 
     elif request.method == 'DELETE':
         phase.moves.delete(begin, end)
-        yorm.update(game)  # TODO: remove when unnecessary
         return '', status.HTTP_204_NO_CONTENT
 
     else:  # pragma: no cover

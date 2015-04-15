@@ -7,8 +7,8 @@ from .move import Moves
 
 
 @yorm.attr(moves=Moves)
-@yorm.attr(done=yorm.standard.Boolean)
-class Phase(yorm.extended.AttributeDictionary):
+@yorm.attr(done=yorm.converters.Boolean)
+class Phase(yorm.converters.AttributeDictionary):
 
     """An individual phase for a player."""
 
@@ -16,6 +16,9 @@ class Phase(yorm.extended.AttributeDictionary):
         super().__init__()
         self.moves = Moves()
         self.done = False
+
+    def __repr__(self):
+        return "<phase>"
 
     def serialize(self, game, player, number):
         moves_url = url_for('.moves_list', _external=True,
@@ -26,9 +29,20 @@ class Phase(yorm.extended.AttributeDictionary):
 
 
 @yorm.attr(all=Phase)
-class Phases(yorm.container.List):
+class Phases(yorm.converters.List):
 
     """A list of phases in a game for each player."""
+
+    def __repr__(self):
+        return "<{} phase{}>".format(len(self), "" if len(self) == 1 else "s")
+
+    @property
+    def current(self):
+        """Get the most recent phase."""
+        try:
+            return self[-1]
+        except IndexError:
+            return None
 
     def find(self, number, exc=ValueError):
         try:

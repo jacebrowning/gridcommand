@@ -3,7 +3,6 @@
 
 from flask import request
 from flask.ext.api import status, exceptions  # pylint: disable=E0611,F0401
-import yorm  # TODO: remove this import
 
 from ..data import games
 
@@ -22,7 +21,6 @@ def players_list(key):
     game = games.find(key, exc=exceptions.NotFound)
 
     if request.method == 'GET':
-        yorm.update(game)  # TODO: remove when unnecessary
         return game.players.serialize(game)
 
     elif request.method == 'POST':
@@ -30,7 +28,6 @@ def players_list(key):
         if not code:
             raise exceptions.ParseError("Player 'code' must be specified.")
         player = game.create_player(code, exc=exceptions.PermissionDenied)
-        yorm.update(game)  # TODO: remove when unnecessary
         return player.serialize(game, auth=True), status.HTTP_201_CREATED
 
     else:  # pragma: no cover
@@ -44,7 +41,6 @@ def players_detail(key, color):
 
     if request.method == 'GET':
         player = game.players.find(color, exc=exceptions.NotFound)
-        yorm.update(game)  # TODO: remove when unnecessary
         return player.serialize(game)
 
     else:  # pragma: no cover
@@ -59,12 +55,10 @@ def players_auth(key, color, code):
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
 
     if request.method == 'GET':
-        yorm.update(game)  # TODO: remove when unnecessary
         return player.serialize(game, auth=True)
 
     elif request.method == 'DELETE':
         game.delete_player(color, exc=exceptions.PermissionDenied)
-        yorm.update(game)  # TODO: remove when unnecessary
         return '', status.HTTP_204_NO_CONTENT
 
     else:  # pragma: no cover

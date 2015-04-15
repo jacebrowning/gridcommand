@@ -3,13 +3,17 @@
 from flask import url_for  # TODO: remove this import
 import yorm
 
+from ..common import logger
 from .phase import Phases
 
 
-@yorm.attr(color=yorm.standard.String)
-@yorm.attr(code=yorm.standard.String)
+log = logger(__name__)
+
+
+@yorm.attr(color=yorm.converters.String)
+@yorm.attr(code=yorm.converters.String)
 @yorm.attr(phases=Phases)
-class Player(yorm.extended.AttributeDictionary):
+class Player(yorm.converters.AttributeDictionary):
 
     """An entity that plans moves during a phase."""
 
@@ -18,6 +22,9 @@ class Player(yorm.extended.AttributeDictionary):
         self.color = color
         self.code = code
         self.phases = Phases()
+
+    def __repr__(self):
+        return "<player: {}>".format(self.color)
 
     def __eq__(self, other):
         return self.color == other.color
@@ -38,7 +45,7 @@ class Player(yorm.extended.AttributeDictionary):
 
 
 @yorm.attr(all=Player)
-class Players(yorm.container.List):
+class Players(yorm.converters.List):
 
     """A collection players in a game."""
 
@@ -53,6 +60,9 @@ class Players(yorm.container.List):
         'pink',
     )
 
+    def __repr__(self):
+        return "<{} player{}>".format(len(self), "" if len(self) == 1 else "s")
+
     @property
     def maximum(self):
         return len(self.COLORS)
@@ -62,6 +72,7 @@ class Players(yorm.container.List):
                         key=game.key, color=player.color) for player in self]
 
     def create(self, code='', exc=RuntimeError):
+        log.info("creating player with code %r...", code)
         colors = [player.color for player in self]
         for color in self.COLORS:
             if color not in colors:
