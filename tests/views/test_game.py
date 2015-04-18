@@ -23,7 +23,7 @@ class TestGames:
         assert {'key': "x",
                 'players': GAMES + "x/players/",
                 'start': GAMES + "x/start",
-                'phase': 0} == load(response)
+                'turn': 0} == load(response)
 
 
 class TestGame:
@@ -34,7 +34,7 @@ class TestGame:
         assert {'key': "my_game",
                 'players': GAMES + "my_game/players/",
                 'start': GAMES + "my_game/start",
-                'phase': 0} == load(response)
+                'turn': 0} == load(response)
 
     def test_get_missing_game(self, client):
         response = client.get('/api/games/my_game')

@@ -1,4 +1,4 @@
-"""Classes representing phases in a game."""
+"""Classes representing turns in a game."""
 
 from flask import url_for  # TODO: remove this import
 import yorm
@@ -8,9 +8,9 @@ from .move import Moves
 
 @yorm.attr(moves=Moves)
 @yorm.attr(done=yorm.converters.Boolean)
-class Phase(yorm.converters.AttributeDictionary):
+class Turn(yorm.converters.AttributeDictionary):
 
-    """An individual phase for a player."""
+    """An individual turn for a player."""
 
     def __init__(self):
         super().__init__()
@@ -18,7 +18,7 @@ class Phase(yorm.converters.AttributeDictionary):
         self.done = False
 
     def __repr__(self):
-        return "<phase>"
+        return "<turn>"
 
     def serialize(self, game, player, number):
         moves_url = url_for('.moves_list', _external=True,
@@ -28,17 +28,17 @@ class Phase(yorm.converters.AttributeDictionary):
                 'done': self.done}
 
 
-@yorm.attr(all=Phase)
-class Phases(yorm.converters.List):
+@yorm.attr(all=Turn)
+class Turns(yorm.converters.List):
 
-    """A list of phases in a game for each player."""
+    """A list of turns in a game for each player."""
 
     def __repr__(self):
-        return "<{} phase{}>".format(len(self), "" if len(self) == 1 else "s")
+        return "<{} turn{}>".format(len(self), "" if len(self) == 1 else "s")
 
     @property
     def current(self):
-        """Get the most recent phase."""
+        """Get the most recent turn."""
         try:
             return self[-1]
         except IndexError:
@@ -48,10 +48,10 @@ class Phases(yorm.converters.List):
         try:
             return self[number - 1]
         except IndexError:
-            raise exc("The phase '{}' does not exist.".format(number))
+            raise exc("The turn '{}' does not exist.".format(number))
 
     def serialize(self, game, player):
 
-        return [url_for('.phases_detail', _external=True,
+        return [url_for('.turns_detail', _external=True,
                         key=game.key, color=player.color, code=player.code,
                         number=index + 1) for index in range(len(self))]

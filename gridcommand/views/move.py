@@ -7,10 +7,10 @@ from flask.ext.api import status, exceptions  # pylint: disable=E0611,F0401
 from ..data import games
 
 from . import app
-from .phase import PHASES_DETAIL_URL
+from .turn import TURNS_DETAIL_URL
 
 
-MOVES_LIST_URL = PHASES_DETAIL_URL + "/moves/"
+MOVES_LIST_URL = TURNS_DETAIL_URL + "/moves/"
 MOVES_DETAIL_URL = MOVES_LIST_URL + "<int:begin>-<int:end>"
 
 
@@ -20,15 +20,15 @@ def moves_list(key, color, code, number):
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
-    phase = player.phases.find(number, exc=exceptions.NotFound)
+    turn = player.turns.find(number, exc=exceptions.NotFound)
 
     if request.method == 'GET':
-        return phase.moves.serialize(game, player)
+        return turn.moves.serialize(game, player)
 
     elif request.method == 'POST':
-        move = phase.moves.set(request.data.get('begin'),
-                               request.data.get('end'),
-                               request.data.get('count'))
+        move = turn.moves.set(request.data.get('begin'),
+                              request.data.get('end'),
+                              request.data.get('count'))
         return move.serialize()
 
     else:  # pragma: no cover
@@ -41,18 +41,18 @@ def moves_detail(key, color, code, number, begin, end):
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
-    phase = player.phases.find(number, exc=exceptions.NotFound)
+    turn = player.turns.find(number, exc=exceptions.NotFound)
 
     if request.method == 'GET':
-        move = phase.moves.get(begin, end)
+        move = turn.moves.get(begin, end)
         return move.serialize()
 
     elif request.method == 'PUT':
-        move = phase.moves.set(begin, end, request.data.get('count'))
+        move = turn.moves.set(begin, end, request.data.get('count'))
         return move.serialize()
 
     elif request.method == 'DELETE':
-        phase.moves.delete(begin, end)
+        turn.moves.delete(begin, end)
         return '', status.HTTP_204_NO_CONTENT
 
     else:  # pragma: no cover

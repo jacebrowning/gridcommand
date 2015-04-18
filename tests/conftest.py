@@ -97,21 +97,21 @@ def players(game_players):
 
 
 @pytest.fixture
-def phase(game_player):
-    """Fixture to create a phase for a player."""
-    log.info("adding a phase to a player...")
-    phase = models.Phase()
-    log.debug("appending phase...")
-    game_player.players[0].phases.append(phase)
-    return phase
+def turn(game_player):
+    """Fixture to create a turn for a player."""
+    log.info("adding a turn to a player...")
+    turn = models.Turn()
+    log.debug("appending turn...")
+    game_player.players[0].turns.append(turn)
+    return turn
 
 
 @pytest.fixture
-def phases(game_player):
-    """Fixture to create phases for a player."""
-    game_player.players[0].phases.append(models.Phase())
-    game_player.players[0].phases.append(models.Phase())
-    return game_player.players[0].phases
+def turns(game_player):
+    """Fixture to create turns for a player."""
+    game_player.players[0].turns.append(models.Turn())
+    game_player.players[0].turns.append(models.Turn())
+    return game_player.players[0].turns
 
 
 def load(response):

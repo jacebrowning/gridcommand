@@ -20,8 +20,8 @@ class TestPlayers:
         assert 201 == response.status_code
         assert {'color': "red",
                 'code': '1234',
-                'phases': GAMES + "my_game/players/red-1234/phases/",
-                'phase': 0} == load(response)
+                'turns': GAMES + "my_game/players/red-1234/turns/",
+                'turn': 0} == load(response)
 
     def test_post_player_with_invalid_code(self, client, game):
         response = client.post('/api/games/my_game/players/')
@@ -43,7 +43,7 @@ class TestPlayer:
         response = client.get('/api/games/my_game/players/red')
         assert 200 == response.status_code
         assert {'color': "red",
-                'phase': 0} == load(response)
+                'turn': 0} == load(response)
 
     def test_get_missing_player(self, client, game):
         response = client.get('/api/games/my_game/players/red')
@@ -59,8 +59,8 @@ class TestPlayerAuth:
         assert 200 == response.status_code
         assert {'color': "red",
                 'code': 'my_code',
-                'phases': GAMES + "my_game/players/red-my_code/phases/",
-                'phase': 0} == load(response)
+                'turns': GAMES + "my_game/players/red-my_code/turns/",
+                'turn': 0} == load(response)
 
     def test_get_existing_player_with_bad_auth(self, client, player):
         response = client.get('/api/games/my_game/players/red-invalid')

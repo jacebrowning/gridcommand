@@ -1,4 +1,4 @@
-"""API view for phases."""
+"""API view for turns."""
 # pylint: disable=R0913
 
 from flask import request
@@ -10,34 +10,34 @@ from . import app
 from .player import PLAYERS_AUTH_URL
 
 
-PHASES_LIST_URL = PLAYERS_AUTH_URL + "/phases/"
-PHASES_DETAIL_URL = PHASES_LIST_URL + "<int:number>"
+TUNRS_LIST_URL = PLAYERS_AUTH_URL + "/turns/"
+TURNS_DETAIL_URL = TUNRS_LIST_URL + "<int:number>"
 
 
-@app.route(PHASES_LIST_URL, methods=['GET'])
-def phases_list(key, color, code):
-    """List phases for a player."""
+@app.route(TUNRS_LIST_URL, methods=['GET'])
+def turns_list(key, color, code):
+    """List turns for a player."""
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
 
     if request.method == 'GET':
-        return player.phases.serialize(game, player)
+        return player.turns.serialize(game, player)
 
     else:  # pragma: no cover
         assert None
 
 
-@app.route(PHASES_DETAIL_URL, methods=['GET'])
-def phases_detail(key, color, code, number):
-    """Retrieve a players's phase."""
+@app.route(TURNS_DETAIL_URL, methods=['GET'])
+def turns_detail(key, color, code, number):
+    """Retrieve a players's turn."""
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
 
     if request.method == 'GET':
-        phase = player.phases.find(number, exc=exceptions.NotFound)
-        return phase.serialize(game, player, number)
+        turn = player.turns.find(number, exc=exceptions.NotFound)
+        return turn.serialize(game, player, number)
 
     else:  # pragma: no cover
         assert None

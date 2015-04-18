@@ -4,7 +4,7 @@ from flask import url_for  # TODO: remove this import
 import yorm
 
 from ..common import logger
-from .phase import Phases
+from .turn import Turns
 
 
 log = logger(__name__)
@@ -12,16 +12,16 @@ log = logger(__name__)
 
 @yorm.attr(color=yorm.converters.String)
 @yorm.attr(code=yorm.converters.String)
-@yorm.attr(phases=Phases)
+@yorm.attr(turns=Turns)
 class Player(yorm.converters.AttributeDictionary):
 
-    """An entity that plans moves during a phase."""
+    """An entity that plans moves during a turn."""
 
     def __init__(self, color, code=''):
         super().__init__()
         self.color = color
         self.code = code
-        self.phases = Phases()
+        self.turns = Turns()
 
     def __repr__(self):
         return "<player: {}>".format(self.color)
@@ -35,12 +35,12 @@ class Player(yorm.converters.AttributeDictionary):
 
     def serialize(self, game, auth=False):
         data = {'color': self.color,
-                'phase': len(self.phases)}
-        phases_url = url_for('.phases_list', _external=True,
-                             key=game.key, color=self.color, code=self.code)
+                'turn': len(self.turns)}
+        turns_url = url_for('.turns_list', _external=True,
+                            key=game.key, color=self.color, code=self.code)
         if auth:
             data['code'] = self.code
-            data['phases'] = phases_url
+            data['turns'] = turns_url
         return data
 
 

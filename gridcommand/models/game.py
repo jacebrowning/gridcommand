@@ -8,13 +8,13 @@ import yorm
 
 from .. import common
 from .player import Players
-from .phase import Phase
+from .turn import Turn
 
 log = common.logger(__name__)
 
 
 @yorm.attr(players=Players)
-@yorm.attr(phase=yorm.converters.Integer)
+@yorm.attr(turn=yorm.converters.Integer)
 @yorm.sync("data/games/{self.key}.yml")
 class Game:
 
@@ -26,7 +26,7 @@ class Game:
     def __init__(self, key=None):
         self.key = key or self._generate_key()
         self.players = Players()
-        self.phase = 0
+        self.turn = 0
 
     def __repr__(self):
         return "<game: {}>".format(self.key)
@@ -48,23 +48,23 @@ class Game:
 
     @property
     def started(self):
-        return self.phase > 0
+        return self.turn > 0
 
     def start(self, exc=ValueError):
         if len(self.players) < 2:
             raise exc("At least 2 players are required.")
-        if self.phase == 0:
+        if self.turn == 0:
             self.advance()
 
     def advance(self):
-        log.info("starting the next phase...")
-        self.phase += 1
+        log.info("starting the next turn...")
+        self.turn += 1
 
         # TODO: rework this into a proper loop: for player in self.players
         for index in range(len(self.players)):
-            if self.players[index].phases.current:
-                self.players[index].phases.current.done = True
-            self.players[index].phases.append(Phase())
+            if self.players[index].turns.current:
+                self.players[index].turns.current.done = True
+            self.players[index].turns.append(Turn())
 
     def serialize(self):
         kwargs = {'_external': True, 'key': self.key}
@@ -73,7 +73,7 @@ class Game:
         return {'key': self.key,
                 'players': players_url,
                 'start': start_url,
-                'phase': self.phase}
+                'turn': self.turn}
 
 
 class Games(dict):
