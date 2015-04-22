@@ -68,9 +68,10 @@ class Game:
 
     def serialize(self):
         kwargs = {'_external': True, 'key': self.key}
+        game_url = url_for('.games_detail', **kwargs)
         players_url = url_for('.players_list', **kwargs)
         start_url = url_for('.games_start', **kwargs)
-        return {'key': self.key,
+        return {'uri': game_url,
                 'players': players_url,
                 'start': start_url,
                 'turn': self.turn}

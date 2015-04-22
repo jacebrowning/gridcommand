@@ -18,8 +18,7 @@ class TestPlayers:
         response = client.post('/api/games/my_game/players/',
                                data={'code': "1234"})
         assert 201 == response.status_code
-        assert {'color': "red",
-                'code': '1234',
+        assert {'uri': GAMES + "my_game/players/red-1234",
                 'turns': GAMES + "my_game/players/red-1234/turns/",
                 'turn': 0} == load(response)
 
@@ -42,7 +41,7 @@ class TestPlayer:
     def test_get_existing_player(self, client, player):
         response = client.get('/api/games/my_game/players/red')
         assert 200 == response.status_code
-        assert {'color': "red",
+        assert {'uri': GAMES + "my_game/players/red",
                 'turn': 0} == load(response)
 
     def test_get_missing_player(self, client, game):
@@ -57,8 +56,7 @@ class TestPlayerAuth:
     def test_get_existing_player(self, client, player):
         response = client.get('/api/games/my_game/players/red-my_code')
         assert 200 == response.status_code
-        assert {'color': "red",
-                'code': 'my_code',
+        assert {'uri': GAMES + "my_game/players/red-my_code",
                 'turns': GAMES + "my_game/players/red-my_code/turns/",
                 'turn': 0} == load(response)
 

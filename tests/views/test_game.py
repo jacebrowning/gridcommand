@@ -20,7 +20,7 @@ class TestGames:
     def test_post_new_game(self, client):
         response = client.post('/api/games/')
         assert 201 == response.status_code
-        assert {'key': "x",
+        assert {'uri': GAMES + "x",
                 'players': GAMES + "x/players/",
                 'start': GAMES + "x/start",
                 'turn': 0} == load(response)
@@ -31,7 +31,7 @@ class TestGame:
     def test_get_existing_game(self, client, game):
         response = client.get('/api/games/my_game')
         assert 200 == response.status_code
-        assert {'key': "my_game",
+        assert {'uri': GAMES + "my_game",
                 'players': GAMES + "my_game/players/",
                 'start': GAMES + "my_game/start",
                 'turn': 0} == load(response)

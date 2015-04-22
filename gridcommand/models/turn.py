@@ -21,10 +21,15 @@ class Turn(yorm.converters.AttributeDictionary):
         return "<turn>"
 
     def serialize(self, game, player, number):
-        moves_url = url_for('.moves_list', _external=True,
-                            key=game.key, color=player.color, code=player.code,
-                            number=number)
-        return {'moves': moves_url,
+        kwargs = {'_external': True,
+                  'key': game.key,
+                  'color': player.color,
+                  'code': player.code,
+                  'number': number}
+        turn_url = url_for('.turns_detail', **kwargs)
+        moves_url = url_for('.moves_list', **kwargs)
+        return {'uri': turn_url,
+                'moves': moves_url,
                 'done': self.done}
 
 

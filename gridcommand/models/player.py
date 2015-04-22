@@ -34,13 +34,16 @@ class Player(yorm.converters.AttributeDictionary):
             raise exc("The code '{}' is invalid.".format(code))
 
     def serialize(self, game, auth=False):
-        data = {'color': self.color,
-                'turn': len(self.turns)}
-        turns_url = url_for('.turns_list', _external=True,
-                            key=game.key, color=self.color, code=self.code)
+        data = {'turn': len(self.turns)}
+        kwargs = {'_external': True, 'key': game.key, 'color': self.color}
         if auth:
-            data['code'] = self.code
+            kwargs['code'] = self.code
+            player_url = url_for('.players_auth', **kwargs)
+            turns_url = url_for('.turns_list', **kwargs)
             data['turns'] = turns_url
+        else:
+            player_url = url_for('.players_detail', **kwargs)
+        data['uri'] = player_url
         return data
 
 
