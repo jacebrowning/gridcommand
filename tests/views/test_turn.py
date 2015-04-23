@@ -1,4 +1,4 @@
-"""Unit tests for the `api.turn` module."""
+"""Unit tests for the `views.turn` module."""
 # pylint: disable=W0613,R0201,C0103,C0111
 
 from ..conftest import load

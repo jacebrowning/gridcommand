@@ -1,4 +1,4 @@
-"""Unit tests for the `api.game` module."""
+"""Unit tests for the `views.game` module."""
 # pylint: disable=W0613,R0201,C0103,C0111
 
 from unittest.mock import patch, Mock
