@@ -59,12 +59,10 @@ class Game:
     def advance(self):
         log.info("starting the next turn...")
         self.turn += 1
-
-        # TODO: rework this into a proper loop: for player in self.players
-        for index in range(len(self.players)):
-            if self.players[index].turns.current:
-                self.players[index].turns.current.done = True
-            self.players[index].turns.append(Turn())
+        for player in self.players:
+            if player.turns.current:
+                player.turns.current.done = True
+            player.turns.append(Turn())
 
     def serialize(self):
         kwargs = {'_external': True, 'key': self.key}

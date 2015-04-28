@@ -11,7 +11,7 @@ class TestTurns:
     def test_get_all_turns(self, client, turn):
         response = client.get('/api/games/my_game/players/red-my_code/turns/')
         assert 200 == response.status_code
-        # TODO: check loaded response
+        assert [GAMES + "my_game/players/red-my_code/turns/1"] == load(response)
 
 
 class TestTurn:
