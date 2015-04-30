@@ -15,9 +15,9 @@ def main():
 
 
 def run(debug, public):
-    kwargs = {'debug': debug}
+    kwargs = dict(debug=debug)
     if public:
-        kwargs['host'] = '0.0.0.0'
+        kwargs.update(host='0.0.0.0')
 
     data.load()
 

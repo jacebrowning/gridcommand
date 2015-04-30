@@ -65,7 +65,7 @@ class Game:
             player.turns.append(Turn())
 
     def serialize(self):
-        kwargs = {'_external': True, 'key': self.key}
+        kwargs = dict(_external=True, key=self.key)
         game_url = url_for('.games_detail', **kwargs)
         players_url = url_for('.players_list', **kwargs)
         start_url = url_for('.games_start', **kwargs)

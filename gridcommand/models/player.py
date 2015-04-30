@@ -35,9 +35,9 @@ class Player(yorm.converters.AttributeDictionary):
 
     def serialize(self, game, auth=False):
         data = {'turn': len(self.turns)}
-        kwargs = {'_external': True, 'key': game.key, 'color': self.color}
+        kwargs = dict(_external=True, key=game.key, color=self.color)
         if auth:
-            kwargs['code'] = self.code
+            kwargs.update(code=self.code)
             player_url = url_for('.players_auth', **kwargs)
             turns_url = url_for('.turns_list', **kwargs)
             data['turns'] = turns_url
