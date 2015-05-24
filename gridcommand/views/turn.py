@@ -7,18 +7,19 @@ from flask.ext.api import exceptions  # pylint: disable=E0611,F0401
 from ..data import games
 
 from . import app
-from .player import PLAYERS_AUTH_URL
+from .player import PLAYERS_DETAIL_URL
 
 
-TUNRS_LIST_URL = PLAYERS_AUTH_URL + "/turns/"
+TUNRS_LIST_URL = PLAYERS_DETAIL_URL + "/turns/"
 TURNS_DETAIL_URL = TUNRS_LIST_URL + "<int:number>"
 
 
 @app.route(TUNRS_LIST_URL, methods=['GET'])
-def turns_list(key, color, code):
+def turns_list(key, color):
     """List turns for a player."""
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
+    code = request.args.get('code')
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
 
     if request.method == 'GET':
@@ -29,10 +30,11 @@ def turns_list(key, color, code):
 
 
 @app.route(TURNS_DETAIL_URL, methods=['GET'])
-def turns_detail(key, color, code, number):
+def turns_detail(key, color, number):
     """Retrieve a players's turn."""
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
+    code = request.args.get('code')
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
 
     if request.method == 'GET':

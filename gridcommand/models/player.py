@@ -38,7 +38,7 @@ class Player(yorm.converters.AttributeDictionary):
         kwargs = dict(_external=True, key=game.key, color=self.color)
         if auth:
             kwargs.update(code=self.code)
-            player_url = url_for('.players_auth', **kwargs)
+            player_url = url_for('.players_detail', **kwargs)
             turns_url = url_for('.turns_list', **kwargs)
             data['turns'] = turns_url
         else:

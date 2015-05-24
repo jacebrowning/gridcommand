@@ -15,10 +15,11 @@ MOVES_DETAIL_URL = MOVES_LIST_URL + "<int:begin>-<int:end>"
 
 
 @app.route(MOVES_LIST_URL, methods=['GET', 'POST'])
-def moves_list(key, color, code, number):
+def moves_list(key, color, number):
     """List or create moves for a player."""
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
+    code = request.args.get('code')
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
     turn = player.turns.find(number, exc=exceptions.NotFound)
 
@@ -36,10 +37,11 @@ def moves_list(key, color, code, number):
 
 
 @app.route(MOVES_DETAIL_URL, methods=['GET', 'PUT', 'DELETE'])
-def moves_detail(key, color, code, number, begin, end):
+def moves_detail(key, color, number, begin, end):
     """Retrieve, update or delete a players's move."""
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
+    code = request.args.get('code')
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
     turn = player.turns.find(number, exc=exceptions.NotFound)
 

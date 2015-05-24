@@ -12,7 +12,6 @@ from .game import GAMES_DETAIL_URL
 
 PLAYERS_LIST_URL = GAMES_DETAIL_URL + "/players/"
 PLAYERS_DETAIL_URL = PLAYERS_LIST_URL + "<string:color>"
-PLAYERS_AUTH_URL = PLAYERS_DETAIL_URL + "-<string:code>"
 
 
 @app.route(PLAYERS_LIST_URL, methods=['GET', 'POST'])
@@ -34,30 +33,25 @@ def players_list(key):
         assert None
 
 
-@app.route(PLAYERS_DETAIL_URL, methods=['GET'])
+@app.route(PLAYERS_DETAIL_URL, methods=['GET', 'DELETE'])
 def players_detail(key, color):
-    """Retrieve a player.."""
-    game = games.find(key, exc=exceptions.NotFound)
+    """Retrieve a player.
 
-    if request.method == 'GET':
-        player = game.players.find(color, exc=exceptions.NotFound)
-        return player.serialize(game)
+    With authentication (code=?), retrieve full details or delete.
 
-    else:  # pragma: no cover
-        assert None
-
-
-@app.route(PLAYERS_AUTH_URL, methods=['GET', 'DELETE'])
-def players_auth(key, color, code):
-    """Retrieve or delete an authenticated player."""
+    """
     game = games.find(key, exc=exceptions.NotFound)
     player = game.players.find(color, exc=exceptions.NotFound)
-    player.authenticate(code, exc=exceptions.AuthenticationFailed)
+    code = request.args.get('code')
+    if code:
+        player.authenticate(code, exc=exceptions.AuthenticationFailed)
 
     if request.method == 'GET':
-        return player.serialize(game, auth=True)
+        return player.serialize(game, auth=code)
 
     elif request.method == 'DELETE':
+        if not code:
+            raise exceptions.AuthenticationFailed
         game.delete_player(color, exc=exceptions.PermissionDenied)
         return '', status.HTTP_204_NO_CONTENT
 
