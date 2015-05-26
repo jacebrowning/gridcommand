@@ -1,4 +1,3 @@
 Flask ~= 0.10.1
-#Flask-API ~= 0.6.2
-git+git://github.com/tomchristie/flask-api
+Flask-API ~= 0.6.3
 YORM ~= 0.4
