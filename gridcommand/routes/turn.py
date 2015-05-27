@@ -4,8 +4,6 @@
 from flask import request
 from flask.ext.api import exceptions  # pylint: disable=E0611,F0401
 
-from ..data import games
-
 from . import app
 from .player import PLAYERS_DETAIL_URL
 

@@ -14,7 +14,6 @@ if not sys.version_info >= PYTHON_VERSION:  # pragma: no cover (manual test)
 
 try:
     from .routes import app
-    from . import data
 except (ImportError, AttributeError):  # pragma: no cover (manual test)
     import logging
     logging.exception("dependencies:")

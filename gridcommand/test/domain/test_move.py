@@ -1,7 +1,7 @@
-"""Unit tests for the `models.move` module."""
+"""Unit tests for the `domain.move` module."""
 # pylint: disable=R0201,C0103,C0111
 
-from gridcommand.models.move import Move
+from gridcommand.domain import Move
 
 
 class TestMove:

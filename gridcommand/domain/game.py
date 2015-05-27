@@ -59,19 +59,4 @@ class Game:
             player.turns.append(Turn())
 
 
-class Games(dict):
 
-    """A collection of all games in the application."""
-
-    def create(self):
-        game = Game()
-        self[game.key] = game
-        return game
-
-    def find(self, key, exc=ValueError):
-        try:
-            player = self[key]
-        except KeyError:
-            raise exc("The game '{}' does not exist.".format(key)) from None
-        else:
-            return player

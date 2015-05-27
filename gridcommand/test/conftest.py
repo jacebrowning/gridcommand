@@ -10,8 +10,7 @@ import yorm
 
 from gridcommand.common import logger
 from gridcommand import app
-from gridcommand import models
-from gridcommand import data
+from gridcommand import domain
 
 ENV = 'TEST_INTEGRATION'  # environment variable to enable integration tests
 REASON = "'{0}' variable not set".format(ENV)
@@ -41,7 +40,6 @@ def client(request):
     app.config['TESTING'] = True
     app.config['DEBUG'] = True
     test_client = app.test_client()
-    data.games.clear()
     return test_client
 
 
@@ -49,8 +47,8 @@ def client(request):
 def game():
     """Fixture to create an empty game."""
     log.info("creating an empty game...")
-    game = models.Game(GAME_KEY)
-    data.games[game.key] = game
+    game = domain.Game(GAME_KEY)
+    os.system("touch data/games/my_game.yml")
     return game
 
 
@@ -58,7 +56,7 @@ def game():
 def game_player(game):
     """Fixture to create a game with one player."""
     log.info("adding a player to a game...")
-    with patch.object(models.Players, 'COLORS', PLAYERS_COLORS):
+    with patch.object(domain.Players, 'COLORS', PLAYERS_COLORS):
         game.players.create(PLAYER_CODE)
     return game
 
@@ -66,7 +64,7 @@ def game_player(game):
 @pytest.fixture
 def game_players(game):
     """Fixture to create a game with two players."""
-    with patch.object(models.Players, 'COLORS', PLAYERS_COLORS):
+    with patch.object(domain.Players, 'COLORS', PLAYERS_COLORS):
         game.players.create(PLAYER_CODE)
         game.players.create(PLAYER_CODE)
     return game
@@ -100,7 +98,7 @@ def players(game_players):
 def turn(game_player):
     """Fixture to create a turn for a player."""
     log.info("adding a turn to a player...")
-    turn = models.Turn()
+    turn = domain.Turn()
     log.debug("appending turn...")
     game_player.players[0].turns.append(turn)
     return turn
@@ -109,8 +107,8 @@ def turn(game_player):
 @pytest.fixture
 def turns(game_player):
     """Fixture to create turns for a player."""
-    game_player.players[0].turns.append(models.Turn())
-    game_player.players[0].turns.append(models.Turn())
+    game_player.players[0].turns.append(domain.Turn())
+    game_player.players[0].turns.append(domain.Turn())
     return game_player.players[0].turns
 
 

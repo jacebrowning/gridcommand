@@ -1,9 +1,9 @@
-"""Unit tests for the `models.player` module."""
+"""Unit tests for the `domain.player` module."""
 # pylint: disable=R0201,C0103,C0111
 
 import pytest
 
-from gridcommand.models.player import Player, Players
+from gridcommand.domain import Player, Players
 
 
 class TestPlayer:

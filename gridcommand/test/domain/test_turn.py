@@ -1,9 +1,9 @@
-"""Unit tests for the `models.turn` module."""
+"""Unit tests for the `domain.turn` module."""
 # pylint: disable=R0201,C0103,C0111
 
 import pytest
 
-from gridcommand.models.turn import Turns
+from gridcommand.domain import Turns
 
 
 class TestTurn:
