@@ -1,17 +1,16 @@
 from ..domain import Game
-from ..stores import GameStore
 
 from .base import Service
 
 
 class GameService(Service):
 
-    def __init__(self, game_store=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.game_store = game_store or GameStore()
+    def __init__(self, game_store, **kwargs):
+        super().__init__(**kwargs)
+        self.game_store = game_store
 
-    def create_game(self):
-        game = Game()
+    def create_game(self, key=None):
+        game = Game(key=key)
         self.game_store.create(game)
         return game
 

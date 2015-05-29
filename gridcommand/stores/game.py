@@ -53,9 +53,35 @@ class GameModel:
 
     def __init__(self, key):
         self.key = key
+        self.players = Players()
+        self.turn = 0
 
 
-class GameStore(Store):
+class GameMemoryStore(Store):
+
+    def __init__(self):
+        self._games = {}
+
+    def create(self, game):
+        self._games[game.key] = game
+
+    def read(self, key):
+        try:
+            return self._games[key]
+        except KeyError:
+            return None
+
+    def update(self, game):
+        self._games[game.key] = game
+
+    def delete(self, game):
+        try:
+            del self._games[game.key]
+        except KeyError:
+            pass
+
+
+class GameFileStore(Store):
 
     def create(self, game):
         model = GameModel(key=game.key)
@@ -106,4 +132,3 @@ class GameStore(Store):
         path = os.path.join("data", "games", game.key + ".yml")  # TODO: move this to settings?
         if os.path.exists(path):
             os.remove(path)
-

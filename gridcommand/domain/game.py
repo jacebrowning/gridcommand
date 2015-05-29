@@ -57,6 +57,3 @@ class Game:
             if player.turns.current:
                 player.turns.current.done = True
             player.turns.append(Turn())
-
-
-

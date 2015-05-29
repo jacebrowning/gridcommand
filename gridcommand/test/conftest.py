@@ -11,6 +11,8 @@ import yorm
 from gridcommand.common import logger
 from gridcommand import app
 from gridcommand import domain
+from gridcommand import services
+from gridcommand import stores
 
 ENV = 'TEST_INTEGRATION'  # environment variable to enable integration tests
 REASON = "'{0}' variable not set".format(ENV)
@@ -21,6 +23,13 @@ PLAYERS_COLORS = ['red', 'blue']
 
 
 log = logger(__name__)
+
+
+def load(response):
+    """Convert a response's binary data (JSON) to a dictionary."""
+    text = response.data.decode('utf-8')
+    if text:
+        return json.loads(text)
 
 
 def pytest_runtest_setup(item):
@@ -34,21 +43,27 @@ def pytest_runtest_setup(item):
         yorm.settings.fake = True
 
 
+# Flask app fixtures
+
+
 @pytest.fixture
 def client(request):
     """Fixture to create a test client for the application."""
     app.config['TESTING'] = True
     app.config['DEBUG'] = True
+    app.service.game_store = stores.GameMemoryStore()
     test_client = app.test_client()
     return test_client
+
+
+# Domain model fixtures
 
 
 @pytest.fixture
 def game():
     """Fixture to create an empty game."""
     log.info("creating an empty game...")
-    game = domain.Game(GAME_KEY)
-    os.system("touch data/games/my_game.yml")
+    game = app.service.create_game(key=GAME_KEY)
     return game
 
 
@@ -112,8 +127,11 @@ def turns(game_player):
     return game_player.players[0].turns
 
 
-def load(response):
-    """Convert a response's binary data (JSON) to a dictionary."""
-    text = response.data.decode('utf-8')
-    if text:
-        return json.loads(text)
+# Service fixtures
+
+
+@pytest.fixture
+def game_service():
+    game_store = stores.GameMemoryStore()
+    service = services.GameService(game_store=game_store)
+    return service

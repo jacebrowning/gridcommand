@@ -28,7 +28,7 @@ class PlayerFormatter(Formatter):
 
     """Serializes players into dictionaries."""
 
-    def format_single(self, player):
+    def format_single(self, player, game, auth):
         data = {'turn': len(player.turns)}
         kwargs = dict(_external=True, key=game.key, color=player.color)
         if auth:
@@ -50,7 +50,7 @@ class TurnFormatter(Formatter):
 
     """Serializes turns into dictionaries."""
 
-    def format_single(self, turn):
+    def format_single(self, turn, game, player, number):
         kwargs = dict(_external=True,
                       key=game.key,
                       color=player.color,
@@ -62,7 +62,7 @@ class TurnFormatter(Formatter):
                 'moves': moves_url,
                 'done': turn.done}
 
-    def format_multiple(self, turns):
+    def format_multiple(self, turns, game, player):
         return [url_for('.turns_detail', _external=True,
                         key=game.key, color=player.color, code=player.code,
                         number=index + 1) for index in range(len(turns))]
@@ -75,7 +75,7 @@ class MoveFormatter(Formatter):
     def format_single(self, move):
         return {'count': move.count}
 
-    def format_multiple(self, moves):
+    def format_multiple(self, moves, game, player):
         return [url_for('.moves_detail', _external=True,
                         key=game.key, color=player.color, code=player.code,
                         begin=move.begin, end=move.end) for move in self]

@@ -3,8 +3,6 @@
 
 import pytest
 
-from gridcommand.domain import Games
-
 
 class TestGame:
 
@@ -44,17 +42,3 @@ class TestGame:
         game_started.advance()
         assert 2 == len(game_started.players[0].turns)
         assert 2 == len(game_started.players[1].turns)
-
-
-class TestGames:
-
-    def test_find_match(self):
-        games = Games()
-        game = games.create()
-        game2 = games.find(game.key)
-        assert game is game2
-
-    def test_find_missing(self):
-        games = Games()
-        with pytest.raises(ValueError):
-            games.find('abc123')
