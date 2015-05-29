@@ -49,8 +49,7 @@ def players_detail(key, color):
         return formatter.format_single(player, game, auth=code)
 
     elif request.method == 'DELETE':
-        if not code:
-            raise exceptions.AuthenticationFailed
+        player.authenticate(code, exc=exceptions.AuthenticationFailed)
         game.delete_player(color, exc=exceptions.PermissionDenied)
         return '', status.HTTP_204_NO_CONTENT
 

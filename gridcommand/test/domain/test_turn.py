@@ -12,8 +12,16 @@ class TestTurn:
         assert not turn.done
         assert not turn.moves
 
+    def test_repr(self, turn):
+        assert "<turn>" == repr(turn)
+
 
 class TestTurns:
+
+    def test_repr(self, turns):
+        assert "<2 turns>" == repr(turns)
+        turns.pop()
+        assert "<1 turn>" == repr(turns)
 
     def test_current(self, turns):
         assert turns.current

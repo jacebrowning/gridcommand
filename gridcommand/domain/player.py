@@ -24,8 +24,10 @@ class Player:
         return self.color == other.color
 
     def authenticate(self, code, exc=ValueError):
+        if not code:
+            raise exc("Player code required.")
         if code != self.code:
-            raise exc("The code '{}' is invalid.".format(code))
+            raise exc("Player code '{}' is invalid.".format(code))
 
 
 class Players(list):

@@ -11,7 +11,7 @@ else:
     notify = Notifier.notify
 
 
-watch_paths = ['ddd/', 'tests/']
+watch_paths = ['gridcommand/', 'tests/']
 
 
 @select_runnable('python_tests')

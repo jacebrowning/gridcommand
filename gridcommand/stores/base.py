@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 
-class Store(metaclass=ABCMeta):
+class Store(metaclass=ABCMeta):  # pragma: no cover (abstract)
 
     @abstractmethod
     def create(self, item):

@@ -8,6 +8,9 @@ from gridcommand.domain import Player, Players
 
 class TestPlayer:
 
+    def test_repr(self, player):
+        assert "<player: red>" == repr(player)
+
     def test_eq_if_colors_match(self):
         assert Player('red') == Player('red')
         assert Player('red') != Player('blue')
@@ -19,6 +22,11 @@ class TestPlayer:
 
 
 class TestPlayers:
+
+    def test_repr(self, players):
+        assert "<2 players>" == repr(players)
+        players.pop()
+        assert "<1 player>" == repr(players)
 
     def test_create_unique_colors(self):
         players = Players()

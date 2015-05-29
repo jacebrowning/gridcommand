@@ -6,6 +6,9 @@ import pytest
 
 class TestGame:
 
+    def test_repr(self, game):
+        assert "<game: my_game>" == repr(game)
+
     def test_start_triggers_turn_1(self, game_players):
         assert 0 == game_players.turn
         game_players.start()
