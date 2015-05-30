@@ -26,7 +26,8 @@ def players_list(key):
         if not code:
             raise exceptions.ParseError("Player 'code' must be specified.")
         player = game.create_player(code, exc=exceptions.PermissionDenied)
-        return formatter.format_single(player, game, auth=code), status.HTTP_201_CREATED
+        return formatter.format_single(player, game, auth=code), \
+            status.HTTP_201_CREATED
 
     else:  # pragma: no cover
         assert None

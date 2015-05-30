@@ -11,9 +11,9 @@ ifndef TRAVIS
 endif
 
 # Test settings
-UNIT_TEST_COVERAGE := 76
-INTEGRATION_TEST_COVERAGE := 45
-COMBINED_TEST_COVERAGE := 76
+UNIT_TEST_COVERAGE := 83
+INTEGRATION_TEST_COVERAGE := 44
+COMBINED_TEST_COVERAGE := 83
 
 # System paths
 PLATFORM := $(shell python -c 'import sys; print(sys.platform)')
@@ -191,7 +191,7 @@ pep8: depends-ci
 pep257: depends-ci
 # D102: docstring missing (checked by PyLint)
 # D202: No blank lines allowed *after* function docstring
-	$(PEP257) $(PACKAGE) --ignore=D102,D202
+	$(PEP257) $(PACKAGE) --ignore=D100,D101,D102,D202
 
 .PHONY: pylint
 pylint: depends-ci

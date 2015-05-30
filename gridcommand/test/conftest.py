@@ -1,12 +1,10 @@
 """Configuration for pytest."""
 # pylint: disable=W0613,W0621
 
-import os
 import json
 from unittest.mock import patch
 
 import pytest
-import yorm
 
 from gridcommand.common import logger
 from gridcommand import app
@@ -30,17 +28,6 @@ def load(response):
     text = response.data.decode('utf-8')
     if text:
         return json.loads(text)
-
-
-def pytest_runtest_setup(item):
-    """pytest setup."""
-    if 'integration' in item.keywords:
-        if not os.getenv(ENV):
-            pytest.skip(REASON)
-        else:
-            yorm.settings.fake = False
-    else:
-        yorm.settings.fake = True
 
 
 # Flask app fixtures
@@ -132,6 +119,7 @@ def turns(game_player):
 
 @pytest.fixture
 def game_service():
+    """Fixture to create a game service with memory store."""
     game_store = stores.GameMemoryStore()
     service = services.GameService(game_store=game_store)
     return service

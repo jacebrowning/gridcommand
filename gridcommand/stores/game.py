@@ -66,10 +66,13 @@ class GameMemoryStore(Store):
         self._games[game.key] = game
 
     def read(self, key):
-        try:
-            return self._games[key]
-        except KeyError:
-            return None
+        if key:
+            try:
+                return self._games[key]
+            except KeyError:
+                return None
+        else:
+            return list(self._games.values())
 
     def update(self, game):
         self._games[game.key] = game

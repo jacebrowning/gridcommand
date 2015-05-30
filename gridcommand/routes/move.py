@@ -23,7 +23,7 @@ def moves_list(key, color, number):
     turn = player.turns.find(number, exc=exceptions.NotFound)
 
     if request.method == 'GET':
-        return formatter.format_multiple(turn.moves, game, player)
+        return formatter.format_multiple(game, player)
 
     elif request.method == 'POST':
         move = turn.moves.set(request.data.get('begin'),

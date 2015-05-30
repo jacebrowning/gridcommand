@@ -25,6 +25,12 @@ class Game:
     def __repr__(self):
         return "<game: {}>".format(self.key)
 
+    def __eq__(self, other):
+        return self.key == other.key
+
+    def __ne__(self, other):
+        return not self == other
+
     @staticmethod
     def _generate_key():
         return ''.join(random.choice(Game.KEY_CHARS)

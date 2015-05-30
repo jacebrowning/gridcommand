@@ -5,6 +5,10 @@ from flask import url_for
 from .base import Formatter
 
 
+# TODO: figure out a better way to serialize objects without parent objects
+# pylint: disable=W0221
+
+
 class GameFormatter(Formatter):
 
     """Serializes games into dictionaries."""
@@ -75,7 +79,7 @@ class MoveFormatter(Formatter):
     def format_single(self, move):
         return {'count': move.count}
 
-    def format_multiple(self, moves, game, player):
+    def format_multiple(self, game, player):
         return [url_for('.moves_detail', _external=True,
                         key=game.key, color=player.color, code=player.code,
                         begin=move.begin, end=move.end) for move in self]
