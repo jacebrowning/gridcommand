@@ -3,11 +3,20 @@
 
 import pytest
 
+from gridcommand.domain import Game
+
 
 class TestGame:
 
     def test_repr(self, game):
         assert "<game: my_game>" == repr(game)
+
+    def test_eq(self):
+        game1 = Game('abc123')
+        game2 = Game('abc123')
+        game3 = Game('def456')
+        assert game1 == game2
+        assert game1 != game3
 
     def test_start_triggers_turn_1(self, game_players):
         assert 0 == game_players.turn

@@ -5,11 +5,23 @@
 from .conftest import load
 
 
-def test_create_game(client):
+def test_create_game_and_players(client):
+
+    # Create a game
 
     response = client.post('/api/games/')
     assert 201 == response.status_code
-    url = load(response)['uri']
+    game_url = load(response)['uri']
 
-    response = client.get(url)
+    response = client.get(game_url)
     assert 200 == response.status_code
+    players_url = load(response)['players']
+
+    # Create two players
+
+    response = client.post(players_url, data={'code': '1'})
+    assert 201 == response.status_code
+    player1_url = load(response)['uri']
+    response = client.post(players_url, data={'code': '2'})
+    assert 201 == response.status_code
+    player2_url = load(response)['uri']

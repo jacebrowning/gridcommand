@@ -1,5 +1,6 @@
 """Configuration for pytest."""
 # pylint: disable=W0613,W0621
+
 import json
 
 import pytest

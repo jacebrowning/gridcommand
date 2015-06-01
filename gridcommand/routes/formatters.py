@@ -79,10 +79,10 @@ class MoveFormatter(Formatter):
     def format_single(self, move):
         return {'count': move.count}
 
-    def format_multiple(self, game, player):
+    def format_multiple(self, moves, game, player):
         return [url_for('.moves_detail', _external=True,
                         key=game.key, color=player.color, code=player.code,
-                        begin=move.begin, end=move.end) for move in self]
+                        begin=move.begin, end=move.end) for move in moves]
 
 
 game_formatter = GameFormatter()

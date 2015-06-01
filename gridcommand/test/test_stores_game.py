@@ -20,6 +20,9 @@ class TestGameStore:
         store = store_class()
 
         game = domain.Game()
+        game.players.append(domain.Player('red'))
+        game.players[0].turns.append(domain.Turn())
+        game.players[0].turns[0].moves.append(domain.Move(0, 0))
         store.create(game)
 
         game2 = store.read(game.key)
