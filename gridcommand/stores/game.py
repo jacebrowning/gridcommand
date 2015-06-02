@@ -25,7 +25,10 @@ class MovesFileModel(yorm.converters.SortedList):
 @yorm.attr(moves=MovesFileModel)
 @yorm.attr(done=yorm.converters.Boolean)
 class TurnFileModel(yorm.converters.AttributeDictionary):
-    pass
+
+    def __init__(self):
+        self.moves = []
+        self.done = False
 
 
 @yorm.attr(all=TurnFileModel)
@@ -37,7 +40,11 @@ class TurnsFileModel(yorm.converters.List):
 @yorm.attr(code=yorm.converters.String)
 @yorm.attr(turns=TurnsFileModel)
 class PlayerFileModel(yorm.converters.AttributeDictionary):
-    pass
+
+    def __init__(self, color, code):
+        self.color = color
+        self.code = code
+        self.turns = []
 
 
 @yorm.attr(all=PlayerFileModel)
@@ -56,7 +63,24 @@ class GameFileModel:
         self.turn = 0
 
     def from_domain(self, game):
-        self.players = game.players
+        for player in game.players:
+            player_model = PlayerFileModel(color=player.color,
+                                           code=player.code)
+
+            for turn in player.turns:
+                turn_model = TurnFileModel()
+
+                for move in turn.moves:
+                    move_model = MoveFileModel(begin=move.begin,
+                                               end=move.end,
+                                               count=move.count)
+
+                    turn_model.moves.append(move_model)
+
+                player_model.turns.append(turn_model)
+
+            self.players.append(player_model)
+
         self.turn = game.turn
 
     def to_domain(self):

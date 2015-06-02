@@ -19,7 +19,7 @@ class TestGameStore:
     def test_create_and_read(self, store_class):
         store = store_class()
 
-        game = domain.Game()
+        game = domain.Game('test_game')
         game.players.append(domain.Player('red'))
         game.players[0].turns.append(domain.Turn())
         game.players[0].turns[0].moves.append(domain.Move(0, 0))
@@ -27,6 +27,7 @@ class TestGameStore:
 
         game2 = store.read(game.key)
         assert game == game2
+        assert game2.players[0].turns[0].moves[0].begin == 0
 
     def test_read_single_unknown(self, store_class):
         store = store_class()

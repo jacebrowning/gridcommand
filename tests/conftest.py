@@ -2,6 +2,7 @@
 # pylint: disable=W0613,W0621
 
 import json
+import logging
 
 import pytest
 
@@ -16,7 +17,11 @@ def load(response):
     """Convert a response's binary data (JSON) to a dictionary."""
     text = response.data.decode('utf-8')
     if text:
-        return json.loads(text)
+        data = json.loads(text)
+    else:
+        data = None
+    logging.debug("response: %r", data)
+    return data
 
 
 @pytest.fixture

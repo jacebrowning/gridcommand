@@ -5,6 +5,7 @@ class Exceptions:
 
     duplicate = ValueError
     missing = KeyError
+    invalid = ValueError
 
 
 class Service(metaclass=ABCMeta):

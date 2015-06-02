@@ -20,3 +20,6 @@ class GameService(Service):
             msg = "The game '{}' does not exist.".format(key)
             raise self.exceptions.missing(msg)
         return game
+
+    def create_player(self, game, code):
+        raise NotImplementedError("TODO: implement method")

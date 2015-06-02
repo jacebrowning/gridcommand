@@ -12,9 +12,6 @@ from gridcommand import domain
 from gridcommand import services
 from gridcommand import stores
 
-ENV = 'TEST_INTEGRATION'  # environment variable to enable integration tests
-REASON = "'{0}' variable not set".format(ENV)
-
 GAME_KEY = 'my_game'
 PLAYER_CODE = 'my_code'
 PLAYERS_COLORS = ['red', 'blue']

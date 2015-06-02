@@ -23,6 +23,7 @@ def players_list(key):
 
     elif request.method == 'POST':
         code = str(request.data.get('code', ''))
+        # TODO: replace with a service call
         if not code:
             raise exceptions.ParseError("Player 'code' must be specified.")
         player = game.create_player(code, exc=exceptions.PermissionDenied)
