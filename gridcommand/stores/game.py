@@ -13,100 +13,57 @@ log = common.logger(__name__)
 @yorm.attr(begin=yorm.converters.Integer)
 @yorm.attr(end=yorm.converters.Integer)
 @yorm.attr(count=yorm.converters.Integer)
-class MoveFileModel(yorm.converters.AttributeDictionary):
+class MoveFileModel(yorm.converters.AttributeDictionary, domain.Move):
     pass
 
 
 @yorm.attr(all=MoveFileModel)
-class MovesFileModel(yorm.converters.SortedList):
+class MovesFileModel(yorm.converters.SortedList, domain.Moves):
     pass
 
 
 @yorm.attr(moves=MovesFileModel)
 @yorm.attr(done=yorm.converters.Boolean)
-class TurnFileModel(yorm.converters.AttributeDictionary):
+class TurnFileModel(yorm.converters.AttributeDictionary, domain.Turn):
 
     def __init__(self):
+        super().__init__()
         self.moves = []
         self.done = False
 
 
 @yorm.attr(all=TurnFileModel)
-class TurnsFileModel(yorm.converters.List):
+class TurnsFileModel(yorm.converters.List, domain.Turns):
     pass
 
 
 @yorm.attr(color=yorm.converters.String)
 @yorm.attr(code=yorm.converters.String)
 @yorm.attr(turns=TurnsFileModel)
-class PlayerFileModel(yorm.converters.AttributeDictionary):
+class PlayerFileModel(yorm.converters.AttributeDictionary, domain.Player):
 
     def __init__(self, color, code):
+        super().__init__()
         self.color = color
         self.code = code
         self.turns = []
 
 
 @yorm.attr(all=PlayerFileModel)
-class PlayersFileModel(yorm.converters.List):
+class PlayersFileModel(yorm.converters.List, domain.Players):
     pass
 
 
 @yorm.attr(players=PlayersFileModel)
 @yorm.attr(turn=yorm.converters.Integer)
-@yorm.sync("data/games/{self.key}.yml")
-class GameFileModel:
+@yorm.sync("data/games/{self.key}.yml", auto=False)
+class GameFileModel(domain.Game):
 
-    def __init__(self, key):
+    def __init__(self, key, players=None, turn=0):
+        super().__init__()
         self.key = key
-        self.players = PlayersFileModel()
-        self.turn = 0
-
-    def from_domain(self, game):
-        for player in game.players:
-            player_model = PlayerFileModel(color=player.color,
-                                           code=player.code)
-
-            for turn in player.turns:
-                turn_model = TurnFileModel()
-
-                for move in turn.moves:
-                    move_model = MoveFileModel(begin=move.begin,
-                                               end=move.end,
-                                               count=move.count)
-
-                    turn_model.moves.append(move_model)
-
-                player_model.turns.append(turn_model)
-
-            self.players.append(player_model)
-
-        self.turn = game.turn
-
-    def to_domain(self):
-        game = domain.Game(key=self.key)
-
-        for player_model in self.players:
-            player = domain.Player(color=player_model.color,
-                                   code=player_model.code)
-
-            for turn_model in player_model.turns:
-                turn = domain.Turn()
-
-                for move_model in turn_model.moves:
-                    move = domain.Move(begin=move_model.begin,
-                                       end=move_model.end,
-                                       count=move_model.count)
-
-                    turn.moves.append(move)
-
-                player.turns.append(turn)
-
-            game.players.append(player)
-
-        game.turn = self.turn
-
-        return game
+        self.players = players or PlayersFileModel()
+        self.turn = turn
 
 
 class GameMemoryStore(Store):
@@ -139,8 +96,12 @@ class GameMemoryStore(Store):
 class GameFileStore(Store):
 
     def create(self, game):
-        model = GameFileModel(key=game.key)
-        model.from_domain(game)
+        path = "data/games/{}.yml".format(game.key)
+        attrs = dict(players=PlayersFileModel,
+                     turn=yorm.converters.Integer)
+        print(game.players)
+        yorm.sync(game, path, attrs, auto=False)
+        yorm.update_file(game)
 
     def read(self, key):
         if key:
@@ -149,8 +110,8 @@ class GameFileStore(Store):
             if not os.path.exists(path):
                 return None
 
-            model = GameFileModel(key)
-            game = model.to_domain()
+            game = GameFileModel(key)
+            yorm.update_object(game)
 
             return game
         else:
@@ -161,8 +122,8 @@ class GameFileStore(Store):
                 for filename in os.listdir(path):
                     key = filename.split('.')[0]
 
-                    model = GameFileModel(key)
-                    game = model.to_domain()
+                    game = GameFileModel(key)
+                    yorm.update_object(game)
 
                     games.append(game)
 
@@ -172,8 +133,7 @@ class GameFileStore(Store):
         path = os.path.join("data", "games", game.key + ".yml")  # TODO: move this to settings?
         assert os.path.exists(path)
 
-        model = GameFileModel(game.key)
-        model.from_domain(game)
+        yorm.update_file(game)
 
     def delete(self, game):
         path = os.path.join("data", "games", game.key + ".yml")  # TODO: move this to settings?

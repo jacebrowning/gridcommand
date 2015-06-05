@@ -27,6 +27,8 @@ def players_list(key):
         if not code:
             raise exceptions.ParseError("Player 'code' must be specified.")
         player = game.create_player(code, exc=exceptions.PermissionDenied)
+        # TODO: move this to the service
+        app.service.game_store.update(game)
         return formatter.format_single(player, game, auth=code), \
             status.HTTP_201_CREATED
 

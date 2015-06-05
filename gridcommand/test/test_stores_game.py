@@ -2,6 +2,7 @@
 
 import os
 import tempfile
+import logging
 
 import pytest
 
@@ -20,13 +21,19 @@ class TestGameStore:
         store = store_class()
 
         game = domain.Game('test_game')
+        game.turn = 3
         game.players.append(domain.Player('red'))
         game.players[0].turns.append(domain.Turn())
         game.players[0].turns[0].moves.append(domain.Move(0, 0))
+        logging.info("creating game...")
         store.create(game)
 
+        logging.info("reading game...")
         game2 = store.read(game.key)
         assert game == game2
+        assert game2.turn == 3
+        assert game2.players[0].color == 'red'
+        assert game2.players[0].turns[0].done is False
         assert game2.players[0].turns[0].moves[0].begin == 0
 
     def test_read_single_unknown(self, store_class):
@@ -61,6 +68,7 @@ class TestGameStore:
         store.create(game)
 
         game.turn = 42
+        logging.info("updating game...")
         store.update(game)
 
         game2 = store.read(game.key)

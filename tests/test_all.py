@@ -41,7 +41,8 @@ def test_create_game_and_players(client):
     player_2_url = load(response)['uri']
 
     response = client.get(player_1_url)
-    assert  0 ==  load(response)['turn']
+    assert 200 == response.status_code
+    turn = load(response)['turn']
 
     # Start the game
 
