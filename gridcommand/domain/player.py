@@ -1,8 +1,5 @@
 """Classes representing players in a game."""
 
-from flask import url_for  # TODO: remove this import
-import yorm
-
 from ..common import logger
 from .turn import Turns
 
@@ -10,10 +7,7 @@ from .turn import Turns
 log = logger(__name__)
 
 
-@yorm.attr(color=yorm.converters.String)
-@yorm.attr(code=yorm.converters.String)
-@yorm.attr(turns=Turns)
-class Player(yorm.converters.AttributeDictionary):
+class Player:
 
     """An entity that plans moves during a turn."""
 
@@ -30,25 +24,13 @@ class Player(yorm.converters.AttributeDictionary):
         return self.color == other.color
 
     def authenticate(self, code, exc=ValueError):
+        if not code:
+            raise exc("Player code required.")
         if code != self.code:
-            raise exc("The code '{}' is invalid.".format(code))
-
-    def serialize(self, game, auth=False):
-        data = {'turn': len(self.turns)}
-        kwargs = dict(_external=True, key=game.key, color=self.color)
-        if auth:
-            kwargs.update(code=self.code)
-            player_url = url_for('.players_detail', **kwargs)
-            turns_url = url_for('.turns_list', **kwargs)
-            data['turns'] = turns_url
-        else:
-            player_url = url_for('.players_detail', **kwargs)
-        data['uri'] = player_url
-        return data
+            raise exc("Player code '{}' is invalid.".format(code))
 
 
-@yorm.attr(all=Player)
-class Players(yorm.converters.List):
+class Players(list):
 
     """A collection players in a game."""
 
@@ -69,10 +51,6 @@ class Players(yorm.converters.List):
     @property
     def maximum(self):
         return len(self.COLORS)
-
-    def serialize(self, game):
-        return [url_for('.players_detail', _external=True,
-                        key=game.key, color=player.color) for player in self]
 
     def create(self, code='', exc=RuntimeError):
         log.info("creating player with code %r...", code)

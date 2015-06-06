@@ -3,9 +3,6 @@
 import string
 import random
 
-from flask import url_for  # TODO: remove this import
-import yorm
-
 from .. import common
 from .player import Players
 from .turn import Turn
@@ -13,9 +10,6 @@ from .turn import Turn
 log = common.logger(__name__)
 
 
-@yorm.attr(players=Players)
-@yorm.attr(turn=yorm.converters.Integer)
-@yorm.sync("data/games/{self.key}.yml")
 class Game:
 
     """An individual game instance."""
@@ -30,6 +24,12 @@ class Game:
 
     def __repr__(self):
         return "<game: {}>".format(self.key)
+
+    def __eq__(self, other):
+        return self.key == other.key
+
+    def __ne__(self, other):
+        return not self == other
 
     @staticmethod
     def _generate_key():
@@ -63,35 +63,3 @@ class Game:
             if player.turns.current:
                 player.turns.current.done = True
             player.turns.append(Turn())
-
-    def serialize(self):
-        kwargs = dict(_external=True, key=self.key)
-        game_url = url_for('.games_detail', **kwargs)
-        players_url = url_for('.players_list', **kwargs)
-        start_url = url_for('.games_start', **kwargs)
-        return {'uri': game_url,
-                'players': players_url,
-                'start': start_url,
-                'turn': self.turn}
-
-
-class Games(dict):
-
-    """A collection of all games in the application."""
-
-    def serialize(self):
-        return [url_for('.games_detail',
-                        _external=True, key=key) for key in self]
-
-    def create(self):
-        game = Game()
-        self[game.key] = game
-        return game
-
-    def find(self, key, exc=ValueError):
-        try:
-            player = self[key]
-        except KeyError:
-            raise exc("The game '{}' does not exist.".format(key)) from None
-        else:
-            return player

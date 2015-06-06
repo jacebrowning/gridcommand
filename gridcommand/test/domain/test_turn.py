@@ -1,9 +1,9 @@
-"""Unit tests for the `models.turn` module."""
+"""Unit tests for the `domain.turn` module."""
 # pylint: disable=R0201,C0103,C0111
 
 import pytest
 
-from gridcommand.models.turn import Turns
+from gridcommand.domain import Turns
 
 
 class TestTurn:
@@ -12,8 +12,16 @@ class TestTurn:
         assert not turn.done
         assert not turn.moves
 
+    def test_repr(self, turn):
+        assert "<turn>" == repr(turn)
+
 
 class TestTurns:
+
+    def test_repr(self, turns):
+        assert "<2 turns>" == repr(turns)
+        turns.pop()
+        assert "<1 turn>" == repr(turns)
 
     def test_current(self, turns):
         assert turns.current

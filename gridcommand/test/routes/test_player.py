@@ -50,6 +50,13 @@ class TestPlayer:
         assert {'message':
                 "The player 'red' does not exist."} == load(response)
 
+    def test_delete_player(self, client, player):
+        response = client.delete('/api/games/my_game/players/red')
+        assert 401 == response.status_code
+        assert load(response) == {
+            'message': "Player code required.",
+        }
+
 
 class TestPlayerWithAuth:
 
@@ -63,7 +70,9 @@ class TestPlayerWithAuth:
     def test_get_existing_player_with_bad_auth(self, client, player):
         response = client.get('/api/games/my_game/players/red?code=invalid')
         assert 401 == response.status_code
-        assert {'message': "The code 'invalid' is invalid."}
+        assert {
+            'message': "Player code 'invalid' is invalid."
+        } == load(response)
 
     def test_delete_player(self, client, player):
         response = client.delete('/api/games/my_game/players/red?code=my_code')

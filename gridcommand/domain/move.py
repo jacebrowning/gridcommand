@@ -1,13 +1,7 @@
 """Classes representing player's moves."""
 
-from flask import url_for  # TODO: remove this import
-import yorm
 
-
-@yorm.attr(begin=yorm.converters.Integer)
-@yorm.attr(end=yorm.converters.Integer)
-@yorm.attr(count=yorm.converters.Integer)
-class Move(yorm.converters.AttributeDictionary):
+class Move:
 
     """A planned transfer of tokens from one cell to another."""
 
@@ -32,22 +26,13 @@ class Move(yorm.converters.AttributeDictionary):
             return False
         return self.end < other.end
 
-    def serialize(self):
-        return {'count': self.count}
 
-
-@yorm.attr(all=Move)
-class Moves(yorm.converters.SortedList):
+class Moves(list):
 
     """A collection of moves for a player."""
 
     def __repr__(self):
         return "<{} move{}>".format(len(self), "" if len(self) == 1 else "s")
-
-    def serialize(self, game, player):
-        return [url_for('.moves_detail', _external=True,
-                        key=game.key, color=player.color, code=player.code,
-                        begin=move.begin, end=move.end) for move in self]
 
     def get(self, begin, end):
         move = Move(begin, end)

@@ -4,7 +4,7 @@
 
 import sys
 
-from gridcommand import app, data
+from gridcommand import app
 
 
 def main():
@@ -18,8 +18,6 @@ def run(debug, public):
     kwargs = dict(debug=debug)
     if public:
         kwargs.update(host='0.0.0.0')
-
-    data.load()
 
     app.run(**kwargs)
 

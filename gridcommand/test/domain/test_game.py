@@ -1,12 +1,22 @@
-"""Unit tests for the `models.game` module."""
+"""Unit tests for the `domain.game` module."""
 # pylint: disable=R0201,C0103,C0111
 
 import pytest
 
-from gridcommand.models.game import Games
+from gridcommand.domain import Game
 
 
 class TestGame:
+
+    def test_repr(self, game):
+        assert "<game: my_game>" == repr(game)
+
+    def test_eq(self):
+        game1 = Game('abc123')
+        game2 = Game('abc123')
+        game3 = Game('def456')
+        assert game1 == game2
+        assert game1 != game3
 
     def test_start_triggers_turn_1(self, game_players):
         assert 0 == game_players.turn
@@ -44,17 +54,3 @@ class TestGame:
         game_started.advance()
         assert 2 == len(game_started.players[0].turns)
         assert 2 == len(game_started.players[1].turns)
-
-
-class TestGames:
-
-    def test_find_match(self):
-        games = Games()
-        game = games.create()
-        game2 = games.find(game.key)
-        assert game is game2
-
-    def test_find_missing(self):
-        games = Games()
-        with pytest.raises(ValueError):
-            games.find('abc123')

@@ -1,38 +1,27 @@
 """Configuration for pytest."""
 # pylint: disable=W0613,W0621
 
-import os
 import json
-from unittest.mock import patch
+import logging
 
 import pytest
-import yorm
 
 from gridcommand.common import logger
 from gridcommand import app
-from gridcommand import models
-from gridcommand import data
-
-ENV = 'TEST_INTEGRATION'  # environment variable to enable integration tests
-REASON = "'{0}' variable not set".format(ENV)
-
-GAME_KEY = 'my_game'
-PLAYER_CODE = 'my_code'
-PLAYERS_COLORS = ['red', 'blue']
 
 
 log = logger(__name__)
 
 
-def pytest_runtest_setup(item):
-    """pytest setup."""
-    if 'integration' in item.keywords:
-        if not os.getenv(ENV):
-            pytest.skip(REASON)
-        else:
-            yorm.settings.fake = False
+def load(response):
+    """Convert a response's binary data (JSON) to a dictionary."""
+    text = response.data.decode('utf-8')
+    if text:
+        data = json.loads(text)
     else:
-        yorm.settings.fake = True
+        data = None
+    logging.debug("response: %r", data)
+    return data
 
 
 @pytest.fixture
@@ -41,81 +30,4 @@ def client(request):
     app.config['TESTING'] = True
     app.config['DEBUG'] = True
     test_client = app.test_client()
-    data.games.clear()
     return test_client
-
-
-@pytest.fixture
-def game():
-    """Fixture to create an empty game."""
-    log.info("creating an empty game...")
-    game = models.Game(GAME_KEY)
-    data.games[game.key] = game
-    return game
-
-
-@pytest.fixture
-def game_player(game):
-    """Fixture to create a game with one player."""
-    log.info("adding a player to a game...")
-    with patch.object(models.Players, 'COLORS', PLAYERS_COLORS):
-        game.players.create(PLAYER_CODE)
-    return game
-
-
-@pytest.fixture
-def game_players(game):
-    """Fixture to create a game with two players."""
-    with patch.object(models.Players, 'COLORS', PLAYERS_COLORS):
-        game.players.create(PLAYER_CODE)
-        game.players.create(PLAYER_CODE)
-    return game
-
-
-@pytest.fixture
-def game_started(game):
-    """Fixture to create a started game."""
-    game.players.create(PLAYER_CODE)
-    game.players.create(PLAYER_CODE)
-    game.start()
-    return game
-
-
-@pytest.fixture
-def player(game):
-    """Fixture to create a player for a game."""
-    log.info("adding a player to a game...")
-    player = game.players.create(PLAYER_CODE)
-    return player
-
-
-@pytest.fixture
-def players(game_players):
-    """Fixture to create two players for a game."""
-    assert len(game_players.players) == 2
-    return game_players.players
-
-
-@pytest.fixture
-def turn(game_player):
-    """Fixture to create a turn for a player."""
-    log.info("adding a turn to a player...")
-    turn = models.Turn()
-    log.debug("appending turn...")
-    game_player.players[0].turns.append(turn)
-    return turn
-
-
-@pytest.fixture
-def turns(game_player):
-    """Fixture to create turns for a player."""
-    game_player.players[0].turns.append(models.Turn())
-    game_player.players[0].turns.append(models.Turn())
-    return game_player.players[0].turns
-
-
-def load(response):
-    """Convert a response's binary data (JSON) to a dictionary."""
-    text = response.data.decode('utf-8')
-    if text:
-        return json.loads(text)

@@ -13,8 +13,7 @@ if not sys.version_info >= PYTHON_VERSION:  # pragma: no cover (manual test)
     exit("Python {}.{}+ is required.".format(*PYTHON_VERSION))
 
 try:
-    from .views import app
-    from . import data
+    from .routes import app
 except (ImportError, AttributeError):  # pragma: no cover (manual test)
     import logging
     logging.exception("dependencies:")

@@ -16,7 +16,7 @@ class TestGames:
         assert {'message':
                 "Games list is hidden."} == load(response)
 
-    @patch('gridcommand.models.game.Game._generate_key', Mock(return_value='x'))
+    @patch('gridcommand.domain.game.Game._generate_key', Mock(return_value='x'))
     def test_post_new_game(self, client):
         response = client.post('/api/games/')
         assert 201 == response.status_code

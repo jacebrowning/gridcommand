@@ -4,10 +4,9 @@
 from flask import request
 from flask.ext.api import status, exceptions  # pylint: disable=E0611,F0401
 
-from ..data import games
-
 from . import app
 from .game import GAMES_DETAIL_URL
+from .formatters import player_formatter as formatter
 
 
 PLAYERS_LIST_URL = GAMES_DETAIL_URL + "/players/"
@@ -17,17 +16,16 @@ PLAYERS_DETAIL_URL = PLAYERS_LIST_URL + "<string:color>"
 @app.route(PLAYERS_LIST_URL, methods=['GET', 'POST'])
 def players_list(key):
     """List or create players."""
-    game = games.find(key, exc=exceptions.NotFound)
+    game = app.service.find_game(key)
 
     if request.method == 'GET':
-        return game.players.serialize(game)
+        return formatter.format_multiple(game.players, game)
 
     elif request.method == 'POST':
         code = str(request.data.get('code', ''))
-        if not code:
-            raise exceptions.ParseError("Player 'code' must be specified.")
-        player = game.create_player(code, exc=exceptions.PermissionDenied)
-        return player.serialize(game, auth=True), status.HTTP_201_CREATED
+        player = app.service.create_player(game, code)
+        return formatter.format_single(player, game, auth=code), \
+            status.HTTP_201_CREATED
 
     else:  # pragma: no cover
         assert None
@@ -40,19 +38,18 @@ def players_detail(key, color):
     With authentication (code=?), retrieve full details or delete.
 
     """
-    game = games.find(key, exc=exceptions.NotFound)
+    game = app.service.find_game(key)
     player = game.players.find(color, exc=exceptions.NotFound)
     code = request.args.get('code')
     if code:
         player.authenticate(code, exc=exceptions.AuthenticationFailed)
 
     if request.method == 'GET':
-        return player.serialize(game, auth=code)
+        return formatter.format_single(player, game, auth=code)
 
     elif request.method == 'DELETE':
-        if not code:
-            raise exceptions.AuthenticationFailed
-        game.delete_player(color, exc=exceptions.PermissionDenied)
+        player.authenticate(code, exc=exceptions.AuthenticationFailed)
+        app.service.delete_player(game, player)
         return '', status.HTTP_204_NO_CONTENT
 
     else:  # pragma: no cover

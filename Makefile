@@ -10,19 +10,26 @@ ifndef TRAVIS
 	PYTHON_MINOR := 4
 endif
 
-# Testake settings
+# Test settings
 UNIT_TEST_COVERAGE := 82
-INTEGRATION_TEST_COVERAGE := 82
+INTEGRATION_TEST_COVERAGE := 49
+COMBINED_TEST_COVERAGE := 82
 
 # System paths
 PLATFORM := $(shell python -c 'import sys; print(sys.platform)')
 ifneq ($(findstring win32, $(PLATFORM)), )
+	WINDOWS := 1
 	SYS_PYTHON_DIR := C:\\Python$(PYTHON_MAJOR)$(PYTHON_MINOR)
 	SYS_PYTHON := $(SYS_PYTHON_DIR)\\python.exe
 	SYS_VIRTUALENV := $(SYS_PYTHON_DIR)\\Scripts\\virtualenv.exe
 	# https://bugs.launchpad.net/virtualenv/+bug/449537
 	export TCL_LIBRARY=$(SYS_PYTHON_DIR)\\tcl\\tcl8.5
 else
+	ifneq ($(findstring darwin, $(PLATFORM)), )
+		MAC := 1
+	else
+		LINUX := 1
+	endif
 	SYS_PYTHON := python$(PYTHON_MAJOR)
 	ifdef PYTHON_MINOR
 		SYS_PYTHON := $(SYS_PYTHON).$(PYTHON_MINOR)
@@ -58,8 +65,10 @@ PYREVERSE := $(BIN)/pyreverse
 NOSE := $(BIN)/nosetests
 PYTEST := $(BIN)/py.test
 COVERAGE := $(BIN)/coverage
+SNIFFER := $(BIN)/sniffer
 
 # Flags for PHONY targets
+INSTALLED := $(ENV)/.installed
 DEPENDS_CI := $(ENV)/.depends-ci
 DEPENDS_DEV := $(ENV)/.depends-dev
 ALL := $(ENV)/.all
@@ -102,10 +111,10 @@ launch-public: env
 # Development Installation #####################################################
 
 .PHONY: env
-env: .virtualenv $(EGG_INFO)
-$(EGG_INFO): Makefile setup.py requirements.txt
-	VIRTUAL_ENV=$(ENV) $(PYTHON) setup.py develop
-	touch $(EGG_INFO)  # flag to indicate package is installed
+env: .virtualenv $(INSTALLED)
+$(INSTALLED): Makefile requirements.txt
+	VIRTUAL_ENV=$(ENV) $(PIP) install -r requirements.txt
+	touch $(INSTALLED)  # flag to indicate package is installed
 
 .PHONY: .virtualenv
 .virtualenv: $(PIP)
@@ -125,7 +134,14 @@ $(DEPENDS_CI): Makefile
 .PHONY: depends-dev
 depends-dev: env Makefile $(DEPENDS_DEV)
 $(DEPENDS_DEV): Makefile
-	$(PIP) install --upgrade pip pep8radius pygments docutils pdoc wheel
+	$(PIP) install --upgrade pip pep8radius pygments docutils pdoc wheel readme sniffer
+ifdef WINDOWS
+	$(PIP) install --upgrade pywin32
+else ifdef MAC
+	$(PIP) install --upgrade pync MacFSEvents
+else ifdef LINUX
+	$(PIP) install --upgrade pyinotify
+endif
 	touch $(DEPENDS_DEV)  # flag to indicate dependencies are installed
 
 # Documentation ################################################################
@@ -150,7 +166,7 @@ apidocs/$(PACKAGE)/index.html: $(SOURCES)
 .PHONY: uml
 uml: depends-dev docs/*.png
 docs/*.png: $(SOURCES)
-	$(PYREVERSE) $(PACKAGE) -p $(PACKAGE) -f ALL -o png --ignore test
+	$(PYREVERSE) $(PACKAGE) -p $(PACKAGE) -a 1 -f ALL -o png --ignore test
 	- mv -f classes_$(PACKAGE).png docs/classes.png
 	- mv -f packages_$(PACKAGE).png docs/packages.png
 
@@ -175,7 +191,7 @@ pep8: depends-ci
 pep257: depends-ci
 # D102: docstring missing (checked by PyLint)
 # D202: No blank lines allowed *after* function docstring
-	$(PEP257) $(PACKAGE) --ignore=D102,D202
+	$(PEP257) $(PACKAGE) --ignore=D100,D101,D102,D202
 
 .PHONY: pylint
 pylint: depends-ci
@@ -194,19 +210,33 @@ PYTEST_COV_OPTS := --cov=$(PACKAGE) --cov-report=term-missing --cov-report=html
 PYTEST_CAPTURELOG_OPTS := --log-format="%(name)-25s %(lineno)4d %(levelname)8s: %(message)s"
 PYTEST_OPTS := $(PYTEST_CORE_OPTS) $(PYTEST_COV_OPTS) $(PYTEST_CAPTURELOG_OPTS)
 
+.PHONY: test-unit
+test-unit: test
 .PHONY: test
 test: depends-ci .clean-test
-	$(PYTEST) $(PYTEST_OPTS) tests
+	$(PYTEST) $(PYTEST_OPTS) $(PACKAGE)
 	$(COVERAGE) report --fail-under=$(UNIT_TEST_COVERAGE) > /dev/null
 
-.PHONY: tests
-tests: depends-ci .clean-test
+.PHONY: test-int
+test-int: depends-ci .clean-test
 	TEST_INTEGRATION=1 $(PYTEST) $(PYTEST_OPTS) tests
 	$(COVERAGE) report --fail-under=$(INTEGRATION_TEST_COVERAGE) > /dev/null
+
+.PHONY: test-all
+test-all: tests
+.PHONY: tests
+tests: depends-ci .clean-test
+	TEST_INTEGRATION=1 $(PYTEST) $(PYTEST_OPTS) $(PACKAGE) tests
+	$(COVERAGE) report --fail-under=$(COMBINED_TEST_COVERAGE) > /dev/null
 
 .PHONY: read-coverage
 read-coverage:
 	$(OPEN) htmlcov/index.html
+
+.PHONY: watch
+watch: depends-dev
+	mkdir -p htmlcov && touch htmlcov/index.html && $(MAKE) read-coverage
+	$(SNIFFER)
 
 # Cleanup ######################################################################
 

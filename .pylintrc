@@ -8,7 +8,8 @@
 # R0401: Cyclic import
 # C0103: Invalid constant name
 # R0901: Too many ancestor
-disable=I0011,W0142,W0511,R0903,R0904,R0401,C0103,R0901
+# R0913: Too many arguments
+disable=I0011,W0142,W0511,R0903,R0904,R0401,C0103,R0901,R0913
 
 [REPORTS]
 

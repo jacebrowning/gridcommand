@@ -1,16 +1,20 @@
-"""Unit tests for the `models.move` module."""
+"""Unit tests for the `domain.move` module."""
 # pylint: disable=R0201,C0103,C0111
 
-from gridcommand.models.move import Move
+from gridcommand.domain import Move
 
 
 class TestMove:
 
     def test_init(self):
-        move = Move(1, 2)
+        move = Move(1, 2)  # TODO: create fixture
         assert 1 == move.begin
         assert 2 == move.end
         assert 0 == move.count
+
+    def test_repr(self):
+        move = Move(1, 2)  # TODO: create fixture
+        assert "<move: 0 from 1 to 2>" == repr(move)
 
     def test_eq_if_begin_and_end_both_match(self):
         assert Move(1, 2) == Move(1, 2)
