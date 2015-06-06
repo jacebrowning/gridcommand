@@ -75,13 +75,14 @@ class GameMemoryStore(Store):
         self._games[game.key] = game
 
     def read(self, key):
-        if key:
-            try:
-                return self._games[key]
-            except KeyError:
-                return None
-        else:
-            return list(self._games.values())
+        assert key
+        try:
+            return self._games[key]
+        except KeyError:
+            return None
+
+    def filter(self):
+        return list(self._games.values())
 
     def update(self, game):
         self._games[game.key] = game
@@ -104,30 +105,31 @@ class GameFileStore(Store):
         yorm.update_file(game)
 
     def read(self, key):
-        if key:
-            path = os.path.join("data", "games", key + ".yml")  # TODO: move this to settings?
+        assert key
+        path = os.path.join("data", "games", key + ".yml")  # TODO: move this to settings?
 
-            if not os.path.exists(path):
-                return None
+        if not os.path.exists(path):
+            return None
 
-            game = GameFileModel(key)
-            yorm.update_object(game)
+        game = GameFileModel(key)
+        yorm.update_object(game)
 
-            return game
-        else:
-            games = []
+        return game
 
-            path = os.path.join("data", "games")  # TODO: move this to settings?
-            if os.path.exists(path):
-                for filename in os.listdir(path):
-                    key = filename.split('.')[0]
+    def filter(self):
+        games = []
 
-                    game = GameFileModel(key)
-                    yorm.update_object(game)
+        path = os.path.join("data", "games")  # TODO: move this to settings?
+        if os.path.exists(path):
+            for filename in os.listdir(path):
+                key = filename.split('.')[0]
 
-                    games.append(game)
+                game = GameFileModel(key)
+                yorm.update_object(game)
 
-            return games
+                games.append(game)
+
+        return games
 
     def update(self, game):
         path = os.path.join("data", "games", game.key + ".yml")  # TODO: move this to settings?

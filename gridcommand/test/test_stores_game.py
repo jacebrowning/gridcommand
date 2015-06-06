@@ -50,14 +50,14 @@ class TestGameStore:
         game = domain.Game()
         store.create(game)
 
-        games = store.read(key=None)
+        games = store.filter()
 
         assert len(games) == 2
 
     def test_read_multiple_empty(self, store_class):
         store = store_class()
 
-        games = store.read(key=None)
+        games = store.filter()
 
         assert games == []
 
