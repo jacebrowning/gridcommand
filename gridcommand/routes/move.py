@@ -26,9 +26,10 @@ def moves_list(key, color, number):
         return formatter.format_multiple(turn.moves, game, player)
 
     elif request.method == 'POST':
-        move = turn.moves.set(request.data.get('begin'),
-                              request.data.get('end'),
-                              request.data.get('count'))
+        begin = request.data.get('begin'),
+        end = request.data.get('end'),
+        count = request.data.get('count')
+        move = app.service.create_move(game, turn, begin, end, count)
         return formatter.format_single(move)
 
     else:  # pragma: no cover
@@ -49,11 +50,12 @@ def moves_detail(key, color, number, begin, end):
         return formatter.format_single(move)
 
     elif request.method == 'PUT':
-        move = turn.moves.set(begin, end, request.data.get('count'))
+        count = request.data.get('count')
+        move = app.service.create_move(game, turn, begin, end, count)
         return formatter.format_single(move)
 
     elif request.method == 'DELETE':
-        turn.moves.delete(begin, end)
+        app.service.delete_move(game, turn, begin, end)
         return '', status.HTTP_204_NO_CONTENT
 
     else:  # pragma: no cover

@@ -36,3 +36,12 @@ class GameService(Service):
     def start_game(self, game):
         game.start(exc=self.exceptions.permission_denied)
         self.game_store.update(game)
+
+    def create_move(self, game, turn, begin, end, count):
+        move = turn.moves.set(begin, end, count)
+        self.game_store.update(game)
+        return move
+
+    def delete_move(self, game, turn, begin, end):
+        turn.moves.delete(begin, end)
+        self.game_store.update(game)
