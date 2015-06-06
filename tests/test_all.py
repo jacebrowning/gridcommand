@@ -30,6 +30,8 @@ def test_create_game_and_players(client):
 
     response = client.post(game_start_url)
     assert 403 == response.status_code
+    response = client.get(game_start_url)
+    assert False is load(response)['started']
 
     # Create two players
 
@@ -42,9 +44,19 @@ def test_create_game_and_players(client):
 
     response = client.get(player_1_url)
     assert 200 == response.status_code
-    turn = load(response)['turn']
+    assert 0 == load(response)['turn']
 
     # Start the game
 
+    response = client.post(game_start_url)
+    assert 200 == response.status_code
+    assert True is load(response)['started']
 
+    response = client.get(player_1_url)
+    assert 200 == response.status_code
+    assert 1 == load(response)['turn']
 
+    # Attempt to add another player
+
+    response = client.post(players_url, data={'code': '3'})
+    assert 403 == response.status_code
