@@ -23,12 +23,7 @@ def players_list(key):
 
     elif request.method == 'POST':
         code = str(request.data.get('code', ''))
-        # TODO: replace with a service call
-        if not code:
-            raise exceptions.ParseError("Player 'code' must be specified.")
-        player = game.create_player(code, exc=exceptions.PermissionDenied)
-        # TODO: move this to the service
-        app.service.game_store.update(game)
+        player = app.service.create_player(game, code)
         return formatter.format_single(player, game, auth=code), \
             status.HTTP_201_CREATED
 
@@ -54,7 +49,7 @@ def players_detail(key, color):
 
     elif request.method == 'DELETE':
         player.authenticate(code, exc=exceptions.AuthenticationFailed)
-        game.delete_player(color, exc=exceptions.PermissionDenied)
+        app.service.delete_player(game, player)
         return '', status.HTTP_204_NO_CONTENT
 
     else:  # pragma: no cover

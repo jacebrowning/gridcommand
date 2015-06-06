@@ -18,12 +18,21 @@ class GameService(Service):
         game = self.game_store.read(key)
         if game is None:
             msg = "The game '{}' does not exist.".format(key)
-            raise self.exceptions.missing(msg)
+            raise self.exceptions.not_found(msg)
         return game
 
     def create_player(self, game, code):
-        raise NotImplementedError("TODO: implement method")
+        if not code:
+            msg = "Player 'code' must be specified."
+            raise self.exceptions.missing_input(msg)
+        player = game.create_player(code, exc=self.exceptions.permission_denied)
+        self.game_store.update(game)
+        return player
+
+    def delete_player(self, game, player):
+        game.delete_player(player.color, exc=self.exceptions.permission_denied)
+        self.game_store.update(game)
 
     def start_game(self, game):
-        game.start(exc=self.exceptions.denied)
+        game.start(exc=self.exceptions.permission_denied)
         self.game_store.update(game)

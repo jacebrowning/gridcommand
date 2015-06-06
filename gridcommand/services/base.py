@@ -3,10 +3,11 @@ from abc import ABCMeta
 
 class Exceptions:
 
-    duplicate = ValueError
-    missing = KeyError
-    invalid = ValueError
-    denied = ValueError
+    duplicate_value = ValueError
+    not_found = KeyError
+    invalid_input = ValueError
+    permission_denied = ValueError
+    missing_input = ValueError
 
 
 class Service(metaclass=ABCMeta):
