@@ -23,3 +23,7 @@ class GameService(Service):
 
     def create_player(self, game, code):
         raise NotImplementedError("TODO: implement method")
+
+    def start_game(self, game):
+        game.start(exc=self.exceptions.denied)
+        self.game_store.update(game)

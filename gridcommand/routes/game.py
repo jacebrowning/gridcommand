@@ -50,7 +50,7 @@ def games_start(key):
         pass
 
     elif request.method == 'POST':
-        game.start(exc=exceptions.PermissionDenied)
+        app.service.start_game(game)
 
     else:  # pragma: no cover
         assert None

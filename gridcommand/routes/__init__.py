@@ -8,5 +8,6 @@ from ..stores import GameFileStore
 app = FlaskAPI(__name__)  # pylint: disable=C0103
 app.service = GameService(game_store=GameFileStore())
 app.service.exceptions.missing = exceptions.NotFound
+app.service.exceptions.denied = exceptions.PermissionDenied
 
 from . import root, game, player, turn, move  # loads routes

@@ -6,6 +6,7 @@ class Exceptions:
     duplicate = ValueError
     missing = KeyError
     invalid = ValueError
+    denied = ValueError
 
 
 class Service(metaclass=ABCMeta):
