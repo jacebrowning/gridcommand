@@ -9,6 +9,8 @@ import pytest
 from gridcommand.common import logger
 from gridcommand import app
 
+from gridcommand.test.conftest import pytest_configure
+
 
 log = logger(__name__)
 

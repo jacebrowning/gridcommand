@@ -12,6 +12,7 @@ else:
 
 
 watch_paths = ['gridcommand/', 'tests/']
+show_coverage = True
 
 
 @select_runnable('python_tests')
@@ -22,7 +23,7 @@ def py_files(filename):
 
 
 @runnable
-def python_tests(*_):
+def python_tests(*args):
 
     group = int(time.time())  # unique per run
 
@@ -30,18 +31,27 @@ def python_tests(*_):
         (('make', 'test-unit'), "Unit Tests"),
         (('make', 'test-int'), "Integration Tests"),
         (('make', 'test-all'), "Combined Tests"),
+        (('make', 'check'), "Static Analysis"),
+        (('make', 'doc'), None),
     ), start=1):
 
+        print("")
+        print("$ %s" % ' '.join(command))
         failure = subprocess.call(command)
 
         if failure:
-            if notify:
+            if notify and title:
                 mark = "❌" * count
                 notify(mark + " [FAIL] " + mark, title=title, group=group)
             return False
         else:
-            if notify:
+            if notify and title:
                 mark = "✅" * count
                 notify(mark + " [PASS] " + mark, title=title, group=group)
+
+    global show_coverage
+    if show_coverage:
+        subprocess.call(['make', 'read-coverage'])
+    show_coverage = False
 
     return True
