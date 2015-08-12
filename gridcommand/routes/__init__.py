@@ -12,4 +12,4 @@ app.service.exceptions.permission_denied = exceptions.PermissionDenied
 app.service.exceptions.missing_input = exceptions.ParseError
 
 # TODO: replace imports with blueprints
-from . import root, game, player, turn, move  # loads routes
+from . import root, game, player, turn, move  # noqa, loads routes

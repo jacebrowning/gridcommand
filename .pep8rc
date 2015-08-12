@@ -1,3 +1,2 @@
 [pep8]
-# TODO: remove E402 after switching to blueprints
-ignore = E501,E402
+ignore = E501

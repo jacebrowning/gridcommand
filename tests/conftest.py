@@ -9,7 +9,7 @@ import pytest
 from gridcommand.common import logger
 from gridcommand import app
 
-from gridcommand.test.conftest import pytest_configure
+from gridcommand.test.conftest import pytest_configure  # pylint: disable=unused-import
 
 
 log = logger(__name__)
