@@ -15,9 +15,9 @@ class TestTurns:
         response = client.get('/api/games/'
                               'my_game/players/red/turns/?code=my_code')
         assert 200 == response.status_code
-        assert load(response) == [
+        assert [
             GAMES + "my_game/players/red/turns/1?code=my_code",
-        ]
+        ] == load(response)
 
 
 class TestTurn:
@@ -26,6 +26,8 @@ class TestTurn:
         response = client.get('/api/games/'
                               'my_game/players/red/turns/1?code=my_code')
         assert 200 == response.status_code
-        assert {'uri': TURNS + "1?code=my_code",
-                'moves': TURNS + "1/moves/?code=my_code",
-                'done': False} == load(response)
+        assert {
+            'uri': TURNS + "1?code=my_code",
+            'moves': TURNS + "1/moves/?code=my_code",
+            'done': False,
+        } == load(response)

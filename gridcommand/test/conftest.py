@@ -67,7 +67,7 @@ def client(request):
 def game():
     """Fixture to create an empty game."""
     log.info("creating an empty game...")
-    game = app.service.create_game(key=GAME_KEY)
+    game = app.service.create_game(key=GAME_KEY, timestamp=99)
     return game
 
 
@@ -90,12 +90,17 @@ def game_players(game):
 
 
 @pytest.fixture
-def game_started(game):
+def game_started(game_players):
     """Fixture to create a started game."""
-    game.players.create(PLAYER_CODE)
-    game.players.create(PLAYER_CODE)
-    game.start()
-    return game
+    game_players.start()
+    return game_players
+
+
+@pytest.fixture
+def game_turns(game_started):
+    """Fixture to create a game with multiple turns."""
+    game_started.advance()
+    return game_started
 
 
 @pytest.fixture
@@ -114,21 +119,10 @@ def players(game_players):
 
 
 @pytest.fixture
-def turn(game_player):
+def turn(game_started):
     """Fixture to create a turn for a player."""
-    log.info("adding a turn to a player...")
-    turn = domain.Turn()
-    log.debug("appending turn...")
-    game_player.players[0].turns.append(turn)
-    return turn
-
-
-@pytest.fixture
-def turns(game_player):
-    """Fixture to create turns for a player."""
-    game_player.players[0].turns.append(domain.Turn())
-    game_player.players[0].turns.append(domain.Turn())
-    return game_player.players[0].turns
+    assert game_started.turn == 1
+    return game_started.players[0].turn
 
 
 # Service fixtures

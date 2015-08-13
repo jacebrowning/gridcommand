@@ -18,5 +18,7 @@ class TestRoot:
     def test_version(self, client):
         response = client.get('/api')
         assert 200 == response.status_code
-        assert {'version': 1,
-                'games': GAMES} == load(response)
+        assert {
+            'version': 1,
+            'games': GAMES,
+        } == load(response)

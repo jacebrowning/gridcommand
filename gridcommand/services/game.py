@@ -9,8 +9,8 @@ class GameService(Service):
         super().__init__(**kwargs)
         self.game_store = game_store
 
-    def create_game(self, key=None):
-        game = Game(key=key)
+    def create_game(self, key=None, timestamp=None):
+        game = Game(key=key, timestamp=timestamp)
         self.game_store.create(game)
         return game
 
@@ -36,6 +36,14 @@ class GameService(Service):
     def start_game(self, game):
         game.start(exc=self.exceptions.permission_denied)
         self.game_store.update(game)
+
+    def get_board(self, key):
+        game = self.find_game(key)
+        if game.board is None:
+            msg = "The game has not started."
+            raise self.exceptions.not_found(msg)
+        else:
+            return game.board
 
     def create_move(self, game, turn, begin, end, count):
         move = turn.moves.set(begin, end, count)

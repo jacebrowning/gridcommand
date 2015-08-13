@@ -32,21 +32,16 @@ class TurnFileModel(yorm.converters.AttributeDictionary, domain.Turn):
         self.done = False
 
 
-@yorm.attr(all=TurnFileModel)
-class TurnsFileModel(yorm.converters.List, domain.Turns):
-    pass
-
-
 @yorm.attr(color=yorm.converters.String)
 @yorm.attr(code=yorm.converters.String)
-@yorm.attr(turns=TurnsFileModel)
+@yorm.attr(turn=TurnFileModel)
 class PlayerFileModel(yorm.converters.AttributeDictionary, domain.Player):
 
-    def __init__(self, color, code):
+    def __init__(self, color, code, turn=None):
         super().__init__()
         self.color = color
         self.code = code
-        self.turns = []
+        self.turn = turn or TurnFileModel()
 
 
 @yorm.attr(all=PlayerFileModel)
@@ -54,16 +49,24 @@ class PlayersFileModel(yorm.converters.List, domain.Players):
     pass
 
 
+class BoardFileModel(yorm.converters.AttributeDictionary, domain.Board):
+    pass
+
+
+@yorm.attr(time=yorm.converters.Integer)
 @yorm.attr(players=PlayersFileModel)
 @yorm.attr(turn=yorm.converters.Integer)
+@yorm.attr(board=BoardFileModel)
 @yorm.sync("data/games/{self.key}.yml", auto=False)
 class GameFileModel(domain.Game):
 
-    def __init__(self, key, players=None, turn=0):
+    def __init__(self, key, time=0, turn=0, players=None, board=None):
         super().__init__()
         self.key = key
-        self.players = players or PlayersFileModel()
+        self.time = time
         self.turn = turn
+        self.players = players or PlayersFileModel()
+        self.board = board or BoardFileModel()
 
 
 class GameMemoryStore(Store):
@@ -73,6 +76,7 @@ class GameMemoryStore(Store):
 
     def create(self, game):
         self._games[game.key] = game
+        return game
 
     def read(self, key):
         assert key
@@ -97,12 +101,13 @@ class GameMemoryStore(Store):
 class GameFileStore(Store):
 
     def create(self, game):
-        path = "data/games/{}.yml".format(game.key)
-        attrs = dict(players=PlayersFileModel,
-                     turn=yorm.converters.Integer)
-        print(game.players)
-        yorm.sync(game, path, attrs, auto=False)
+        game = GameFileModel(key=game.key,
+                             time=game.time,
+                             players=game.players,
+                             turn=game.turn,
+                             board=game.board)
         yorm.update_file(game)
+        return game
 
     def read(self, key):
         assert key
