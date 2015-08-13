@@ -20,6 +20,7 @@ def moves_list(key, color, number):
     player = game.players.find(color, exc=exceptions.NotFound)
     code = request.args.get('code')
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
+    # TODO: requested turn is current
     turn = player.turns.find(number, exc=exceptions.NotFound)
 
     if request.method == 'GET':
@@ -43,6 +44,7 @@ def moves_detail(key, color, number, begin, end):
     player = game.players.find(color, exc=exceptions.NotFound)
     code = request.args.get('code')
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
+    # TODO: requested turn is current
     turn = player.turns.find(number, exc=exceptions.NotFound)
 
     if request.method == 'GET':
