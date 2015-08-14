@@ -22,6 +22,7 @@ class TestPlayers:
         assert 201 == response.status_code
         assert {
             'uri': GAMES + "my_game/players/red?code=1234",
+            'done': False,
             'turns': GAMES + "my_game/players/red/turns/?code=1234",
         } == load(response)
 
@@ -48,7 +49,7 @@ class TestPlayer:
         assert 200 == response.status_code
         assert {
             'uri': GAMES + "my_game/players/red",
-            'turns': GAMES + "my_game/players/red/turns/",
+            'done': False,
         } == load(response)
 
     def test_get_missing_player(self, client, game):
@@ -73,6 +74,7 @@ class TestPlayerWithAuth:
         assert 200 == response.status_code
         assert {
             'uri': GAMES + "my_game/players/red?code=my_code",
+            'done': False,
             'turns': GAMES + "my_game/players/red/turns/?code=my_code",
         } == load(response)
 

@@ -35,7 +35,7 @@ def players_list(key):
 def players_detail(key, color):
     """Retrieve a player.
 
-    With authentication (code=?), retrieve full details or delete.
+    With authentication (`code` argument), retrieve private details or delete.
 
     """
     game = app.service.find_game(key)

@@ -43,12 +43,10 @@ def test_create_game_and_players(client):
 
     response = client.get(player_1_url)
     assert 200 == response.status_code
-    # TODO: check for player's public turn status
-    # assert 0 == load(response)['turn']
+    assert False is load(response)['done']
     response = client.get(player_2_url)
     assert 200 == response.status_code
-    # TODO: check for player's public turn status
-    # assert 0 == load(response)['turn']
+    assert False is load(response)['done']
 
     # Start the game
 
@@ -58,8 +56,10 @@ def test_create_game_and_players(client):
 
     response = client.get(player_1_url)
     assert 200 == response.status_code
-    # TODO: check for player's public turn status
-    # assert 1 == load(response)['turn']
+    assert False is load(response)['done']
+    response = client.get(player_2_url)
+    assert 200 == response.status_code
+    assert False is load(response)['done']
 
     # Attempt to add another player
 

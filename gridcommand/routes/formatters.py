@@ -43,7 +43,9 @@ class PlayerFormatter(Formatter):
         if auth:
             kwargs.update(code=player.code)
         data['uri'] = url_for('.players_detail', **kwargs)
-        data['turns'] = url_for('.turns_list', **kwargs)
+        data['done'] = player.turn.done
+        if auth:
+            data['turns'] = url_for('.turns_list', **kwargs)
 
         return data
 
