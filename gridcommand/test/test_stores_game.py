@@ -66,12 +66,12 @@ class TestGameStore:
         game = domain.Game()
         game = store.create(game)
 
-        game.time = 42
+        game.timestamp = 42
         logging.info("updating game...")
         store.update(game)
 
         game2 = store.read(game.key)
-        assert game2.time == 42
+        assert game2.timestamp == 42
 
     def test_delete_existing(self, store_class):
         store = store_class()

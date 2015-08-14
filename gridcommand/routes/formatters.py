@@ -20,7 +20,7 @@ class GameFormatter(Formatter):
 
         kwargs = dict(_external=True, key=game.key)
         data['uri'] = url_for('.games_detail', **kwargs)
-        data['stamp'] = game.time
+        data['timestamp'] = game.timestamp
         data['players'] = url_for('.players_list', **kwargs)
         data['turn'] = game.turn
         data['start'] = url_for('.games_start', **kwargs)

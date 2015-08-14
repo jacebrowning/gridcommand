@@ -20,7 +20,7 @@ class Game:
 
     def __init__(self, key=None, timestamp=None):
         self.key = key or self._generate_key()
-        self.time = timestamp or self._get_timestamp()
+        self.timestamp = timestamp or self._get_timestamp()
         self.players = Players()
         self.turn = 0
         self.board = None

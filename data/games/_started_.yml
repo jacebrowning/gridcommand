@@ -9,5 +9,5 @@ players:
   turn:
     done: false
     moves: []
-time: 42
+timestamp: 42
 turn: 1

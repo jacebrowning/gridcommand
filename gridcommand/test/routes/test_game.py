@@ -24,10 +24,10 @@ class TestGames:
         assert 201 == response.status_code
         assert {
             'uri': GAMES + "x",
-            'stamp': 99,
+            'timestamp': 99,
             'players': GAMES + "x/players/",
-            'start': GAMES + "x/start",
             'turn': 0,
+            'start': GAMES + "x/start",
         } == load(response)
 
 
@@ -38,10 +38,10 @@ class TestGame:
         assert 200 == response.status_code
         assert {
             'uri': GAMES + "my_game",
-            'stamp': 99,
+            'timestamp': 99,
             'players': GAMES + "my_game/players/",
-            'start': GAMES + "my_game/start",
             'turn': 0,
+            'start': GAMES + "my_game/start",
         } == load(response)
 
     def test_get_missing_game(self, client):

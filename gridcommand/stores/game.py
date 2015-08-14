@@ -53,17 +53,17 @@ class BoardFileModel(yorm.converters.AttributeDictionary, domain.Board):
     pass
 
 
-@yorm.attr(time=yorm.converters.Integer)
+@yorm.attr(timestamp=yorm.converters.Integer)
 @yorm.attr(players=PlayersFileModel)
 @yorm.attr(turn=yorm.converters.Integer)
 @yorm.attr(board=BoardFileModel)
 @yorm.sync("data/games/{self.key}.yml", auto=False)
 class GameFileModel(domain.Game):
 
-    def __init__(self, key, time=0, turn=0, players=None, board=None):
+    def __init__(self, key, timestamp=0, turn=0, players=None, board=None):
         super().__init__()
         self.key = key
-        self.time = time
+        self.timestamp = timestamp
         self.turn = turn
         self.players = players or PlayersFileModel()
         self.board = board or BoardFileModel()
@@ -102,7 +102,7 @@ class GameFileStore(Store):
 
     def create(self, game):
         game = GameFileModel(key=game.key,
-                             time=game.time,
+                             timestamp=game.timestamp,
                              players=game.players,
                              turn=game.turn,
                              board=game.board)
