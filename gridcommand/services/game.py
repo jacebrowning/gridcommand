@@ -54,5 +54,6 @@ class GameService(Service):
         turn.moves.delete(begin, end)
         self.game_store.update(game)
 
-    def finish_turn(self, turn):
+    def finish_turn(self, game, turn):
         turn.finish(exc=self.exceptions.permission_denied)
+        self.game_store.update(game)

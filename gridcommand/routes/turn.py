@@ -60,7 +60,7 @@ def turns_finish(key, color, number):
         pass
 
     elif request.method == 'POST':
-        app.service.finish_turn(turn)
+        app.service.finish_turn(game, turn)
 
     else:  # pragma: no cover
         assert None
