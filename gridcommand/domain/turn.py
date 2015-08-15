@@ -12,4 +12,10 @@ class Turn:
         self.done = done
 
     def __repr__(self):
-        return "<turn: {}done>".format("" if self.done else "not ")
+        return "<turn: {}>".format("finished" if self.done else "started")
+
+    def finish(self, exc=ValueError):
+        """Mark the current turn as complete."""
+        if self.done:
+            raise exc("The turn has already finished.")
+        self.done = True

@@ -65,3 +65,5 @@ def test_create_game_and_players(client):
 
     response = client.post(players_url, data={'code': '3'})
     assert 403 == response.status_code
+
+    # Complete the first players turn with no moves

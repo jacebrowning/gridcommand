@@ -1,6 +1,6 @@
 from ..domain import Game
 
-from .base import Service
+from ._bases import Service
 
 
 class GameService(Service):
@@ -53,3 +53,6 @@ class GameService(Service):
     def delete_move(self, game, turn, begin, end):
         turn.moves.delete(begin, end)
         self.game_store.update(game)
+
+    def finish_turn(self, turn):
+        turn.finish(exc=self.exceptions.permission_denied)

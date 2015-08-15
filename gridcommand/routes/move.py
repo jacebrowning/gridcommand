@@ -6,7 +6,7 @@ from flask.ext.api import status, exceptions  # pylint: disable=E0611,F0401
 
 from . import app
 from .turn import TURNS_DETAIL_URL
-from .formatters import move_formatter as formatter
+from ._formatters import move_formatter as formatter
 
 
 MOVES_LIST_URL = TURNS_DETAIL_URL + "/moves/"

@@ -6,8 +6,7 @@ from flask.ext.api import status, exceptions  # pylint: disable=E0611,F0401
 
 from . import app
 from .root import ROOT_URL
-from .formatters import game_formatter as formatter
-from .formatters import board_formatter
+from ._formatters import game_formatter as formatter, board_formatter
 
 
 GAMES_LIST_URL = ROOT_URL + "/games/"

@@ -4,7 +4,7 @@ from collections import OrderedDict
 
 from flask import url_for
 
-from .base import Formatter
+from ._bases import Formatter
 
 
 # TODO: figure out a better way to serialize objects without parent objects
@@ -69,7 +69,7 @@ class TurnFormatter(Formatter):
 
     """Serializes turns into dictionaries."""
 
-    def format_single(self, turn, game, player, number):
+    def format_single(self, game, player, number):
         data = OrderedDict()
 
         kwargs = dict(_external=True,
@@ -79,7 +79,7 @@ class TurnFormatter(Formatter):
                       number=number)
         data['uri'] = url_for('.turns_detail', **kwargs)
         data['moves'] = url_for('.moves_list', **kwargs)
-        data['done'] = turn.done
+        data['finish'] = url_for('.turns_finish', **kwargs)
 
         return data
 

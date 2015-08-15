@@ -4,7 +4,7 @@ import yorm
 
 from .. import common
 from .. import domain
-from .base import Store
+from ._bases import Store
 
 
 log = common.logger(__name__)

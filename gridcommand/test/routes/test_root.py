@@ -3,7 +3,7 @@
 
 from ..conftest import load
 
-from . import GAMES
+from . import GAMES, EXTERNAL
 
 
 class TestIndex:
@@ -20,5 +20,5 @@ class TestRoot:
         assert 200 == response.status_code
         assert {
             'version': 1,
-            'games': GAMES,
+            'games': EXTERNAL + GAMES,
         } == load(response)

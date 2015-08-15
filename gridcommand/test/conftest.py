@@ -122,7 +122,17 @@ def players(game_players):
 def turn(game_started):
     """Fixture to create a turn for a player."""
     assert game_started.turn == 1
-    return game_started.players[0].turn
+    turn = game_started.players[0].turn
+    assert not turn.done
+    return turn
+
+
+@pytest.fixture
+def turn_completed(turn):
+    """Fixture to create a completed turn for a player."""
+    turn.finish()
+    assert turn.done
+    return turn
 
 
 # Service fixtures
