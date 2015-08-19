@@ -39,12 +39,15 @@ def turns_detail(key, color, number):
     player = game.players.find(color, exc=exceptions.NotFound)
     code = request.args.get('code')
     player.authenticate(code, exc=exceptions.AuthenticationFailed)
+    _get_turn(game, player, number)
 
     if request.method == 'GET':
-        return formatter.format_single(game, player, number)
+        pass
 
     else:  # pragma: no cover
         assert None
+
+    return formatter.format_single(game, player, number)
 
 
 @app.route(TURNS_FINISH_URL, methods=['GET', 'POST'])
@@ -69,9 +72,9 @@ def turns_finish(key, color, number):
 
 
 def _get_turn(game, player, number):
-    if 1 >= number < game.turn:
-        return Turn(done=True)
+    if 1 <= number < game.turn:
+        raise exceptions.PermissionDenied("This turn is in the past.")
     elif number == game.turn:
         return player.turn
     else:
-        raise exceptions.NotFound
+        raise exceptions.NotFound("This turn is in the future.")

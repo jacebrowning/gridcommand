@@ -21,13 +21,27 @@ class TestTurns:
 
 class TestTurn:
 
-    def test_get_existing_turn(self, client, turn):
+    def test_get_past_turn(self, client, game_turns):
         response = client.get(TURNS + "1?code=my_code")
+        assert 403 == response.status_code
+        assert {
+            'message': "This turn is in the past."
+        } == load(response)
+
+    def test_get_current_turn(self, client, game_turns):
+        response = client.get(TURNS + "2?code=my_code")
         assert 200 == response.status_code
         assert {
-            'uri': EXTERNAL + TURNS + "1?code=my_code",
-            'moves': EXTERNAL + TURNS + "1/moves/?code=my_code",
-            'finish': EXTERNAL + TURNS + "1/finish?code=my_code"
+            'uri': EXTERNAL + TURNS + "2?code=my_code",
+            'moves': EXTERNAL + TURNS + "2/moves/?code=my_code",
+            'finish': EXTERNAL + TURNS + "2/finish?code=my_code"
+        } == load(response)
+
+    def test_get_future_turn(self, client, game_turns):
+        response = client.get(TURNS + "3?code=my_code")
+        assert 404 == response.status_code
+        assert {
+            'message': "This turn is in the future."
         } == load(response)
 
 
