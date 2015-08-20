@@ -2,7 +2,7 @@
 # pylint: disable=R0913
 
 from flask import request
-from flask.ext.api import status, exceptions  # pylint: disable=E0611,F0401
+from flask.ext.api import status  # pylint: disable=E0611,F0401
 
 from . import app
 from .turn import TURNS_DETAIL_URL
@@ -16,12 +16,8 @@ MOVES_DETAIL_URL = MOVES_LIST_URL + "<int:begin>-<int:end>"
 @app.route(MOVES_LIST_URL, methods=['GET', 'POST'])
 def moves_list(key, color, number):
     """List or create moves for a player."""
-    game = app.service.find_game(key)
-    player = game.players.find(color, exc=exceptions.NotFound)
     code = request.args.get('code')
-    player.authenticate(code, exc=exceptions.AuthenticationFailed)
-    # TODO: requested turn is current
-    turn = player.turns.find(number, exc=exceptions.NotFound)
+    turn, player, game = app.service.find_turn(key, color, code, number)
 
     if request.method == 'GET':
         return formatter.format_multiple(turn.moves, game, player)
@@ -39,13 +35,9 @@ def moves_list(key, color, number):
 
 @app.route(MOVES_DETAIL_URL, methods=['GET', 'PUT', 'DELETE'])
 def moves_detail(key, color, number, begin, end):
-    """Retrieve, update or delete a players's move."""
-    game = app.service.find_game(key)
-    player = game.players.find(color, exc=exceptions.NotFound)
+    """Retrieve, update or delete a player's move."""
     code = request.args.get('code')
-    player.authenticate(code, exc=exceptions.AuthenticationFailed)
-    # TODO: requested turn is current
-    turn = player.turns.find(number, exc=exceptions.NotFound)
+    turn, _, game = app.service.find_turn(key, color, code, number)
 
     if request.method == 'GET':
         move = turn.moves.get(begin, end)

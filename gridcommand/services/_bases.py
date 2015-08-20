@@ -8,6 +8,7 @@ class Exceptions:
     invalid_input = ValueError
     permission_denied = ValueError
     missing_input = ValueError
+    authentication_failed = ValueError
 
 
 class Service(metaclass=ABCMeta):

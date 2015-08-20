@@ -33,6 +33,12 @@ class GameService(Service):
         game.delete_player(player.color, exc=self.exceptions.permission_denied)
         self.game_store.update(game)
 
+    def find_player(self, game_key, key, code):
+        game = self.find_game(game_key)
+        player = game.players.find(key, exc=self.exceptions.not_found)
+        player.authenticate(code, exc=self.exceptions.authentication_failed)
+        return player
+
     def start_game(self, game):
         game.start(exc=self.exceptions.permission_denied)
         self.game_store.update(game)
@@ -53,6 +59,19 @@ class GameService(Service):
     def delete_move(self, game, turn, begin, end):
         turn.moves.delete(begin, end)
         self.game_store.update(game)
+
+    def find_turn(self, game_key, player_key, player_code, number):
+        game = self.find_game(game_key)
+        player = self.find_player(game_key, player_key, player_code)
+
+        if 1 <= number < game.turn:
+            msg = "This turn is in the past."
+            raise self.exceptions.permission_denied(msg)
+        elif number == game.turn:
+            return player.turn, player, game
+        else:
+            msg = "This turn is in the future."
+            raise self.exceptions.not_found(msg)
 
     def finish_turn(self, game, turn):
         turn.finish(exc=self.exceptions.permission_denied)

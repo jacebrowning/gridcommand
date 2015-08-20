@@ -35,11 +35,8 @@ def turns_list(key, color):
 @app.route(TURNS_DETAIL_URL, methods=['GET'])
 def turns_detail(key, color, number):
     """Retrieve a player's turn."""
-    game = app.service.find_game(key)
-    player = game.players.find(color, exc=exceptions.NotFound)
     code = request.args.get('code')
-    player.authenticate(code, exc=exceptions.AuthenticationFailed)
-    _get_turn(game, player, number)
+    _, player, game = app.service.find_turn(key, color, code, number)
 
     if request.method == 'GET':
         pass
@@ -53,11 +50,8 @@ def turns_detail(key, color, number):
 @app.route(TURNS_FINISH_URL, methods=['GET', 'POST'])
 def turns_finish(key, color, number):
     """Finish a player's turn."""
-    game = app.service.find_game(key)
-    player = game.players.find(color, exc=exceptions.NotFound)
     code = request.args.get('code')
-    player.authenticate(code, exc=exceptions.AuthenticationFailed)
-    turn = _get_turn(game, player, number)
+    turn, _, game = app.service.find_turn(key, color, code, number)
 
     if request.method == 'GET':
         pass
@@ -69,12 +63,3 @@ def turns_finish(key, color, number):
         assert None
 
     return {'finished': turn.done}
-
-
-def _get_turn(game, player, number):
-    if 1 <= number < game.turn:
-        raise exceptions.PermissionDenied("This turn is in the past.")
-    elif number == game.turn:
-        return player.turn
-    else:
-        raise exceptions.NotFound("This turn is in the future.")
