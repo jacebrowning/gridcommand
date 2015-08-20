@@ -1,6 +1,6 @@
 from ..domain import Game
 
-from .base import Service
+from ._bases import Service
 
 
 class GameService(Service):
@@ -9,8 +9,8 @@ class GameService(Service):
         super().__init__(**kwargs)
         self.game_store = game_store
 
-    def create_game(self, key=None):
-        game = Game(key=key)
+    def create_game(self, key=None, timestamp=None):
+        game = Game(key=key, timestamp=timestamp)
         self.game_store.create(game)
         return game
 
@@ -33,9 +33,23 @@ class GameService(Service):
         game.delete_player(player.color, exc=self.exceptions.permission_denied)
         self.game_store.update(game)
 
+    def find_player(self, game_key, key, code):
+        game = self.find_game(game_key)
+        player = game.players.find(key, exc=self.exceptions.not_found)
+        player.authenticate(code, exc=self.exceptions.authentication_failed)
+        return player
+
     def start_game(self, game):
         game.start(exc=self.exceptions.permission_denied)
         self.game_store.update(game)
+
+    def get_board(self, key):
+        game = self.find_game(key)
+        if game.board is None:
+            msg = "The game has not started."
+            raise self.exceptions.not_found(msg)
+        else:
+            return game.board
 
     def create_move(self, game, turn, begin, end, count):
         move = turn.moves.set(begin, end, count)
@@ -44,4 +58,21 @@ class GameService(Service):
 
     def delete_move(self, game, turn, begin, end):
         turn.moves.delete(begin, end)
+        self.game_store.update(game)
+
+    def find_turn(self, game_key, player_key, player_code, number):
+        game = self.find_game(game_key)
+        player = self.find_player(game_key, player_key, player_code)
+
+        if 1 <= number < game.turn:
+            msg = "This turn is in the past."
+            raise self.exceptions.permission_denied(msg)
+        elif number == game.turn:
+            return player.turn, player, game
+        else:
+            msg = "This turn is in the future."
+            raise self.exceptions.not_found(msg)
+
+    def finish_turn(self, game, turn):
+        turn.finish(exc=self.exceptions.permission_denied)
         self.game_store.update(game)

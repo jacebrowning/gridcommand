@@ -3,8 +3,6 @@
 
 import pytest
 
-from gridcommand.domain import Turns
-
 
 class TestTurn:
 
@@ -13,25 +11,17 @@ class TestTurn:
         assert not turn.moves
 
     def test_repr(self, turn):
-        assert "<turn>" == repr(turn)
+        assert "<turn: started>" == repr(turn)
 
+    def test_repr_completed(self, turn_completed):
+        assert "<turn: finished>" == repr(turn_completed)
 
-class TestTurns:
+    def test_finish(self, turn):
+        assert False is turn.done
+        turn.finish()
+        assert True is turn.done
 
-    def test_repr(self, turns):
-        assert "<2 turns>" == repr(turns)
-        turns.pop()
-        assert "<1 turn>" == repr(turns)
-
-    def test_current(self, turns):
-        assert turns.current
-
-    def test_current_none(self):
-        assert None is Turns().current
-
-    def test_find_match(self, turns):
-        turns.find(1)
-
-    def test_find_missing(self, player):
+    def test_error_finishing_twice(self, turn_completed):
         with pytest.raises(ValueError):
-            player.turns.find(1)
+            turn_completed.finish()
+        assert True is turn_completed.done

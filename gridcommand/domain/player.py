@@ -1,7 +1,7 @@
 """Classes representing players in a game."""
 
 from ..common import logger
-from .turn import Turns
+from .turn import Turn
 
 
 log = logger(__name__)
@@ -15,7 +15,7 @@ class Player:
         super().__init__()
         self.color = color
         self.code = code
-        self.turns = Turns()
+        self.turn = Turn()
 
     def __repr__(self):
         return "<player: {}>".format(self.color)

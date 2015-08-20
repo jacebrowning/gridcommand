@@ -1,12 +1,14 @@
+board: {}
 players:
 - code: '1234'
   color: red
-  turns:
-  - done: false
+  turn:
+    done: true
     moves: []
 - code: '5678'
   color: blue
-  turns:
-  - done: false
+  turn:
+    done: false
     moves: []
-turn: 1
+timestamp: 42
+turn: 3

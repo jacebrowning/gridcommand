@@ -6,7 +6,7 @@ from flask.ext.api import status, exceptions  # pylint: disable=E0611,F0401
 
 from . import app
 from .game import GAMES_DETAIL_URL
-from .formatters import player_formatter as formatter
+from ._formatters import player_formatter as formatter
 
 
 PLAYERS_LIST_URL = GAMES_DETAIL_URL + "/players/"
@@ -35,7 +35,7 @@ def players_list(key):
 def players_detail(key, color):
     """Retrieve a player.
 
-    With authentication (code=?), retrieve full details or delete.
+    With authentication (`code` argument), retrieve private details or delete.
 
     """
     game = app.service.find_game(key)

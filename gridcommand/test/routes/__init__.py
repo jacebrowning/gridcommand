@@ -1,1 +1,2 @@
-GAMES = "http://localhost/api/games/"
+GAMES = "/api/games/"
+EXTERNAL = "http://localhost"

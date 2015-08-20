@@ -7,32 +7,15 @@ class Turn:
 
     """An individual turn for a player."""
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, done=False):
         self.moves = Moves()
-        self.done = False
+        self.done = done
 
     def __repr__(self):
-        return "<turn>"
+        return "<turn: {}>".format("finished" if self.done else "started")
 
-
-class Turns(list):
-
-    """A list of turns in a game for each player."""
-
-    def __repr__(self):
-        return "<{} turn{}>".format(len(self), "" if len(self) == 1 else "s")
-
-    @property
-    def current(self):
-        """Get the most recent turn."""
-        try:
-            return self[-1]
-        except IndexError:
-            return None
-
-    def find(self, number, exc=ValueError):
-        try:
-            return self[number - 1]
-        except IndexError:
-            raise exc("The turn '{}' does not exist.".format(number))
+    def finish(self, exc=ValueError):
+        """Mark the current turn as complete."""
+        if self.done:
+            raise exc("The turn has already finished.")
+        self.done = True

@@ -1,0 +1,13 @@
+players:
+- code: '1234'
+  color: red
+  turn:
+    done: false
+    moves: []
+- code: '5678'
+  color: blue
+  turn:
+    done: false
+    moves: []
+timestamp: 42
+turn: 1

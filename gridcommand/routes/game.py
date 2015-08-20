@@ -6,12 +6,13 @@ from flask.ext.api import status, exceptions  # pylint: disable=E0611,F0401
 
 from . import app
 from .root import ROOT_URL
-from .formatters import game_formatter as formatter
+from ._formatters import game_formatter as formatter, board_formatter
 
 
 GAMES_LIST_URL = ROOT_URL + "/games/"
 GAMES_DETAIL_URL = GAMES_LIST_URL + "<string:key>"
 GAMES_START_URL = GAMES_DETAIL_URL + "/start"
+GAMES_BOARD_URL = GAMES_DETAIL_URL + "/board"
 
 
 @app.route(GAMES_LIST_URL, methods=['GET', 'POST'])
@@ -56,3 +57,15 @@ def games_start(key):
         assert None
 
     return {'started': game.started}
+
+
+@app.route(GAMES_BOARD_URL, methods=['GET'])
+@board_formatter.single
+def games_board(key):
+    """Get the game board."""
+    if request.method == 'GET':
+        board = app.service.get_board(key)
+        return board
+
+    else:  # pragma: no cover
+        assert None

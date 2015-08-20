@@ -1,0 +1,19 @@
+board: {}
+players:
+- code: '1111'
+  color: red
+  turn:
+    done: false
+    moves: []
+- code: '2222'
+  color: blue
+  turn:
+    done: false
+    moves: []
+- code: '3333'
+  color: teal
+  turn:
+    done: false
+    moves: []
+timestamp: 0
+turn: 0

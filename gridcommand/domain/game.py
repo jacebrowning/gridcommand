@@ -1,11 +1,12 @@
 """Classes representing games."""
 
+import time
 import string
 import random
 
 from .. import common
 from .player import Players
-from .turn import Turn
+from .board import Board
 
 log = common.logger(__name__)
 
@@ -17,10 +18,12 @@ class Game:
     KEY_CHARS = string.ascii_lowercase + string.digits
     KEY_LENGTH = 8
 
-    def __init__(self, key=None):
+    def __init__(self, key=None, timestamp=None):
         self.key = key or self._generate_key()
+        self.timestamp = timestamp or self._get_timestamp()
         self.players = Players()
         self.turn = 0
+        self.board = None
 
     def __repr__(self):
         return "<game: {}>".format(self.key)
@@ -35,6 +38,10 @@ class Game:
     def _generate_key():
         return ''.join(random.choice(Game.KEY_CHARS)
                        for _ in range(Game.KEY_LENGTH))
+
+    @staticmethod
+    def _get_timestamp():
+        return int(time.time())
 
     def create_player(self, code, exc=ValueError):
         if self.started:
@@ -51,15 +58,29 @@ class Game:
         return self.turn > 0
 
     def start(self, exc=ValueError):
-        if len(self.players) < 2:
+        """Populate the game board."""
+        log.info("starting the game...")
+        if self.started:
+            raise exc("The game has already started.")
+        elif len(self.players) < 2:
             raise exc("At least 2 players are required.")
-        if self.turn == 0:
-            self.advance()
+        else:
+            self.board = Board.randomize(self.players)
+            self.turn = 1
 
-    def advance(self):
+    def advance(self, exc=ValueError):
+        """Start the next turn."""
         log.info("starting the next turn...")
+        if not self.started:
+            raise exc("The game has not started.")
+
+        # End every players turn
+        for player in self.players:
+            player.turn.done = True
+
+        # TODO: update the board
+
+        # Start the next turn
         self.turn += 1
         for player in self.players:
-            if player.turns.current:
-                player.turns.current.done = True
-            player.turns.append(Turn())
+            player.turn.done = False
