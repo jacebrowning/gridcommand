@@ -3,7 +3,7 @@
 import sys
 
 __project__ = 'GridCommand'
-__version__ = '0.1dev0'
+__version__ = '0.1.dev0'
 
 VERSION = __project__ + '-' + __version__
 
