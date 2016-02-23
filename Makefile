@@ -5,7 +5,7 @@ SOURCES := Makefile setup.py $(shell find $(PACKAGE) -name '*.py')
 
 # Python settings
 PYTHON_MAJOR ?= 3
-PYTHON_MINOR ?= 4
+PYTHON_MINOR ?= 5
 
 # Test settings
 UNIT_TEST_COVERAGE := 82
@@ -201,7 +201,7 @@ pep257: depends-ci
 # D102: docstring missing (checked by PyLint)
 # D202: No blank lines allowed *after* function docstring (personal preference)
 # D203: 1 blank line required before class (deprecated warning)
-	$(PEP257) $(PACKAGE) tests --ignore=D102,D202,D203,D100,D101
+	$(PEP257) $(PACKAGE) tests --add-ignore=D102,D202,D203,D100,D101
 
 .PHONY: pylint
 pylint: depends-ci
@@ -219,7 +219,7 @@ fix: depends-dev
 
 RANDOM_SEED ?= $(shell date +%s)
 
-PYTEST_CORE_OPTS := --doctest-modules --verbose -r X -vv
+PYTEST_CORE_OPTS := --verbose -r X -vv
 PYTEST_COV_OPTS := --cov=$(PACKAGE) --cov-report=term-missing --no-cov-on-fail
 PYTEST_RANDOM_OPTS := --random --random-seed=$(RANDOM_SEED)
 

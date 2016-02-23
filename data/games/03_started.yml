@@ -1,10 +1,10 @@
 players:
-- code: '1234'
+- code: 1234
   color: red
   turn:
     done: false
     moves: []
-- code: '5678'
+- code: 5678
   color: blue
   turn:
     done: false

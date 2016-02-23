@@ -10,21 +10,21 @@ from ._bases import Store
 log = common.logger(__name__)
 
 
-@yorm.attr(begin=yorm.converters.Integer)
-@yorm.attr(end=yorm.converters.Integer)
-@yorm.attr(count=yorm.converters.Integer)
-class MoveFileModel(yorm.converters.AttributeDictionary, domain.Move):
+@yorm.attr(begin=yorm.types.Integer)
+@yorm.attr(end=yorm.types.Integer)
+@yorm.attr(count=yorm.types.Integer)
+class MoveFileModel(yorm.types.AttributeDictionary, domain.Move):
     pass
 
 
 @yorm.attr(all=MoveFileModel)
-class MovesFileModel(yorm.converters.SortedList, domain.Moves):
+class MovesFileModel(yorm.types.SortedList, domain.Moves):
     pass
 
 
 @yorm.attr(moves=MovesFileModel)
-@yorm.attr(done=yorm.converters.Boolean)
-class TurnFileModel(yorm.converters.AttributeDictionary, domain.Turn):
+@yorm.attr(done=yorm.types.Boolean)
+class TurnFileModel(yorm.types.AttributeDictionary, domain.Turn):
 
     def __init__(self):
         super().__init__()
@@ -32,10 +32,10 @@ class TurnFileModel(yorm.converters.AttributeDictionary, domain.Turn):
         self.done = False
 
 
-@yorm.attr(color=yorm.converters.String)
-@yorm.attr(code=yorm.converters.String)
+@yorm.attr(color=yorm.types.String)
+@yorm.attr(code=yorm.types.String)
 @yorm.attr(turn=TurnFileModel)
-class PlayerFileModel(yorm.converters.AttributeDictionary, domain.Player):
+class PlayerFileModel(yorm.types.AttributeDictionary, domain.Player):
 
     def __init__(self, color, code, turn=None):
         super().__init__()
@@ -45,17 +45,17 @@ class PlayerFileModel(yorm.converters.AttributeDictionary, domain.Player):
 
 
 @yorm.attr(all=PlayerFileModel)
-class PlayersFileModel(yorm.converters.List, domain.Players):
+class PlayersFileModel(yorm.types.List, domain.Players):
     pass
 
 
-class BoardFileModel(yorm.converters.AttributeDictionary, domain.Board):
+class BoardFileModel(yorm.types.AttributeDictionary, domain.Board):
     pass
 
 
-@yorm.attr(timestamp=yorm.converters.Integer)
+@yorm.attr(timestamp=yorm.types.Integer)
 @yorm.attr(players=PlayersFileModel)
-@yorm.attr(turn=yorm.converters.Integer)
+@yorm.attr(turn=yorm.types.Integer)
 @yorm.attr(board=BoardFileModel)
 @yorm.sync("data/games/{self.key}.yml", auto=False)
 class GameFileModel(domain.Game):
@@ -131,6 +131,7 @@ class GameFileStore(Store):
 
                 game = GameFileModel(key)
                 yorm.update_object(game)
+                yorm.update_file(game)
 
                 games.append(game)
 
