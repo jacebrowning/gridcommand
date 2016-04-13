@@ -1,3 +1,4 @@
-Flask ~= 0.10.1
-Flask-API ~= 0.6.4
-YORM == 0.6.dev8
+Flask == 0.10.1
+Flask-API == 0.6.4
+
+YORM == 0.8.dev5

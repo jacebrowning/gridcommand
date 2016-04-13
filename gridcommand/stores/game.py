@@ -57,7 +57,7 @@ class BoardFileModel(yorm.types.AttributeDictionary, domain.Board):
 @yorm.attr(players=PlayersFileModel)
 @yorm.attr(turn=yorm.types.Integer)
 @yorm.attr(board=BoardFileModel)
-@yorm.sync("data/games/{self.key}.yml", auto=False)
+@yorm.sync("data/games/{self.key}.yml", auto_create=False)
 class GameFileModel(domain.Game):
 
     def __init__(self, key, timestamp=0, turn=0, players=None, board=None):
@@ -101,25 +101,11 @@ class GameMemoryStore(Store):
 class GameFileStore(Store):
 
     def create(self, game):
-        game = GameFileModel(key=game.key,
-                             timestamp=game.timestamp,
-                             players=game.players,
-                             turn=game.turn,
-                             board=game.board)
-        yorm.update_file(game)
-        return game
+        return yorm.create(GameFileModel, game.key, game.timestamp, game.turn,
+                           game.players, game.board, overwrite=True)
 
     def read(self, key):
-        assert key
-        path = os.path.join("data", "games", key + ".yml")  # TODO: move this to settings?
-
-        if not os.path.exists(path):
-            return None
-
-        game = GameFileModel(key)
-        yorm.update_object(game)
-
-        return game
+        return yorm.find(GameFileModel, key)
 
     def filter(self):
         games = []
@@ -130,20 +116,14 @@ class GameFileStore(Store):
                 key = filename.split('.')[0]
 
                 game = GameFileModel(key)
-                yorm.update_object(game)
-                yorm.update_file(game)
-
                 games.append(game)
 
         return games
 
     def update(self, game):
-        path = os.path.join("data", "games", game.key + ".yml")  # TODO: move this to settings?
-        assert os.path.exists(path)
-
-        yorm.update_file(game)
+        yorm.save(game)
 
     def delete(self, game):
-        path = os.path.join("data", "games", game.key + ".yml")  # TODO: move this to settings?
-        if os.path.exists(path):
-            os.remove(path)
+        model = yorm.find(GameFileModel, game.key)
+        if model:
+            yorm.delete(model)
