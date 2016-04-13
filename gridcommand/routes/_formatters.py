@@ -12,7 +12,6 @@ from ._bases import Formatter
 
 
 class GameFormatter(Formatter):
-
     """Serializes games into dictionaries."""
 
     def format_single(self, game):
@@ -33,7 +32,6 @@ class GameFormatter(Formatter):
 
 
 class PlayerFormatter(Formatter):
-
     """Serializes players into dictionaries."""
 
     def format_single(self, player, game, auth):
@@ -66,7 +64,6 @@ class BoardFormatter(Formatter):
 
 
 class TurnFormatter(Formatter):
-
     """Serializes turns into dictionaries."""
 
     def format_single(self, game, player, number):
@@ -90,7 +87,6 @@ class TurnFormatter(Formatter):
 
 
 class MoveFormatter(Formatter):
-
     """Serializes moves into dictionaries."""
 
     def format_single(self, move):

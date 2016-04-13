@@ -13,4 +13,5 @@ app.service.exceptions.missing_input = exceptions.ParseError
 app.service.exceptions.authentication_failed = exceptions.AuthenticationFailed
 
 # TODO: replace imports with blueprints
+# pylint: disable=wrong-import-position
 from . import root, game, player, turn, move  # noqa, loads routes

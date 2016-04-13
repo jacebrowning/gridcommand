@@ -2,7 +2,6 @@
 
 
 class Move:
-
     """A planned transfer of tokens from one cell to another."""
 
     def __init__(self, begin, end, count=0):
@@ -28,7 +27,6 @@ class Move:
 
 
 class Moves(list):
-
     """A collection of moves for a player."""
 
     def __repr__(self):

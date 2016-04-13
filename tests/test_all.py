@@ -1,4 +1,4 @@
-# pylint: disable=W0613,R0201,C0103,C0111
+# pylint: disable=W0613,R0201,C0103,C0111,misplaced-comparison-constant
 
 
 from .conftest import load

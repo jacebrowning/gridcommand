@@ -8,7 +8,6 @@ log = logger(__name__)
 
 
 class Player:
-
     """An entity that plans moves during a turn."""
 
     def __init__(self, color, code=''):
@@ -31,7 +30,6 @@ class Player:
 
 
 class Players(list):
-
     """A collection players in a game."""
 
     COLORS = (

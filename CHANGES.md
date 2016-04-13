@@ -1,7 +1,5 @@
-Changelog
-=========
+# Revision History
 
-0.0.0 (2013/10/09)
-------------------
+## 0.0.0 (YYYY/MM/DD)
 
- - <Change the version, date, and this text.>
+ - TBD

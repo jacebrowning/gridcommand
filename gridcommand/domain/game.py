@@ -12,7 +12,6 @@ log = common.logger(__name__)
 
 
 class Game:
-
     """An individual game instance."""
 
     KEY_CHARS = string.ascii_lowercase + string.digits

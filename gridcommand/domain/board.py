@@ -9,7 +9,6 @@ log = common.logger(__name__)
 
 
 class Board:
-
     """The board for a game."""
 
     @classmethod

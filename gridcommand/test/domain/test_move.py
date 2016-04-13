@@ -1,5 +1,5 @@
 """Unit tests for the `domain.move` module."""
-# pylint: disable=R0201,C0103,C0111
+# pylint: disable=R0201,C0103,C0111,misplaced-comparison-constant
 
 from gridcommand.domain import Move
 

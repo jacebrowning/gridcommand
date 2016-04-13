@@ -4,7 +4,6 @@ from .move import Moves
 
 
 class Turn:
-
     """An individual turn for a player."""
 
     def __init__(self, done=False):
