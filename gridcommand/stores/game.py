@@ -108,17 +108,7 @@ class GameFileStore(Store):
         return yorm.find(GameFileModel, key)
 
     def filter(self):
-        games = []
-
-        path = os.path.join("data", "games")  # TODO: move this to settings?
-        if os.path.exists(path):
-            for filename in os.listdir(path):
-                key = filename.split('.')[0]
-
-                game = GameFileModel(key)
-                games.append(game)
-
-        return games
+        return list(yorm.match(GameFileModel, key='\w+'))
 
     def update(self, game):
         yorm.save(game)
