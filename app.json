@@ -1,0 +1,10 @@
+{
+  "env": {
+    "FLASK_ENV": {
+      "required": true
+    }
+  },
+  "addons": [
+    "papertrail"
+  ]
+}

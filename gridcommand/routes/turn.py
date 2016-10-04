@@ -2,7 +2,7 @@
 # pylint: disable=R0913
 
 from flask import request
-from flask.ext.api import exceptions  # pylint: disable=E0611,F0401
+from flask_api import exceptions  # pylint: disable=E0611,F0401
 
 from ..domain import Turn
 

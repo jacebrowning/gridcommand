@@ -14,10 +14,11 @@ Icon*
 # Temporary server files
 .env
 *.pid
+/data
 
 # Generated documentation
 /docs/gen
-/apidocs
+/docs/apidocs
 /site
 /*.html
 /*.rst
@@ -35,10 +36,12 @@ Icon*
 .coverage
 .coverage.*
 /htmlcov
+/xmlreport
 /pyunit.xml
 *.tmp
 
 # Build and release directories
+*.spec
 /build
 /dist
 

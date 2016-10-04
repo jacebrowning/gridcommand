@@ -1,5 +1,5 @@
-"""Configuration for pytest."""
-# pylint: disable=W0613,W0621
+"""Integration tests configuration file."""
+# pylint: disable=unused-argument,wildcard-import,unused-wildcard-import
 
 import json
 import logging
@@ -9,7 +9,7 @@ import pytest
 from gridcommand.common import logger
 from gridcommand import app
 
-from gridcommand.test.conftest import pytest_configure  # pylint: disable=unused-import
+from gridcommand.tests.conftest import pytest_configure  # pylint: disable=unused-import
 
 
 log = logger(__name__)

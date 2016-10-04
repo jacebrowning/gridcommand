@@ -2,7 +2,7 @@
 # pylint: disable=R0913
 
 from flask import request
-from flask.ext.api import status, exceptions  # pylint: disable=E0611,F0401
+from flask_api import status, exceptions  # pylint: disable=E0611,F0401
 
 from . import app
 from .root import ROOT_URL

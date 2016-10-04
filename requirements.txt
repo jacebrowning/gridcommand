@@ -1,4 +1,10 @@
-Flask == 0.10.1
-Flask-API == 0.6.4
+# Server
+Flask == 0.11.0
+Flask-API == 0.6.6
 
-YORM == 0.8.dev5
+# Storage
+YORM == 1.0.1
+
+# Deployment
+Flask-Script == 2.0.5
+gunicorn == 19.3.0

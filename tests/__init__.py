@@ -1,1 +1,1 @@
-"""Integration tests for the `gridcommand` package."""
+"""Integration tests for the package."""

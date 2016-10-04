@@ -2,7 +2,7 @@
 # pylint: disable=R0913
 
 from flask import request
-from flask.ext.api import status  # pylint: disable=E0611,F0401
+from flask_api import status  # pylint: disable=E0611,F0401
 
 from . import app
 from .turn import TURNS_DETAIL_URL
