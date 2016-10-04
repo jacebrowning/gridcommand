@@ -26,10 +26,10 @@ class MovesFileModel(yorm.types.SortedList, domain.Moves):
 @yorm.attr(done=yorm.types.Boolean)
 class TurnFileModel(yorm.types.AttributeDictionary, domain.Turn):
 
-    def __init__(self):
+    def __init__(self, moves=None, done=None):
         super().__init__()
-        self.moves = []
-        self.done = False
+        self.moves = moves or []
+        self.done = done or False
 
 
 @yorm.attr(color=yorm.types.String)
@@ -57,7 +57,7 @@ class BoardFileModel(yorm.types.AttributeDictionary, domain.Board):
 @yorm.attr(players=PlayersFileModel)
 @yorm.attr(turn=yorm.types.Integer)
 @yorm.attr(board=BoardFileModel)
-@yorm.sync("data/games/{self.key}.yml", auto_create=False)
+@yorm.sync("data/games/{self.key}.yml", auto_create=False, auto_save=False)
 class GameFileModel(domain.Game):
 
     def __init__(self, key, timestamp=0, turn=0, players=None, board=None):
