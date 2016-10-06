@@ -6,10 +6,10 @@ from .conftest import load
 
 def test_create_game_and_players(client):
 
-    # Attempt to get the games list
+    # Get the games list
 
     response = client.get("/api/games/")
-    assert 403 == response.status_code
+    assert 200 == response.status_code
 
     # Create a game
 

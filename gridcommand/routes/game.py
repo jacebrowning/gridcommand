@@ -1,8 +1,7 @@
 """API view for games."""
-# pylint: disable=R0913
 
 from flask import request
-from flask_api import status, exceptions  # pylint: disable=E0611,F0401
+from flask_api import status
 
 from . import app
 from .root import ROOT_URL
@@ -20,7 +19,8 @@ def games_list():
     """Create a new game."""
 
     if request.method == 'GET':
-        raise exceptions.PermissionDenied("Games list is hidden.")
+        games = app.service.find_games()
+        return formatter.format_multiple(games)
 
     elif request.method == 'POST':
         game = app.service.create_game()
@@ -30,13 +30,17 @@ def games_list():
         assert None
 
 
-@app.route(GAMES_DETAIL_URL, methods=['GET'])
+@app.route(GAMES_DETAIL_URL, methods=['GET', 'DELETE'])
 def games_detail(key):
     """Retrieve a game's status."""
 
     if request.method == 'GET':
         game = app.service.find_game(key)
         return formatter.format_single(game)
+
+    if request.method == 'DELETE':
+        app.service.delete_game(key)
+        return {}, status.HTTP_204_NO_CONTENT
 
     else:  # pragma: no cover
         assert None

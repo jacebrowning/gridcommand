@@ -1,7 +1,10 @@
 """Unit tests for the `views.game` module."""
-# pylint: disable=W0613,R0201,C0103,C0111,misplaced-comparison-constant
+# pylint: disable=no-self-use
+# pylint: disable=unused-argument,expression-not-assigned,misplaced-comparison-constant
 
 from unittest.mock import patch, Mock
+
+from expecter import expect
 
 from ..conftest import load
 
@@ -12,10 +15,8 @@ class TestGames:
 
     def test_get_games_list_hidden(self, client):
         response = client.get(GAMES)
-        assert 403 == response.status_code
-        assert {
-            'message': "Games list is hidden.",
-        } == load(response)
+        expect(response.status_code) == 200
+        expect(load(response)) == []
 
     @patch('gridcommand.domain.game.Game._generate_key', Mock(return_value='x'))
     @patch('gridcommand.domain.game.Game._get_timestamp', Mock(return_value=99))

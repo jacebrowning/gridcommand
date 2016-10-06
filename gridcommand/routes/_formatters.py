@@ -28,7 +28,7 @@ class GameFormatter(Formatter):
 
     def format_multiple(self, games):
         return [url_for('.games_detail',
-                        _external=True, key=key) for key in games]
+                        _external=True, key=game.key) for game in games]
 
 
 class PlayerFormatter(Formatter):
