@@ -1,6 +1,7 @@
 import os
 
 import yorm
+from pymongo import MongoClient
 
 from .. import common
 from .. import domain
@@ -127,3 +128,69 @@ class GameFileStore(Store):
         model = yorm.find(GameFileModel, game.key)
         if model:
             yorm.delete(model)
+
+
+class GameMongoStore(GameFileStore):
+
+    # pylint: disable=no-member
+
+    def __init__(self):
+        url = os.getenv('MONGODB_URI') or \
+            "mongodb://localhost:27017/gridcommand_dev"  # TODO: move this to settings.py
+        log.debug("Connecting to MongoDB: %s", url)
+        self._client = client = MongoClient(url)
+        self._db = client.database
+        self._games = self._db.games
+
+    def create(self, game):
+        model = super().create(game)
+
+        data = model.__mapper__.data
+        data['_id'] = game.key
+
+        log.debug("Creating document: %s", data)
+        result = self._games.insert_one(data)
+        log.debug(result)
+
+        return model
+
+    def read(self, key):
+        data = self._games.find_one(key)
+        log.debug("Read document: %s", data)
+
+        if not data:
+            return None
+
+        key = data.pop('_id')
+        model = GameFileModel(key)
+        model.__mapper__.data = data
+
+        return model
+
+    def filter(self):
+        models = []
+
+        for data in self._games.find():
+            log.debug("Read document: %s", data)
+            key = data.pop('_id')
+            model = GameFileModel(key)
+            model.__mapper__.data = data
+            models.append(model)
+
+        return models
+
+    def update(self, game):
+        super().update(game)
+
+        model = super().read(game.key)
+
+        data = model.__mapper__.data
+        data['_id'] = game.key
+
+        log.debug("Updating document: %s", data)
+        result = self._games.replace_one({'_id': data['_id']}, data)
+        log.debug(result)
+
+    def delete(self, game):
+        self._games.delete_one({'_id': game.key})
+        super().delete(game)

@@ -7,7 +7,7 @@ import logging
 import pytest
 
 from gridcommand.common import logger
-from gridcommand import app
+from gridcommand import app, stores
 
 from gridcommand.tests.conftest import pytest_configure  # pylint: disable=unused-import
 
@@ -31,5 +31,6 @@ def client(request):
     """Fixture to create a test client for the application."""
     app.config['TESTING'] = True
     app.config['DEBUG'] = True
+    app.service.game_store = stores.GameFileStore()
     test_client = app.test_client()
     return test_client

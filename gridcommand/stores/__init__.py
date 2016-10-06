@@ -1,3 +1,3 @@
 """Persistence models for the application."""
 
-from .game import GameMemoryStore, GameFileStore
+from .game import GameMemoryStore, GameFileStore, GameMongoStore
