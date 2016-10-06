@@ -67,6 +67,7 @@ def client(request):
 def game():
     """Fixture to create an empty game."""
     log.info("creating an empty game...")
+    app.service.game_store = stores.GameMemoryStore()
     game = app.service.create_game(key=GAME_KEY, timestamp=99)
     return game
 

@@ -89,6 +89,10 @@ launch: install
 doctor:  ## Confirm system dependencies are available
 	@ echo "Checking Python version:"
 	@ python --version | tee /dev/stderr | grep -q "3.5."
+	@ echo "Checking MongoDB version:"
+	@ mongo --version | tee /dev/stderr | grep -q "shell version: "
+	@ echo "Checking that MongoDB is running":
+	@ curl http://127.0.0.1:27017 &> /dev/null && echo ✔ || (echo ✖ && exit 2)
 
 # PROJECT DEPENDENCIES #########################################################
 

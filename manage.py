@@ -1,6 +1,6 @@
 #!env/bin/python
 
-import os
+# import os
 
 from flask_script import Manager, Server
 
@@ -12,11 +12,13 @@ from gridcommand.routes import app
 
 def find_assets():
     """Yield paths for all static files and templates."""
-    for name in ['static', 'templates']:
-        directory = os.path.join(app.config['PATH'], name)
-        for entry in os.scandir(directory):
-            if entry.is_file():
-                yield entry.path
+    return []
+    # TODO: add app.py and settings.py to match other Flask applications
+    # for name in ['static', 'templates']:
+    #     directory = os.path.join(app.config['PATH'], name)
+    #     for entry in os.scandir(directory):
+    #         if entry.is_file():
+    #             yield entry.path
 
 
 # TODO: add app.py and settings.py to match other Flask applications
@@ -24,7 +26,8 @@ def find_assets():
 
 # app = create_app(config)
 
-server = Server(host='0.0.0.0', extra_files=find_assets())
+server = Server(host='0.0.0.0', extra_files=find_assets(),
+                use_debugger=True, use_reloader=True)
 
 manager = Manager(app)
 manager.add_command('run', server)
