@@ -135,12 +135,13 @@ class GameMongoStore(GameFileStore):
     # pylint: disable=no-member
 
     def __init__(self):
-        url = os.getenv('MONGODB_URI') or \
+        uri = os.getenv('MONGODB_URI') or \
             "mongodb://localhost:27017/gridcommand_dev"  # TODO: move this to settings.py
-        log.debug("Connecting to MongoDB: %s", url)
-        self._client = client = MongoClient(url)
-        self._db = client.database
-        self._games = self._db.games
+        name = uri.split('/')[-1]
+        log.debug("Connecting to MongoDB: %s", uri)
+        client = MongoClient(uri)
+        database = client[name]
+        self._documents = database.games
 
     def create(self, game):
         model = super().create(game)
@@ -149,13 +150,13 @@ class GameMongoStore(GameFileStore):
         data['_id'] = game.key
 
         log.debug("Creating document: %s", data)
-        result = self._games.insert_one(data)
+        result = self._documents.insert_one(data)
         log.debug(result)
 
         return model
 
     def read(self, key):
-        data = self._games.find_one(key)
+        data = self._documents.find_one(key)
         log.debug("Read document: %s", data)
 
         if not data:
@@ -170,7 +171,7 @@ class GameMongoStore(GameFileStore):
     def filter(self):
         models = []
 
-        for data in self._games.find():
+        for data in self._documents.find():
             log.debug("Read document: %s", data)
             key = data.pop('_id')
             model = GameFileModel(key)
@@ -188,9 +189,9 @@ class GameMongoStore(GameFileStore):
         data['_id'] = game.key
 
         log.debug("Updating document: %s", data)
-        result = self._games.replace_one({'_id': data['_id']}, data)
+        result = self._documents.replace_one({'_id': data['_id']}, data)
         log.debug(result)
 
     def delete(self, game):
-        self._games.delete_one({'_id': game.key})
+        self._documents.delete_one({'_id': game.key})
         super().delete(game)
