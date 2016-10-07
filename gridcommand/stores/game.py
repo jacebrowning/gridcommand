@@ -164,6 +164,7 @@ class GameMongoStore(GameFileStore):
 
         key = data.pop('_id')
         model = GameFileModel(key)
+        model.__mapper__.create()
         model.__mapper__.data = data
 
         return model
@@ -175,6 +176,7 @@ class GameMongoStore(GameFileStore):
             log.debug("Read document: %s", data)
             key = data.pop('_id')
             model = GameFileModel(key)
+            model.__mapper__.create()
             model.__mapper__.data = data
             models.append(model)
 
