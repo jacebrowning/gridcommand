@@ -71,6 +71,7 @@ class GameFileModel(domain.Game):
 
 
 class GameMemoryStore(Store):
+    """Persists games in memory."""
 
     def __init__(self):
         self._games = {}
@@ -100,6 +101,7 @@ class GameMemoryStore(Store):
 
 
 class GameFileStore(Store):
+    """Persists games on disk."""
 
     def create(self, game):
         return yorm.create(GameFileModel, game.key, game.timestamp, game.turn,
@@ -115,9 +117,9 @@ class GameFileStore(Store):
         if os.path.exists(path):
             for filename in os.listdir(path):
                 key = filename.split('.')[0]
-
-                game = GameFileModel(key)
-                games.append(game)
+                if key:
+                    game = GameFileModel(key)
+                    games.append(game)
 
         return games
 
@@ -131,57 +133,82 @@ class GameFileStore(Store):
 
 
 class GameMongoStore(GameFileStore):
+    """Persists games in MongoDB and on disk."""
+
+    @staticmethod
+    def _insert_document(model):
+        document = model.__mapper__.data
+        document['_id'] = model.key
+
+        log.debug("Creating document: %s", document)
+        mongo.db.games.insert_one(document)
+
+        return document
+
+    @staticmethod
+    def _update_document(model):
+        document = model.__mapper__.data
+        document['_id'] = model.key
+
+        log.debug("Updating document: %s", document)
+        mongo.db.games.replace_one({'_id': document['_id']}, document)
+
+        return document
+
+    @staticmethod
+    def _update_model(document):
+        key = document.pop('_id')
+        model = GameFileModel(key)
+        model.__mapper__.create()
+        model.__mapper__.data = document
+        return model
 
     def create(self, game):
         model = super().create(game)
-
-        data = model.__mapper__.data
-        data['_id'] = game.key
-
-        log.debug("Creating document: %s", data)
-        result = mongo.db.games.insert_one(data)
-        log.debug(result)
-
+        self._insert_document(model)
         return model
 
     def read(self, key):
-        data = mongo.db.games.find_one(key)
-        log.debug("Read document: %s", data)
+        model = super().read(key)
 
-        if not data:
+        # TODO: make this work
+        if model and model.__mapper__.modified:
+            self._update_document(model)
+            return model
+
+        document = mongo.db.games.find_one(key)
+        log.debug("Read document: %s", document)
+
+        if document:
+            model = self._update_model(document)
+            return model
+
+        elif model:
+            self._insert_document(model)
+            return model
+
+        else:
             return None
-
-        key = data.pop('_id')
-        model = GameFileModel(key)
-        model.__mapper__.create()
-        model.__mapper__.data = data
-
-        return model
 
     def filter(self):
         models = []
 
-        for data in mongo.db.games.find():
-            log.debug("Read document: %s", data)
-            key = data.pop('_id')
-            model = GameFileModel(key)
-            model.__mapper__.create()
-            model.__mapper__.data = data
+        for document in mongo.db.games.find():
+            log.debug("Read document: %s", document)
+            model = self._update_model(document)
             models.append(model)
+
+        for model in super().filter():
+            if model.__mapper__.exists and model not in models:
+                self._insert_document(model)
+                models.append(model)
 
         return models
 
     def update(self, game):
         super().update(game)
-
         model = super().read(game.key)
-
-        data = model.__mapper__.data
-        data['_id'] = game.key
-
-        log.debug("Updating document: %s", data)
-        result = mongo.db.games.replace_one({'_id': data['_id']}, data)
-        log.debug(result)
+        self._update_document(model)
 
     def delete(self, game):
         mongo.db.games.delete_one({'_id': game.key})
