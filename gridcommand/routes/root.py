@@ -1,5 +1,4 @@
 """API entry point."""
-# pylint: disable=R0913
 
 from flask import url_for, redirect
 

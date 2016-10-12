@@ -1,4 +1,4 @@
-# pylint: disable=W0613,R0201,C0111
+# pylint: disable=unused-argument,no-self-use
 
 import os
 import tempfile

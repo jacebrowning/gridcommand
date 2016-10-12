@@ -8,7 +8,7 @@ from ._bases import Formatter
 
 
 # TODO: figure out a better way to serialize objects without parent objects
-# pylint: disable=W0221
+# pylint: disable=arguments-differ
 
 
 class GameFormatter(Formatter):

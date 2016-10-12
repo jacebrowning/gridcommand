@@ -1,5 +1,5 @@
-"""Unit tests for the `domain.player` module."""
-# pylint: disable=R0201,C0103,C0111,misplaced-comparison-constant
+# pylint: disable=no-self-use
+# pylint: disable=misplaced-comparison-constant
 
 import pytest
 

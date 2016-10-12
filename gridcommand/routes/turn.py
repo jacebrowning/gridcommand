@@ -1,5 +1,4 @@
 """API view for turns."""
-# pylint: disable=R0913
 
 from flask import request
 from flask_api import exceptions  # pylint: disable=E0611,F0401

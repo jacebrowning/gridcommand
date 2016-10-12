@@ -1,7 +1,7 @@
-"""Unit tests for the `views.turn` module."""
-# pylint: disable=W0613,R0201,C0103,C0111,misplaced-comparison-constant
+# pylint: disable=no-self-use
+# pylint: disable=unused-argument,misplaced-comparison-constant
 
-from ..conftest import load
+from ..utils import load
 
 from . import GAMES, EXTERNAL
 

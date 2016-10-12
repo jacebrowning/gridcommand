@@ -1,4 +1,3 @@
-"""Unit tests for the `views.game` module."""
 # pylint: disable=no-self-use
 # pylint: disable=unused-argument,expression-not-assigned,misplaced-comparison-constant
 
@@ -6,7 +5,7 @@ from unittest.mock import patch, Mock
 
 from expecter import expect
 
-from ..conftest import load
+from ..utils import load
 
 from . import GAMES, EXTERNAL
 

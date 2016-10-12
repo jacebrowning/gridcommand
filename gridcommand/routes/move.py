@@ -1,5 +1,4 @@
 """API view for moves."""
-# pylint: disable=R0913
 
 from flask import request
 from flask_api import status  # pylint: disable=E0611,F0401

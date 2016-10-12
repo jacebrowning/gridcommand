@@ -1,4 +1,5 @@
-# pylint: disable=W0613,R0201,C0103,C0111,misplaced-comparison-constant
+# pylint: disable=no-self-use
+# pylint: disable=misplaced-comparison-constant
 
 
 from .conftest import load

@@ -1,4 +1,4 @@
-# pylint: disable=R0201,C0103,C0111
+# pylint: disable=no-self-use
 
 import pytest
 

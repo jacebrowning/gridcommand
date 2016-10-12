@@ -10,7 +10,7 @@ from ..stores import GameMongoStore
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger('yorm').setLevel(logging.INFO)
 
-app = FlaskAPI(__name__)  # pylint: disable=C0103
+app = FlaskAPI(__name__)
 app.service = GameService(game_store=GameMongoStore())
 app.service.exceptions.not_found = exceptions.NotFound
 app.service.exceptions.permission_denied = exceptions.PermissionDenied
