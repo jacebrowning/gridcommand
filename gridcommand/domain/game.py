@@ -34,6 +34,9 @@ class Game:
     def __ne__(self, other):
         return not self == other
 
+    def __lt__(self, other):
+        return self.key < other.key
+
     @staticmethod
     def _generate_key():
         return ''.join(random.choice(Game.KEY_CHARS)

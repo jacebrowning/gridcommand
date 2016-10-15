@@ -15,6 +15,7 @@ def index():
 
     if request.method == 'GET':
         games = app.service.find_games()
+        games.sort()
         return formatter.format_multiple(games)
 
     elif request.method == 'POST':
@@ -35,6 +36,7 @@ def detail(key):
 
     if request.method == 'DELETE':
         app.service.delete_game(key)
+        # TODO: figure out why `{}` is required instead of `''`
         return {}, status.HTTP_204_NO_CONTENT
 
     else:  # pragma: no cover
