@@ -7,7 +7,7 @@ pymongo == 3.3.0
 Flask-PyMongo == 0.4.1
 
 # Views
-Flask-API == 0.6.8
+Flask-API == 0.6.9
 
 # Deployment
 Flask-Script == 2.0.5

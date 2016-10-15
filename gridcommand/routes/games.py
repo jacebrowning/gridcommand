@@ -36,8 +36,7 @@ def detail(key):
 
     if request.method == 'DELETE':
         app.service.delete_game(key)
-        # TODO: figure out why `{}` is required instead of `''`
-        return {}, status.HTTP_204_NO_CONTENT
+        return '', status.HTTP_204_NO_CONTENT
 
     else:  # pragma: no cover
         assert None
