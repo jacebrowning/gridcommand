@@ -6,13 +6,6 @@ from ..utils import load
 from . import GAMES, EXTERNAL
 
 
-class TestIndex:
-
-    def test_redirect(self, client):
-        response = client.get('/')
-        assert 302 == response.status_code
-
-
 class TestRoot:
 
     def test_version(self, client):
