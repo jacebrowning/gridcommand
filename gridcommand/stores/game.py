@@ -164,17 +164,14 @@ class GameMongoStore(GameFileStore):
         return model
 
     def create(self, game):
+        """Create a game in MongoDB and on disk."""
         model = super().create(game)
         self._insert_document(model)
         return model
 
     def read(self, key):
+        """Get the game from MongoDB."""
         model = super().read(key)
-
-        # TODO: make this work
-        if model and model.__mapper__.modified:
-            self._update_document(model)
-            return model
 
         document = mongo.db.games.find_one(key)
         log.debug("Read document: %s", document)
@@ -191,6 +188,7 @@ class GameMongoStore(GameFileStore):
             return None
 
     def filter(self):
+        """Load all games from MongoDB and on disk."""
         models = []
 
         for document in mongo.db.games.find():
@@ -206,10 +204,12 @@ class GameMongoStore(GameFileStore):
         return models
 
     def update(self, game):
+        """Update the game in MongoDB and on disk."""
         super().update(game)
         model = super().read(game.key)
         self._update_document(model)
 
     def delete(self, game):
+        """Delete the game in MongoDB and from disk."""
         mongo.db.games.delete_one({'_id': game.key})
         super().delete(game)
