@@ -1,11 +1,10 @@
 """Classes representing boards."""
 
 import copy
+import logging
 
-from .. import common
 
-
-log = common.logger(__name__)
+log = logging.getLogger(__name__)
 
 
 class Board:

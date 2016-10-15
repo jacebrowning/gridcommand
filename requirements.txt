@@ -1,10 +1,13 @@
-# Server
+# Core
 Flask == 0.11.0
-Flask-API == 0.6.7
 
-# Storage
+# Models
 YORM == 1.1.dev1
 pymongo == 3.3.0
+Flask-PyMongo == 0.4.1
+
+# Views
+Flask-API == 0.6.8
 
 # Deployment
 Flask-Script == 2.0.5

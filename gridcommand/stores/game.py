@@ -1,14 +1,14 @@
 import os
+import logging
 
 import yorm
-from pymongo import MongoClient
 
-from .. import common
 from .. import domain
+from ..extensions import mongo
 from ._bases import Store
 
 
-log = common.logger(__name__)
+log = logging.getLogger(__name__)
 
 
 @yorm.attr(begin=yorm.types.Integer)
@@ -132,17 +132,6 @@ class GameFileStore(Store):
 
 class GameMongoStore(GameFileStore):
 
-    # pylint: disable=no-member
-
-    def __init__(self):
-        uri = os.getenv('MONGODB_URI') or \
-            "mongodb://localhost:27017/gridcommand_dev"  # TODO: move this to settings.py
-        name = uri.split('/')[-1]
-        log.debug("Connecting to MongoDB: %s", uri)
-        client = MongoClient(uri)
-        database = client[name]
-        self._documents = database.games
-
     def create(self, game):
         model = super().create(game)
 
@@ -150,13 +139,13 @@ class GameMongoStore(GameFileStore):
         data['_id'] = game.key
 
         log.debug("Creating document: %s", data)
-        result = self._documents.insert_one(data)
+        result = mongo.db.games.insert_one(data)
         log.debug(result)
 
         return model
 
     def read(self, key):
-        data = self._documents.find_one(key)
+        data = mongo.db.games.find_one(key)
         log.debug("Read document: %s", data)
 
         if not data:
@@ -172,7 +161,7 @@ class GameMongoStore(GameFileStore):
     def filter(self):
         models = []
 
-        for data in self._documents.find():
+        for data in mongo.db.games.find():
             log.debug("Read document: %s", data)
             key = data.pop('_id')
             model = GameFileModel(key)
@@ -191,9 +180,9 @@ class GameMongoStore(GameFileStore):
         data['_id'] = game.key
 
         log.debug("Updating document: %s", data)
-        result = self._documents.replace_one({'_id': data['_id']}, data)
+        result = mongo.db.games.replace_one({'_id': data['_id']}, data)
         log.debug(result)
 
     def delete(self, game):
-        self._documents.delete_one({'_id': game.key})
+        mongo.db.games.delete_one({'_id': game.key})
         super().delete(game)

@@ -11,9 +11,3 @@ PYTHON_VERSION = 3, 3
 
 if not sys.version_info >= PYTHON_VERSION:  # pragma: no cover
     exit("Python {}.{}+ is required.".format(*PYTHON_VERSION))
-
-try:
-    # pylint: disable=wrong-import-position
-    from .routes import app
-except (ImportError, AttributeError):  # pragma: no cover
-    pass

@@ -18,16 +18,16 @@ class GameFormatter(Formatter):
         data = OrderedDict()
 
         kwargs = dict(_external=True, key=game.key)
-        data['uri'] = url_for('.games_detail', **kwargs)
+        data['uri'] = url_for('games.detail', **kwargs)
         data['timestamp'] = game.timestamp
-        data['players'] = url_for('.players_list', **kwargs)
+        data['players'] = url_for('players.index', **kwargs)
         data['turn'] = game.turn
-        data['start'] = url_for('.games_start', **kwargs)
+        data['start'] = url_for('games.start', **kwargs)
 
         return data
 
     def format_multiple(self, games):
-        return [url_for('.games_detail',
+        return [url_for('games.detail',
                         _external=True, key=game.key) for game in games]
 
 
@@ -40,15 +40,15 @@ class PlayerFormatter(Formatter):
         kwargs = dict(_external=True, key=game.key, color=player.color)
         if auth:
             kwargs.update(code=player.code)
-        data['uri'] = url_for('.players_detail', **kwargs)
+        data['uri'] = url_for('players.detail', **kwargs)
         data['done'] = player.turn.done
         if auth:
-            data['turns'] = url_for('.turns_list', **kwargs)
+            data['turns'] = url_for('turns.index', **kwargs)
 
         return data
 
     def format_multiple(self, players, game):
-        return [url_for('.players_detail', _external=True,
+        return [url_for('players.detail', _external=True,
                         key=game.key, color=player.color) for player in players]
 
 
@@ -74,14 +74,14 @@ class TurnFormatter(Formatter):
                       color=player.color,
                       code=player.code,
                       number=number)
-        data['uri'] = url_for('.turns_detail', **kwargs)
-        data['moves'] = url_for('.moves_list', **kwargs)
-        data['finish'] = url_for('.turns_finish', **kwargs)
+        data['uri'] = url_for('turns.detail', **kwargs)
+        data['moves'] = url_for('moves.index', **kwargs)
+        data['finish'] = url_for('turns.finish', **kwargs)
 
         return data
 
     def format_multiple(self, turns, game, player):
-        return [url_for('.turns_detail', _external=True,
+        return [url_for('turns.detail', _external=True,
                         key=game.key, color=player.color, code=player.code,
                         number=index + 1) for index in range(len(turns))]
 
@@ -97,7 +97,7 @@ class MoveFormatter(Formatter):
         return data
 
     def format_multiple(self, moves, game, player):
-        return [url_for('.moves_detail', _external=True,
+        return [url_for('moves.detail', _external=True,
                         key=game.key, color=player.color, code=player.code,
                         begin=move.begin, end=move.end) for move in moves]
 

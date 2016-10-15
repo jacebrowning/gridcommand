@@ -1,10 +1,11 @@
 """Classes representing players in a game."""
 
-from ..common import logger
+import logging
+
 from .turn import Turn
 
 
-log = logger(__name__)
+log = logging.getLogger(__name__)
 
 
 class Player:

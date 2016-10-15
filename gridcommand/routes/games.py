@@ -1,21 +1,16 @@
 """API view for games."""
 
-from flask import request
+from flask import Blueprint, request, current_app as app
 from flask_api import status
 
-from . import app
-from .root import ROOT_URL
 from ._formatters import game_formatter as formatter, board_formatter
 
 
-GAMES_LIST_URL = ROOT_URL + "/games/"
-GAMES_DETAIL_URL = GAMES_LIST_URL + "<string:key>"
-GAMES_START_URL = GAMES_DETAIL_URL + "/start"
-GAMES_BOARD_URL = GAMES_DETAIL_URL + "/board"
+blueprint = Blueprint('games', __name__, url_prefix="/api/games")
 
 
-@app.route(GAMES_LIST_URL, methods=['GET', 'POST'])
-def games_list():
+@blueprint.route("/", methods=['GET', 'POST'])
+def index():
     """Create a new game."""
 
     if request.method == 'GET':
@@ -30,8 +25,8 @@ def games_list():
         assert None
 
 
-@app.route(GAMES_DETAIL_URL, methods=['GET', 'DELETE'])
-def games_detail(key):
+@blueprint.route("/<string:key>", methods=['GET', 'DELETE'])
+def detail(key):
     """Retrieve a game's status."""
 
     if request.method == 'GET':
@@ -46,8 +41,8 @@ def games_detail(key):
         assert None
 
 
-@app.route(GAMES_START_URL, methods=['GET', 'POST'])
-def games_start(key):
+@blueprint.route("/<string:key>/start", methods=['GET', 'POST'])
+def start(key):
     """Start a game."""
     game = app.service.find_game(key)
 
@@ -63,13 +58,12 @@ def games_start(key):
     return {'started': game.started}
 
 
-@app.route(GAMES_BOARD_URL, methods=['GET'])
+@blueprint.route("/<string:key>/board", methods=['GET'])
 @board_formatter.single
-def games_board(key):
+def board(key):
     """Get the game board."""
     if request.method == 'GET':
-        board = app.service.get_board(key)
-        return board
+        return app.service.get_board(key)
 
     else:  # pragma: no cover
         assert None
