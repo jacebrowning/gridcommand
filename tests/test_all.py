@@ -2,7 +2,7 @@
 # pylint: disable=misplaced-comparison-constant
 
 
-from .conftest import load
+from .utils import load
 
 
 def test_create_game_and_players(client):

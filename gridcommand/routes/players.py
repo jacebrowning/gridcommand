@@ -1,19 +1,18 @@
 """API view for players."""
 
-from flask import request
-from flask_api import status, exceptions  # pylint: disable=E0611,F0401
+from flask import Blueprint, request, current_app as app
+from flask_api import status, exceptions
 
-from . import app
-from .game import GAMES_DETAIL_URL
+from .games import blueprint as games
 from ._formatters import player_formatter as formatter
 
 
-PLAYERS_LIST_URL = GAMES_DETAIL_URL + "/players/"
-PLAYERS_DETAIL_URL = PLAYERS_LIST_URL + "<string:color>"
+blueprint = Blueprint('players', __name__,
+                      url_prefix=games.url_prefix + "/<string:key>/players")
 
 
-@app.route(PLAYERS_LIST_URL, methods=['GET', 'POST'])
-def players_list(key):
+@blueprint.route("/", methods=['GET', 'POST'])
+def index(key):
     """List or create players."""
     game = app.service.find_game(key)
 
@@ -30,8 +29,8 @@ def players_list(key):
         assert None
 
 
-@app.route(PLAYERS_DETAIL_URL, methods=['GET', 'DELETE'])
-def players_detail(key, color):
+@blueprint.route("/<string:color>", methods=['GET', 'DELETE'])
+def detail(key, color):
     """Retrieve a player.
 
     With authentication (`code` argument), retrieve private details or delete.

@@ -1,19 +1,18 @@
 """API view for moves."""
 
-from flask import request
-from flask_api import status  # pylint: disable=E0611,F0401
+from flask import Blueprint, request, current_app as app
+from flask_api import status
 
-from . import app
-from .turn import TURNS_DETAIL_URL
+from .turns import blueprint as turns
 from ._formatters import move_formatter as formatter
 
 
-MOVES_LIST_URL = TURNS_DETAIL_URL + "/moves/"
-MOVES_DETAIL_URL = MOVES_LIST_URL + "<int:begin>-<int:end>"
+blueprint = Blueprint('moves', __name__,
+                      url_prefix=turns.url_prefix + "/<int:number>/moves")
 
 
-@app.route(MOVES_LIST_URL, methods=['GET', 'POST'])
-def moves_list(key, color, number):
+@blueprint.route("/", methods=['GET', 'POST'])
+def index(key, color, number):
     """List or create moves for a player."""
     code = request.args.get('code')
     turn, player, game = app.service.find_turn(key, color, code, number)
@@ -32,8 +31,8 @@ def moves_list(key, color, number):
         assert None
 
 
-@app.route(MOVES_DETAIL_URL, methods=['GET', 'PUT', 'DELETE'])
-def moves_detail(key, color, number, begin, end):
+@blueprint.route("/<int:begin>-<int:end>", methods=['GET', 'PUT', 'DELETE'])
+def detail(key, color, number, begin, end):
     """Retrieve, update or delete a player's move."""
     code = request.args.get('code')
     turn, _, game = app.service.find_turn(key, color, code, number)

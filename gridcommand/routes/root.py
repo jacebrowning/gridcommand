@@ -1,21 +1,19 @@
 """API entry point."""
 
-from flask import url_for, redirect
-
-from . import app
+from flask import Blueprint, url_for, redirect
 
 
-ROOT_URL = "/api"
+blueprint = Blueprint('root', __name__)
 
 
-@app.route('/')
+@blueprint.route("/")
 def index():
     """Redirect the index to the API."""
     return redirect(url_for('.root'))
 
 
-@app.route(ROOT_URL)
+@blueprint.route("/api")
 def root():
     """Get the API version."""
     return {'version': 1,
-            'games': url_for('.games_list', _external=True)}
+            'games': url_for('games.index', _external=True)}

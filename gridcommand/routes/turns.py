@@ -1,22 +1,19 @@
 """API view for turns."""
 
-from flask import request
-from flask_api import exceptions  # pylint: disable=E0611,F0401
+from flask import Blueprint, request, current_app as app
+from flask_api import exceptions
 
 from ..domain import Turn
 
-from . import app
-from .player import PLAYERS_DETAIL_URL
 from ._formatters import turn_formatter as formatter
 
 
-TUNRS_LIST_URL = PLAYERS_DETAIL_URL + "/turns/"
-TURNS_DETAIL_URL = TUNRS_LIST_URL + "<int:number>"
-TURNS_FINISH_URL = TURNS_DETAIL_URL + "/finish"
+url_prefix = "/api/games/<string:key>/players/<string:color>/turns"
+blueprint = Blueprint('turns', __name__, url_prefix=url_prefix)
 
 
-@app.route(TUNRS_LIST_URL, methods=['GET'])
-def turns_list(key, color):
+@blueprint.route("/", methods=['GET'])
+def index(key, color):
     """List turns for a player."""
     game = app.service.find_game(key)
     player = game.players.find(color, exc=exceptions.NotFound)
@@ -31,8 +28,8 @@ def turns_list(key, color):
         assert None
 
 
-@app.route(TURNS_DETAIL_URL, methods=['GET'])
-def turns_detail(key, color, number):
+@blueprint.route("/<int:number>", methods=['GET'])
+def detail(key, color, number):
     """Retrieve a player's turn."""
     code = request.args.get('code')
     _, player, game = app.service.find_turn(key, color, code, number)
@@ -46,8 +43,8 @@ def turns_detail(key, color, number):
     return formatter.format_single(game, player, number)
 
 
-@app.route(TURNS_FINISH_URL, methods=['GET', 'POST'])
-def turns_finish(key, color, number):
+@blueprint.route("/<int:number>/finish", methods=['GET', 'POST'])
+def finish(key, color, number):
     """Finish a player's turn."""
     code = request.args.get('code')
     turn, _, game = app.service.find_turn(key, color, code, number)

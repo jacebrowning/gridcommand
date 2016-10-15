@@ -1,11 +1,12 @@
 # pylint: disable=redefined-outer-name
 
+import logging
 from unittest.mock import patch
 
 import pytest
 
-from gridcommand.common import logger
-from gridcommand import app
+from gridcommand.app import build
+from gridcommand.config import load
 from gridcommand import domain
 from gridcommand import services
 from gridcommand import stores
@@ -15,30 +16,33 @@ GAME_KEY = 'my_game'
 PLAYER_CODE = 'my_code'
 PLAYERS_COLORS = ['red', 'blue']
 
-log = logger(__name__)
+log = logging.getLogger(__name__)
 
 
 # Flask app fixtures
 
 
 @pytest.fixture
-def client():
+def app():
+    """Fixture to create the Flask application."""
+    test_app = build(load('test'))
+    test_app.service.game_store = stores.GameMemoryStore()
+    return test_app
+
+
+@pytest.fixture
+def client(app):
     """Fixture to create a test client for the application."""
-    app.config['TESTING'] = True
-    app.config['DEBUG'] = True
-    app.service.game_store = stores.GameMemoryStore()
-    test_client = app.test_client()
-    return test_client
+    return app.test_client()
 
 
 # Domain model fixtures
 
 
 @pytest.fixture
-def game():
+def game(app):
     """Fixture to create an empty game."""
     log.info("creating an empty game...")
-    app.service.game_store = stores.GameMemoryStore()
     game = app.service.create_game(key=GAME_KEY, timestamp=99)
     return game
 

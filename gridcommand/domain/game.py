@@ -3,12 +3,13 @@
 import time
 import string
 import random
+import logging
 
-from .. import common
 from .player import Players
 from .board import Board
 
-log = common.logger(__name__)
+
+log = logging.getLogger(__name__)
 
 
 class Game:
