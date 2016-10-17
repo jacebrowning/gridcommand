@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h2>{{key}}</h2>
+
+<form id="join-game">
+  <input id="code" type="text" placeholder="your secret code">
+  <input type="submit" value="Join Game">
+</form>
+
+<script>
+var key = '{{ key }}';
+</script>
+
+<script src="/static/game.js"></script>
+
+{% endblock %}

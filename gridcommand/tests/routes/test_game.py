@@ -24,6 +24,7 @@ class TestGames:
         assert 201 == response.status_code
         assert {
             'uri': EXTERNAL + GAMES + "x",
+            'key': "x",
             'timestamp': 99,
             'players': EXTERNAL + GAMES + "x/players/",
             'turn': 0,
@@ -38,6 +39,7 @@ class TestGame:
         assert 200 == response.status_code
         assert {
             'uri': EXTERNAL + GAMES + "my_game",
+            'key': "my_game",
             'timestamp': 99,
             'players': EXTERNAL + GAMES + "my_game/players/",
             'turn': 0,
