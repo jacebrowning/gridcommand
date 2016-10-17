@@ -42,6 +42,8 @@ def _register_blueprints(app):
     app.register_blueprint(routes.turns.blueprint)
     app.register_blueprint(routes.moves.blueprint)
 
+    app.register_blueprint(routes.web.blueprint)
+
 
 def _register_services(app):
     app.service = services.GameService(game_store=stores.GameMongoStore())
