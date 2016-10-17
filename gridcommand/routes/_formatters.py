@@ -43,6 +43,8 @@ class PlayerFormatter(Formatter):
             kwargs.update(code=player.code)
         data['uri'] = url_for('players.detail', **kwargs)
         data['color'] = player.color
+        if auth:
+            data['code'] = player.code
         data['done'] = player.turn.done
         if auth:
             data['turns'] = url_for('turns.index', **kwargs)

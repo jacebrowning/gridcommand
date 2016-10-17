@@ -28,6 +28,7 @@ class TestPlayers:
         assert {
             'uri': EXTERNAL_GAMES + "my_game/players/red?code=1234",
             'color': "red",
+            'code': "1234",
             'done': False,
             'turns': EXTERNAL_GAMES + "my_game/players/red/turns/?code=1234",
         } == load(response)
@@ -86,6 +87,7 @@ class TestPlayerWithAuth:
         assert {
             'uri': EXTERNAL_GAMES + "my_game/players/red?code=my_code",
             'color': "red",
+            'code': "my_code",
             'done': False,
             'turns': EXTERNAL_GAMES + "my_game/players/red/turns/?code=my_code",
         } == load(response)

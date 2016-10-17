@@ -1,14 +1,16 @@
-var urlGame = "/api/games/" + key;
-var urlPlayers = urlGame + "/players/"
-var urlPlayer = null;
+var playersAPI = "/api/games/" + key + "/players/"
 
-$( "#join-game" ).submit(function( event ) {
+$( "#add-players" ).submit(function( event ) {
   event.preventDefault();
 
-  var data = { "code": $( "#code" ).val() };
-  $.post( urlPlayers, data, function( data ) {
-    urlPlayer = data.uri;
-    alert("You have joined as the " + data.color + " player.");
-    $('#join-game')[0].reset();
+  window.location.href = "/games/" + key + "/join";
+});
+
+$(function() {
+  $.get( playersAPI, function( data ) {
+    var count = data.length;
+    var message = count + " " + (count == 1 ? "player has" : "players have") +
+      " " + "joined the game.";
+    $( "#players-count" ).text(message);
   });
 });

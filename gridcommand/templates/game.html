@@ -1,11 +1,12 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<h2>{{key}}</h2>
+<h2>Players</h2>
 
-<form id="join-game">
-  <input id="code" type="text" placeholder="your secret code">
-  <input type="submit" value="Join Game">
+<p id=players-count></p>
+
+<form id="add-players">
+  <input type="submit" value="Add Players">
 </form>
 
 <script>

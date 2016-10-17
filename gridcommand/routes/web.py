@@ -16,6 +16,11 @@ def game(key):
     return Response(render_template("game.html", key=key))
 
 
+@blueprint.route("/games/<key>/join")
+def join(key):
+    return Response(render_template("join.html", key=key))
+
+
 @blueprint.route("/games/<key>/board")
 def board(key):
     return Response(render_template("board.html", key=key))
