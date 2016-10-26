@@ -1,7 +1,12 @@
-$( "#new-game" ).submit(function( event ) {
+var apiGamesIndex = "/api/games/";
+
+
+$("#new-game").submit(function(event) {
+
   event.preventDefault();
 
-  $.post( "/api/games/", function( data ) {
+  $.post(apiGamesIndex, function(data) {
     window.location.href = "/games/" + data.key;
   });
+
 });
