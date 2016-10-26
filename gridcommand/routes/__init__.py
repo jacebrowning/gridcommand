@@ -3,3 +3,5 @@ from . import games
 from . import players
 from . import turns
 from . import moves
+
+from . import web

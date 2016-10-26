@@ -19,6 +19,7 @@ class GameFormatter(Formatter):
 
         kwargs = dict(_external=True, key=game.key)
         data['uri'] = url_for('games.detail', **kwargs)
+        data['key'] = game.key
         data['timestamp'] = game.timestamp
         data['players'] = url_for('players.index', **kwargs)
         data['turn'] = game.turn
@@ -41,6 +42,9 @@ class PlayerFormatter(Formatter):
         if auth:
             kwargs.update(code=player.code)
         data['uri'] = url_for('players.detail', **kwargs)
+        data['color'] = player.color
+        if auth:
+            data['code'] = player.code
         data['done'] = player.turn.done
         if auth:
             data['turns'] = url_for('turns.index', **kwargs)

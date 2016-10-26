@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h2>Board</h2>
+
+<p id=players-pending></p>
+
+<form id="finish-turn">
+  <input type="submit" value="Finish Turn">
+</form>
+
+<script>
+var key = '{{ key }}';
+</script>
+
+<script src="/static/board.js"></script>
+
+{% endblock %}
