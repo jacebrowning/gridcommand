@@ -7,7 +7,7 @@ $(function() {
     var count = data.length;
     var message = count + " " + (count == 1 ? "player has" : "players have") +
       " " + "joined the game.";
-    $("#players-count").text(message);
+    $("#players-joined").text(message);
   });
 
 });
