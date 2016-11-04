@@ -37,6 +37,10 @@ class Game:
     def __lt__(self, other):
         return self.key < other.key
 
+    @property
+    def pending(self):
+        return sum(1 for p in self.players if not p.turn.done)
+
     @staticmethod
     def _generate_key():
         return ''.join(random.choice(Game.KEY_CHARS)

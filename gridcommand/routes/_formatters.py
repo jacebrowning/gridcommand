@@ -23,6 +23,7 @@ class GameFormatter(Formatter):
         data['timestamp'] = game.timestamp
         data['players'] = url_for('players.index', **kwargs)
         data['turn'] = game.turn
+        data['pending'] = game.pending
         data['start'] = url_for('games.start', **kwargs)
 
         return data
