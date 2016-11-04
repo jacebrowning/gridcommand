@@ -28,6 +28,7 @@ class TestGames:
             'timestamp': 99,
             'players': EXTERNAL + GAMES + "x/players/",
             'turn': 0,
+            'pending': 0,
             'start': EXTERNAL + GAMES + "x/start",
         } == load(response)
 
@@ -43,6 +44,7 @@ class TestGame:
             'timestamp': 99,
             'players': EXTERNAL + GAMES + "my_game/players/",
             'turn': 0,
+            'pending': 0,
             'start': EXTERNAL + GAMES + "my_game/start",
         } == load(response)
 
