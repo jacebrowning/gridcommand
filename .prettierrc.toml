@@ -1,0 +1,9 @@
+printWidth = 88
+tabWidth = 4
+semi = false
+bracketSameLine = true
+
+[[ overrides ]]
+
+files = "*.yml"
+options = { tabWidth = 2 }

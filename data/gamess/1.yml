@@ -1,0 +1,23 @@
+board:
+  rows:
+    - cols:
+        - color: ""
+          count: 21
+        - color: ""
+          count: 0
+        - color: red
+          count: 2
+    - cols:
+        - color: ""
+          count: 1
+        - color: blue
+          count: 8
+        - color: "green"
+          count: 6
+    - cols:
+        - color: ""
+          count: 12
+        - color: ""
+          count: 2
+        - color: ""
+          count: 11
