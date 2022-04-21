@@ -49,13 +49,12 @@
 
 {% else %}
 
-<div class="d-flex justify-content-center align-items-center" style="height: 100%">
-    <span
-        class="d-flex justify-content-center text-{{ cell.color.value }} fs-1"
-        hx-post="/games/{{ game.number }}/_cell/{{ cell.row }}/{{ cell.col }}"
-        hx-target="closest td">
-        {{ cell.value }}
-    </span>
+<div
+    class="d-flex justify-content-center align-items-center"
+    style="height: 100%"
+    hx-post="/games/{{ game.number }}/_cell/{{ cell.row }}/{{ cell.col }}"
+    hx-target="closest td">
+    <span class="text-{{ cell.color.value }} fs-1">{{ cell.value }}</span>
 </div>
 
 {% endif %}
