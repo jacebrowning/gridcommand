@@ -17,3 +17,11 @@ serve:
 		status=$$?; \
 		sleep 1; \
 	done; \
+
+.PHONY: clean
+clean:
+	rm -rf data
+
+.PHONY: clean-all
+clean-all: clean
+	rm -rf .venv

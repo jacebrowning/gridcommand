@@ -1,9 +1,19 @@
-<h1>Hello, world!</h1>
+<h1 class="py-4" hx-get="/games/{{ game.number }}/_board" hx-target="#board">
+    Round {{ game.round }}
+</h1>
 
-<div hx-get="/games/{{ game.number }}/_board" hx-target="#board">{{ game }}</div>
+<table class="table table-bordered border-dark">
+    <tbody>
+        {% for row in game.board.rows %}
 
-<br />
-
-{% for row in game.board.rows %}
-<div>{% for cell in row.cols %} {% include "cell.html" %} {% endfor %}</div>
-{% endfor %}
+        <tr>
+            {% for cell in row.cols %}
+            <!-- TODO: Update height to ensuire squares -->
+            <td style="width: 20%; height: 200px">
+                {% if cell %} {% include "cell.html" %} {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
