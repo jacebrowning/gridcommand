@@ -6,7 +6,7 @@
         <button
             type="button"
             class="btn btn-sm btn-outline-{{ cell.color.value }} py-0 px-3"
-            hx-post="/games/{{ game.number }}/_cell/{{ cell.row }}/{{ cell.col }}/up"
+            hx-post="{{ url_for('move', number=game.number, row=cell.row, col=cell.col, direction='up') }}"
             hx-target="closest td">
             {{ cell.up }}
         </button>
@@ -20,7 +20,7 @@
         <button
             type="button"
             class="btn btn-sm btn-outline-{{ cell.color.value }} py-2 px-1"
-            hx-post="/games/{{ game.number }}/_cell/{{ cell.row }}/{{ cell.col }}/left"
+            hx-post="{{ url_for('move', number=game.number, row=cell.row, col=cell.col, direction='left') }}"
             hx-target="closest td">
             {{ cell.left }}
         </button>
@@ -30,7 +30,7 @@
 
         <span
             class="text-{{ cell.color.value }} fs-3"
-            hx-post="/games/{{ game.number }}/_cell/{{ cell.row }}/{{ cell.col }}/center"
+            hx-post="{{ url_for('move', number=game.number, row=cell.row, col=cell.col, direction='center') }}"
             hx-target="closest td">
             {{ cell.value }}
         </span>
@@ -39,7 +39,7 @@
         <button
             type="button"
             class="btn btn-sm btn-outline-{{ cell.color.value }} py-2 px-1"
-            hx-post="/games/{{ game.number }}/_cell/{{ cell.row }}/{{ cell.col }}/right"
+            hx-post="{{ url_for('move', number=game.number, row=cell.row, col=cell.col, direction='right') }}"
             hx-target="closest td">
             {{ cell.right }}
         </button>
@@ -53,7 +53,7 @@
         <button
             type="button"
             class="btn btn-sm btn-outline-{{ cell.color.value }} py-0 px-3"
-            hx-post="/games/{{ game.number }}/_cell/{{ cell.row }}/{{ cell.col }}/down"
+            hx-post="{{ url_for('move', number=game.number, row=cell.row, col=cell.col, direction='down') }}"
             hx-target="closest td">
             {{ cell.down }}
         </button>
@@ -68,7 +68,7 @@
 <div
     class="d-flex justify-content-center align-items-center"
     style="height: 100%"
-    hx-post="/games/{{ game.number }}/_cell/{{ cell.row }}/{{ cell.col }}"
+    hx-post="{{ url_for('cell', number=game.number, row=cell.row, col=cell.col) }}"
     hx-target="closest td">
     <button class="btn btn-outline-{{ cell.color.value }} fs-1 px-4">
         {{ cell.value }}

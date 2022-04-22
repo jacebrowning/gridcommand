@@ -1,20 +1,18 @@
 <div class="d-flex justify-content-between align-items-center">
-    <h1 class="py-4" hx-get="/games/{{ game.number }}/_board" hx-target="#board">
-        Round {{ game.round }}
-    </h1>
+    <h1 class="py-4">Round {{ game.round }}</h1>
     <div>
         {% if game.round == 0 %}
         <button
             type="button"
             class="btn btn-secondary"
-            hx-post="/games/{{ game.number }}/_randomize"
+            hx-post="{{ url_for('game_randomize', number=game.number) }}"
             hx-target="#board">
             Randomize
         </button>
         <button
             type="button"
             class="btn btn-primary"
-            hx-post="/games/{{ game.number }}/_start"
+            hx-post="{{ url_for('game_start', number=game.number) }}"
             hx-target="#board">
             Start
         </button>
