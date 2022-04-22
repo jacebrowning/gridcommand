@@ -1,10 +1,11 @@
-from flask import Flask, render_template, redirect, url_for
-from datafiles import datafile, field
-import datafiles
-from enum import Enum
 import random
+from enum import Enum
 from typing import Iterator
 
+import datafiles
+from datafiles import datafile, field
+from flask import Flask, redirect, render_template, url_for
+from livereload import Server
 
 SIZE = 5
 UNITS = 20
@@ -163,3 +164,9 @@ def move(number: int, row: int, col: int, direction: str):
     cell = game.board[row, col]
     cell.move(1, direction)
     return render_template("cell.html", game=game, cell=cell, editing=True)
+
+
+if __name__ == "__main__":
+    app.debug = True
+    server = Server(app.wsgi_app)
+    server.serve(port=5000)
