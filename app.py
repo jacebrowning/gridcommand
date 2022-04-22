@@ -5,7 +5,6 @@ from typing import Iterator
 import datafiles
 from datafiles import datafile, field
 from flask import Flask, redirect, render_template, url_for
-from livereload import Server
 
 SIZE = 5
 UNITS = 20
@@ -69,6 +68,7 @@ class Board:
                 yield row
                 row = [cell]
                 index += 1
+        yield row
 
     def __getitem__(self, xy) -> Cell:
         row, col = xy
@@ -114,6 +114,11 @@ class Game:
                     cell = random.choice(cells[color])
                     cell.value += 1
         self.datafile.save()
+
+
+@app.get("/")
+def index():
+    return redirect(url_for("games"))
 
 
 @app.get("/games")
@@ -167,6 +172,11 @@ def move(number: int, row: int, col: int, direction: str):
 
 
 if __name__ == "__main__":
+    from livereload import Server
+
     app.debug = True
     server = Server(app.wsgi_app)
+    server.watch("*.py")
+    server.watch("templates")
+    server.watch("data", ignore=lambda _: True)
     server.serve(port=5000)

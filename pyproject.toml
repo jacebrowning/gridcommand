@@ -2,7 +2,7 @@
 
 name = "gridcommand"
 version = "0.0"
-description = ""
+description = "A grid-based clone of Same Time Risk."
 authors = ["Jace Browning <jacebrowning@gmail.com>"]
 
 [tool.poetry.dependencies]

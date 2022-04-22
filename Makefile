@@ -38,7 +38,12 @@ check: install
 
 .PHONY: run
 run: install
-	poetry run python app.py
+	status=1; \
+	while [ $$status -eq 1 ] ; do \
+		poetry run python app.py; \
+		status=$$?; \
+		sleep 1; \
+	done; \
 
 .PHONY: serve
 serve:
