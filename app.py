@@ -98,7 +98,7 @@ class Game:
         with datafiles.frozen():
             self.board.reset()
             for cell in self.board.cells:
-                p = random.randint(1, 4)
+                p = random.randint(1, 3)
                 if p == 1:
                     cell.color = Color.BLUE
                     cell.value = 1
@@ -121,7 +121,7 @@ def index():
     return redirect(url_for("games"))
 
 
-@app.get("/games")
+@app.get("/games/")
 def games():
     number = sum(1 for _ in Game.objects.all()) + 1
     game = Game(number)

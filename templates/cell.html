@@ -47,13 +47,21 @@
     </div>
 </div>
 
-{% else %}
+{% elif game.round > 0 %}
 
 <div
     class="d-flex justify-content-center align-items-center"
     style="height: 100%"
     hx-post="/games/{{ game.number }}/_cell/{{ cell.row }}/{{ cell.col }}"
     hx-target="closest td">
+    <button class="btn btn-outline-{{ cell.color.value }} fs-1 px-4">
+        {{ cell.value }}
+    </button>
+</div>
+
+{% else %}
+
+<div class="d-flex justify-content-center align-items-center" style="height: 100%">
     <span class="text-{{ cell.color.value }} fs-1">{{ cell.value }}</span>
 </div>
 
