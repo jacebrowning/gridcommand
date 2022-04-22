@@ -59,14 +59,11 @@ class Cell:
         return any((self.up, self.down, self.left, self.right))
 
     def move(self, count: int, direction: str):
-        with datafiles.frozen():
-            if direction == "center":
-                self.reset()
-            elif self.value:
+        if self.value:
+            with datafiles.frozen(self):
                 self.value -= count
                 value = getattr(self, direction)
                 setattr(self, direction, value + count)
-        self.datafile.save()
 
     def reset(self):
         self.value = self.value + self.up + self.down + self.left + self.right
@@ -115,7 +112,7 @@ class Game:
     def initialize(self):
         units = {Color.BLUE: UNITS, Color.RED: UNITS}
         cells = {Color.BLUE: [], Color.RED: []}
-        with datafiles.frozen():
+        with datafiles.frozen(self):
             self.board.reset()
             for cell in self.board.cells:
                 p = random.randint(1, 3)
@@ -133,7 +130,6 @@ class Game:
                 for _ in range(count):
                     cell = random.choice(cells[color])
                     cell.value += 1
-        self.datafile.save()
 
 
 @app.get("/")
@@ -187,7 +183,10 @@ def cell(number: int, row: int, col: int):
 def move(number: int, row: int, col: int, direction: str):
     game = Game(number)
     cell = game.board[row, col]
-    cell.move(1, direction)
+    if direction == "center":
+        cell.reset()
+    else:
+        cell.move(1, direction)
     return render_template("cell.html", game=game, cell=cell, editing=True)
 
 
