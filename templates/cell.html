@@ -4,7 +4,7 @@
     <div class="text-center">
         <button
             type="button"
-            class="btn btn-sm btn-outline-{{ cell.color.value }}"
+            class="btn btn-sm btn-outline-{{ cell.color.value }} py-0 px-3"
             hx-post="/games/{{ game.number }}/_cell/{{ cell.row }}/{{ cell.col }}/up"
             hx-target="closest td">
             {{ cell.up }}
@@ -14,14 +14,14 @@
     <div class="d-flex justify-content-between align-items-center">
         <button
             type="button"
-            class="btn btn-sm btn-outline-{{ cell.color.value }}"
+            class="btn btn-sm btn-outline-{{ cell.color.value }} py-2 px-1"
             hx-post="/games/{{ game.number }}/_cell/{{ cell.row }}/{{ cell.col }}/left"
             hx-target="closest td">
             {{ cell.left }}
         </button>
 
         <span
-            class="text-{{ cell.color.value }} fs-1"
+            class="text-{{ cell.color.value }} fs-5"
             hx-post="/games/{{ game.number }}/_cell/{{ cell.row }}/{{ cell.col }}/center"
             hx-target="closest td">
             {{ cell.value }}
@@ -29,7 +29,7 @@
 
         <button
             type="button"
-            class="btn btn-sm btn-outline-{{ cell.color.value }}"
+            class="btn btn-sm btn-outline-{{ cell.color.value }} py-2 px-1"
             hx-post="/games/{{ game.number }}/_cell/{{ cell.row }}/{{ cell.col }}/right"
             hx-target="closest td">
             {{ cell.right }}
@@ -39,7 +39,7 @@
     <div class="text-center">
         <button
             type="button"
-            class="btn btn-sm btn-outline-{{ cell.color.value }}"
+            class="btn btn-sm btn-outline-{{ cell.color.value }} py-0 px-3"
             hx-post="/games/{{ game.number }}/_cell/{{ cell.row }}/{{ cell.col }}/down"
             hx-target="closest td">
             {{ cell.down }}
