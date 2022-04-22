@@ -4,10 +4,10 @@
 
 <table class="table table-bordered border-dark">
     <tbody>
-        {% for row in game.board.rows %}
+        {% for row in game.board %}
 
         <tr>
-            {% for cell in row.cols %}
+            {% for cell in row %}
             <td
                 class="d-none d-md-table-cell"
                 style="width: 20%; height: 15vmin; padding: 7px 10px 10px 10px">

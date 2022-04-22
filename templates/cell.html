@@ -21,7 +21,7 @@
         </button>
 
         <span
-            class="text-{{ cell.color.value }} fs-5"
+            class="text-{{ cell.color.value }} fs-3"
             hx-post="/games/{{ game.number }}/_cell/{{ cell.row }}/{{ cell.col }}/center"
             hx-target="closest td">
             {{ cell.value }}
