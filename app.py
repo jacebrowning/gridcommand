@@ -36,7 +36,27 @@ class Cell:
     right: int = 0
 
     def __bool__(self):
-        return self.value > 0
+        return self.color is not Color.NONE
+
+    @property
+    def can_move_up(self) -> bool:
+        return self.row > 0
+
+    @property
+    def can_move_down(self) -> bool:
+        return self.row < SIZE - 1
+
+    @property
+    def can_move_left(self) -> bool:
+        return self.col > 0
+
+    @property
+    def can_move_right(self) -> bool:
+        return self.col < SIZE - 1
+
+    @property
+    def moves(self) -> bool:
+        return any((self.up, self.down, self.left, self.right))
 
     def move(self, count: int, direction: str):
         with datafiles.frozen():

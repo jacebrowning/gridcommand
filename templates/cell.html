@@ -1,7 +1,8 @@
-{% if editing %}
+{% if editing or cell.moves %}
 
 <div class="d-flex flex-column justify-content-between" style="height: 100%">
     <div class="text-center">
+        {% if cell.can_move_up %}
         <button
             type="button"
             class="btn btn-sm btn-outline-{{ cell.color.value }} py-0 px-3"
@@ -9,9 +10,13 @@
             hx-target="closest td">
             {{ cell.up }}
         </button>
+        {% else %}
+        <span class="py-0 px-3"></span>
+        {% endif %}
     </div>
 
     <div class="d-flex justify-content-between align-items-center">
+        {% if cell.can_move_left %}
         <button
             type="button"
             class="btn btn-sm btn-outline-{{ cell.color.value }} py-2 px-1"
@@ -19,6 +24,9 @@
             hx-target="closest td">
             {{ cell.left }}
         </button>
+        {% else %}
+        <span class="py-2 px-1"></span>
+        {% endif %}
 
         <span
             class="text-{{ cell.color.value }} fs-3"
@@ -27,6 +35,7 @@
             {{ cell.value }}
         </span>
 
+        {% if cell.can_move_right %}
         <button
             type="button"
             class="btn btn-sm btn-outline-{{ cell.color.value }} py-2 px-1"
@@ -34,9 +43,13 @@
             hx-target="closest td">
             {{ cell.right }}
         </button>
+        {% else %}
+        <span class="py-2 px-1"></span>
+        {% endif %}
     </div>
 
     <div class="text-center">
+        {% if cell.can_move_down %}
         <button
             type="button"
             class="btn btn-sm btn-outline-{{ cell.color.value }} py-0 px-3"
@@ -44,6 +57,9 @@
             hx-target="closest td">
             {{ cell.down }}
         </button>
+        {% else %}
+        <span class="py-0 px-3"></span>
+        {% endif %}
     </div>
 </div>
 
