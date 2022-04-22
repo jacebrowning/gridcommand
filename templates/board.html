@@ -1,7 +1,26 @@
-<h1 class="py-4" hx-get="/games/{{ game.number }}/_board" hx-target="#board">
-    Round {{ game.round }}
-</h1>
-
+<div class="d-flex justify-content-between align-items-center">
+    <h1 class="py-4" hx-get="/games/{{ game.number }}/_board" hx-target="#board">
+        Round {{ game.round }}
+    </h1>
+    <div>
+        {% if game.round == 0 %}
+        <button
+            type="button"
+            class="btn btn-primary"
+            hx-post="/games/{{ game.number }}/_randomize"
+            hx-target="#board">
+            Randomize
+        </button>
+        <button
+            type="button"
+            class="btn btn-primary"
+            hx-post="/games/{{ game.number }}/_start"
+            hx-target="#board">
+            Start
+        </button>
+        {% endif %}
+    </div>
+</div>
 <table class="table table-bordered border-dark">
     <tbody>
         {% for row in game.board %}

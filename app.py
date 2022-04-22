@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 from datafiles import datafile, field
 import datafiles
 from enum import Enum
@@ -58,12 +58,6 @@ class Board:
 
     cells: list[Cell] = field(default_factory=list)
 
-    def __post_init__(self):
-        if not self.cells:
-            for row in range(SIZE):
-                for col in range(SIZE):
-                    self.cells.append(Cell(row, col))
-
     def __iter__(self) -> Iterator[list[Cell]]:
         index = 0
         row = []
@@ -82,6 +76,12 @@ class Board:
                 return cell
         raise LookupError(f"Unknown cell: {xy}")
 
+    def reset(self):
+        self.cells = []
+        for row in range(SIZE):
+            for col in range(SIZE):
+                self.cells.append(Cell(row, col))
+
 
 @datafile("data/games/{self.number}.yml")
 class Game:
@@ -92,9 +92,10 @@ class Game:
     board: Board = Board()
 
     def initialize(self):
+        units = {Color.BLUE: UNITS, Color.RED: UNITS}
+        cells = {Color.BLUE: [], Color.RED: []}
         with datafiles.frozen():
-            units = {Color.BLUE: UNITS, Color.RED: UNITS}
-            cells = {Color.BLUE: [], Color.RED: []}
+            self.board.reset()
             for cell in self.board.cells:
                 p = random.randint(1, 4)
                 if p == 1:
@@ -111,14 +112,35 @@ class Game:
                 for _ in range(count):
                     cell = random.choice(cells[color])
                     cell.value += 1
-        self.round = 1
+        self.datafile.save()
+
+
+@app.get("/games")
+def games():
+    number = sum(1 for _ in Game.objects.all()) + 1
+    game = Game(number)
+    game.initialize()
+    return redirect(url_for("game", number=number))
 
 
 @app.get("/games/<int:number>")
 def game(number: int):
     game = Game(number)
-    if game.round == 0:
-        game.initialize()
+    return render_template("game.html", game=game)
+
+
+@app.post("/games/<int:number>/_randomize")
+def game_randomize(number: int):
+    game = Game(number)
+    assert game.round == 0
+    game.initialize()
+    return render_template("game.html", game=game)
+
+
+@app.post("/games/<int:number>/_start")
+def game_start(number: int):
+    game = Game(number)
+    game.round = 1
     return render_template("game.html", game=game)
 
 
