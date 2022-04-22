@@ -45,7 +45,7 @@ serve:
 	status=1; \
 	while [ $$status -eq 1 ] ; do \
 		git pull; \
-		make install; \
+		poetry install --no-dev; \
 		poetry run flask run; \
 		status=$$?; \
 		sleep 1; \
