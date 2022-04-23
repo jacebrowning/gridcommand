@@ -139,25 +139,25 @@ class Game:
 
 @app.get("/")
 def index():
-    return redirect(url_for("game_create"))
+    return redirect(url_for("create"))
 
 
 @app.get("/game/")
-def game_create():
+def create():
     number = sum(1 for _ in Game.objects.all()) + 1
     game = Game(number)
     game.initialize()
-    return redirect(url_for("game_setup", number=number))
+    return redirect(url_for("setup", number=number))
 
 
 @app.get("/game/<int:number>")
-def game_setup(number: int):
+def setup(number: int):
     game = Game(number)
     return render_template("game.html", game=game)
 
 
 @app.post("/game/<int:number>/_randomize")
-def game_randomize(number: int):
+def randomize(number: int):
     game = Game(number)
     assert game.round == 0
     game.initialize()
@@ -165,7 +165,7 @@ def game_randomize(number: int):
 
 
 @app.post("/game/<int:number>/_start")
-def game_start(number: int):
+def start(number: int):
     game = Game(number)
     game.round = 1
     return render_template("board.html", game=game)
@@ -194,6 +194,14 @@ def move(number: int, row: int, col: int, direction: str):
     else:
         cell.move(1, direction)
     return render_template("cell.html", game=game, cell=cell, editing=True)
+
+
+@app.post("/game/<int:number>/_done")
+def done(number: int):
+    game = Game(number)
+    # TODO: Process moves
+    game.round += 1
+    return render_template("board.html", game=game)
 
 
 if __name__ == "__main__":
