@@ -145,9 +145,8 @@ def game_create():
     return redirect(url_for("game_setup", number=number))
 
 
-@app.get("/game/")
 @app.get("/game/<int:number>")
-def game_setup(number: int = 0):
+def game_setup(number: int):
     game = Game(number)
     return render_template("game.html", game=game)
 
@@ -157,20 +156,21 @@ def game_randomize(number: int):
     game = Game(number)
     assert game.round == 0
     game.initialize()
-    return render_template("game.html", game=game)
+    return render_template("board.html", game=game)
 
 
 @app.post("/game/<int:number>/_start")
 def game_start(number: int):
     game = Game(number)
     game.round = 1
-    return render_template("game.html", game=game)
-
-
-@app.get("/game/<int:number>/_board")
-def board(number: int):
-    game = Game(number)
     return render_template("board.html", game=game)
+
+
+@app.get("/game/<int:number>/player/<color>")
+def player(number: int, color: str):
+    game = Game(number)
+    player = Color[color.upper()]
+    return render_template("game.html", game=game, player=player)
 
 
 @app.post("/game/<int:number>/_cell/<int:row>/<int:col>")
@@ -180,7 +180,7 @@ def cell(number: int, row: int, col: int):
     return render_template("cell.html", game=game, cell=cell, editing=True)
 
 
-@app.post("/game/<int:number>/_cell/<int:row>/<int:col>/<string:direction>")
+@app.post("/game/<int:number>/_cell/<int:row>/<int:col>/<direction>")
 def move(number: int, row: int, col: int, direction: str):
     game = Game(number)
     cell = game.board[row, col]
