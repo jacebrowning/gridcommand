@@ -70,7 +70,11 @@
     style="height: 100%"
     hx-post="{{ url_for('cell', number=game.number, row=cell.row, col=cell.col) }}"
     hx-target="closest td">
-    <button class="btn btn-outline-{{ cell.color.value }} fs-1 px-4">
+    <button class="btn btn-outline-{{ cell.color.value }} fs-1 px-4 d-none d-md-inline">
+        {{ cell.value }}
+    </button>
+    <button
+        class="btn btn-outline-{{ cell.color.value }} fs-1 px-3 d-sm-inline d-md-none">
         {{ cell.value }}
     </button>
 </div>

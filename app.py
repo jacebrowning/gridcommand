@@ -7,7 +7,7 @@ from datafiles import datafile, field
 from flask import Flask, redirect, render_template, url_for
 
 SIZE = 5
-UNITS = 20
+UNITS = SIZE * 4
 
 app = Flask(__name__)
 
@@ -19,6 +19,11 @@ class Color(Enum):
     YELLOW = "warning"
 
     NONE = "dark"
+
+
+@app.context_processor
+def constants():
+    return dict(Color=Color)
 
 
 @datafile

@@ -2,20 +2,49 @@
     <h1 class="py-4">Round {{ game.round }}</h1>
     <div>
         {% if game.round == 0 %}
+
         <button
             type="button"
             class="btn btn-secondary"
             hx-post="{{ url_for('game_randomize', number=game.number) }}"
             hx-target="#board">
-            Randomize
+            New Board
         </button>
         <button
             type="button"
             class="btn btn-primary"
             hx-post="{{ url_for('game_start', number=game.number) }}"
             hx-target="#board">
-            Start
+            Start Game
         </button>
+
+        {% elif player %}
+
+        <a
+            type="button"
+            class="btn btn-secondary"
+            href="{{ url_for('game_setup', number=game.number) }}">
+            Done Planning
+        </a>
+
+        {% else %}
+
+        <div class="d-flex align-items-center">
+            <span class="fs-4 me-2">Plan Moves:</span>
+            <a
+                type="button"
+                class="btn btn-{{ Color.BLUE.value }} me-1"
+                href="{{ url_for('player', number=game.number, color='blue') }}">
+                Blue
+            </a>
+            <a
+                type="button"
+                class="btn btn-{{ Color.RED.value }}"
+                href="{{ url_for('player', number=game.number, color='red') }}">
+                Red
+            </a>
+        </div>
+
         {% endif %}
     </div>
 </div>
