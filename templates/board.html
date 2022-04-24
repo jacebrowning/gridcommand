@@ -10,27 +10,34 @@
             hx-target="#board">
             New Board
         </button>
-        <button
+        <a
             type="button"
-            class="btn btn-primary"
-            hx-post="{{ url_for('start', number=game.number) }}"
-            hx-target="#board">
+            class="btn btn-dark"
+            href="{{ url_for('players', number=game.number) }}">
             Start Game
-        </button>
+        </a>
 
-        {% elif player %}
+        {% elif player %} {% if planning %}
 
         <a
             type="button"
-            class="btn btn-secondary"
-            href="{{ url_for('setup', number=game.number) }}">
+            class="btn btn-dark"
+            href="{{ url_for('player_done', number=game.number, color=player.name.lower()) }}">
             Done Planning
         </a>
 
-        {% else %}
+        {% elif waiting %} Waiting for other players... {% else %}
+
+        <a
+            type="button"
+            class="btn btn-dark"
+            href="{{ url_for('player_moves', number=game.number, color=player.name.lower()) }}">
+            Plan Moves
+        </a>
+        {% endif %} {% else %}
 
         <div class="d-flex align-items-center">
-            <span class="fs-4 me-2">Plan Moves:</span>
+            <span class="fs-4 me-2">Choose Color:</span>
             <a
                 type="button"
                 class="btn btn-{{ Color.BLUE.value }}"
@@ -43,13 +50,6 @@
                 href="{{ url_for('player', number=game.number, color='red') }}">
                 Red
             </a>
-            <button
-                type="button"
-                class="btn btn-dark ms-1"
-                hx-post="{{ url_for('done', number=game.number) }}"
-                hx-target="#board">
-                Done
-            </button>
         </div>
 
         {% endif %}

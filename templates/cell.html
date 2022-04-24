@@ -1,4 +1,4 @@
-{% if editing or cell.moves %}
+{% if editing or (cell.moves and cell.color == player) %}
 
 <div class="d-flex flex-column justify-content-between" style="height: 100%">
     <div class="text-center">
@@ -63,7 +63,7 @@
     </div>
 </div>
 
-{% elif game.round > 0 and cell.color == player %}
+{% elif game.round > 0 and cell.color == player and planning %}
 
 <div
     class="d-flex justify-content-center align-items-center"

@@ -164,11 +164,11 @@ def randomize(number: int):
     return render_template("board.html", game=game)
 
 
-@app.post("/game/<int:number>/_start")
-def start(number: int):
+@app.get("/game/<int:number>/player/")
+def players(number: int):
     game = Game(number)
-    game.round = 1
-    return render_template("board.html", game=game)
+    game.round = game.round or 1
+    return render_template("game.html", game=game)
 
 
 @app.get("/game/<int:number>/player/<color>")
@@ -176,6 +176,20 @@ def player(number: int, color: str):
     game = Game(number)
     player = Color[color.upper()]
     return render_template("game.html", game=game, player=player)
+
+
+@app.get("/game/<int:number>/player/<color>/moves")
+def player_moves(number: int, color: str):
+    game = Game(number)
+    player = Color[color.upper()]
+    return render_template("game.html", game=game, player=player, planning=True)
+
+
+@app.get("/game/<int:number>/player/<color>/done")
+def player_done(number: int, color: str):
+    game = Game(number)
+    player = Color[color.upper()]
+    return render_template("game.html", game=game, player=player, waiting=True)
 
 
 @app.post("/game/<int:number>/_cell/<int:row>/<int:col>")
