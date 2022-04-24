@@ -71,8 +71,9 @@ class Cell:
                 setattr(self, direction, value + count)
 
     def reset(self):
-        self.value = self.value + self.up + self.down + self.left + self.right
-        self.up = self.down = self.left = self.right = 0
+        with datafiles.frozen(self):
+            self.value = self.value + self.up + self.down + self.left + self.right
+            self.up = self.down = self.left = self.right = 0
 
 
 @datafile
@@ -150,13 +151,13 @@ def create():
     return redirect(url_for("setup", number=number))
 
 
-@app.get("/game/<int:number>")
+@app.get("/game/<int:number>/")
 def setup(number: int):
     game = Game(number)
     return render_template("game.html", game=game)
 
 
-@app.post("/game/<int:number>/_randomize")
+@app.post("/game/<int:number>/_randomize/")
 def randomize(number: int):
     game = Game(number)
     assert game.round == 0
@@ -171,35 +172,35 @@ def players(number: int):
     return render_template("game.html", game=game)
 
 
-@app.get("/game/<int:number>/player/<color>")
+@app.get("/game/<int:number>/player/<color>/")
 def player(number: int, color: str):
     game = Game(number)
     player = Color[color.upper()]
     return render_template("game.html", game=game, player=player)
 
 
-@app.get("/game/<int:number>/player/<color>/moves")
+@app.get("/game/<int:number>/player/<color>/moves/")
 def player_moves(number: int, color: str):
     game = Game(number)
     player = Color[color.upper()]
     return render_template("game.html", game=game, player=player, planning=True)
 
 
-@app.get("/game/<int:number>/player/<color>/done")
+@app.get("/game/<int:number>/player/<color>/done/")
 def player_done(number: int, color: str):
     game = Game(number)
     player = Color[color.upper()]
     return render_template("game.html", game=game, player=player, waiting=True)
 
 
-@app.post("/game/<int:number>/_cell/<int:row>/<int:col>")
+@app.post("/game/<int:number>/_cell/<int:row>/<int:col>/")
 def cell(number: int, row: int, col: int):
     game = Game(number)
     cell = game.board[row, col]
     return render_template("cell.html", game=game, cell=cell, editing=True)
 
 
-@app.post("/game/<int:number>/_cell/<int:row>/<int:col>/<direction>")
+@app.post("/game/<int:number>/_cell/<int:row>/<int:col>/<direction>/")
 def move(number: int, row: int, col: int, direction: str):
     game = Game(number)
     cell = game.board[row, col]
@@ -210,7 +211,7 @@ def move(number: int, row: int, col: int, direction: str):
     return render_template("cell.html", game=game, cell=cell, editing=True)
 
 
-@app.post("/game/<int:number>/_done")
+@app.post("/game/<int:number>/_done/")
 def done(number: int):
     game = Game(number)
     # TODO: Process moves
