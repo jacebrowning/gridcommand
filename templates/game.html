@@ -1,3 +1,9 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %} {% block content %} {% if waiting %}
+<div
+    hx-get="{{ url_for('player_done', number=game.number, color=player.color.key) }}"
+    hx-trigger="every 10s">
+    {% include 'board.html' %}
+</div>
+{% else %}
 <div id="board">{% include 'board.html' %}</div>
-{% endblock %}
+{% endif %} {% endblock %}

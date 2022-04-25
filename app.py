@@ -35,6 +35,7 @@ class Color(Enum):
 class Player:
     color: Color
     claimed: bool = False
+    round: int = 0
 
 
 @datafile
@@ -130,10 +131,20 @@ class Game:
     )
     board: Board = Board()
 
+    @property
+    def message(self) -> str:
+        finished = total = 0
+        for player in self.players:
+            total += 1
+            if player.round == self.round:
+                finished += 1
+        count = total - finished
+        s = "" if count == 1 else "s"
+        return f"Waiting for {count} other player{s}..."
+
     def initialize(self):
         units = {player.color: UNITS for player in self.players}
         cells = {player.color: [] for player in self.players}
-
         with datafiles.frozen(self):
             self.board.reset()
             for cell in self.board.cells:
@@ -219,6 +230,7 @@ def player_done(number: int, color: str):
     _color = Color[color.upper()]
     for player in game.players:
         if player.color is _color:
+            player.round = game.round
             return render_template("game.html", game=game, player=player, waiting=True)
     log.error(f"Unknown color: {color}")
     return redirect(url_for("players"))
