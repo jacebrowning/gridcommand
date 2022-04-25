@@ -3,11 +3,13 @@ from enum import Enum
 from typing import Iterator
 
 import datafiles
+import log
 from datafiles import datafile, field
-from flask import Flask, redirect, render_template, url_for
+from flask import Flask, redirect, render_template, request, url_for
 
 SIZE = 5
-UNITS = SIZE * 4
+UNITS = 20
+FILL = 2 / 3
 
 app = Flask(__name__)
 
@@ -20,10 +22,19 @@ class Color(Enum):
 
     NONE = "dark"
 
+    @property
+    def key(self) -> str:
+        return self.name.lower()
 
-@app.context_processor
-def constants():
-    return dict(Color=Color)
+    @property
+    def title(self) -> str:
+        return self.name.title()
+
+
+@datafile
+class Player:
+    color: Color
+    claimed: bool = False
 
 
 @datafile
@@ -107,35 +118,40 @@ class Board:
                 self.cells.append(Cell(row, col))
 
 
-@datafile("data/games/{self.number}.yml")
+@datafile("data/games/{self.number}.yml", defaults=True)
 class Game:
 
     number: int
 
     round: int = 0
+    players: list[Player] = field(
+        # TODO: Support more than two players
+        default_factory=lambda: [Player(Color.BLUE), Player(Color.RED)]
+    )
     board: Board = Board()
 
     def initialize(self):
-        units = {Color.BLUE: UNITS, Color.RED: UNITS}
-        cells = {Color.BLUE: [], Color.RED: []}
+        units = {player.color: UNITS for player in self.players}
+        cells = {player.color: [] for player in self.players}
+
         with datafiles.frozen(self):
             self.board.reset()
             for cell in self.board.cells:
-                p = random.randint(1, 3)
-                if p == 1:
-                    cell.color = Color.BLUE
+                if random.random() < FILL:
+                    player = random.choice(self.players)
+                    cell.color = player.color
                     cell.value = 1
-                    units[Color.BLUE] -= 1
-                    cells[Color.BLUE].append(cell)
-                elif p == 2:
-                    cell.color = Color.RED
-                    cell.value = 1
-                    units[Color.RED] -= 1
-                    cells[Color.RED].append(cell)
+                    units[player.color] -= 1
+                    cells[player.color].append(cell)
             for color, count in units.items():
                 for _ in range(count):
                     cell = random.choice(cells[color])
                     cell.value += 1
+
+
+@app.context_processor
+def constants():
+    return dict(Color=Color)
 
 
 @app.get("/")
@@ -168,6 +184,8 @@ def randomize(number: int):
 @app.get("/game/<int:number>/player/")
 def players(number: int):
     game = Game(number)
+    if "partial" in request.args:
+        return render_template("players.html", game=game)
     game.round = game.round or 1
     return render_template("game.html", game=game)
 
@@ -175,22 +193,35 @@ def players(number: int):
 @app.get("/game/<int:number>/player/<color>/")
 def player(number: int, color: str):
     game = Game(number)
-    player = Color[color.upper()]
-    return render_template("game.html", game=game, player=player)
+    _color = Color[color.upper()]
+    for player in game.players:
+        if player.color is _color:
+            player.claimed = True
+            return render_template("game.html", game=game, player=player)
+    log.error(f"Unknown color: {color}")
+    return redirect(url_for("players"))
 
 
 @app.get("/game/<int:number>/player/<color>/moves/")
 def player_moves(number: int, color: str):
     game = Game(number)
-    player = Color[color.upper()]
-    return render_template("game.html", game=game, player=player, planning=True)
+    _color = Color[color.upper()]
+    for player in game.players:
+        if player.color is _color:
+            return render_template("game.html", game=game, player=player, planning=True)
+    log.error(f"Unknown color: {color}")
+    return redirect(url_for("players"))
 
 
 @app.get("/game/<int:number>/player/<color>/done/")
 def player_done(number: int, color: str):
     game = Game(number)
-    player = Color[color.upper()]
-    return render_template("game.html", game=game, player=player, waiting=True)
+    _color = Color[color.upper()]
+    for player in game.players:
+        if player.color is _color:
+            return render_template("game.html", game=game, player=player, waiting=True)
+    log.error(f"Unknown color: {color}")
+    return redirect(url_for("players"))
 
 
 @app.post("/game/<int:number>/_cell/<int:row>/<int:col>/")

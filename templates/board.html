@@ -5,7 +5,7 @@
 
         <button
             type="button"
-            class="btn btn-outline-dark"
+            class="btn btn-outline-secondary"
             hx-post="{{ url_for('randomize', number=game.number) }}"
             hx-target="#board">
             New Board
@@ -22,7 +22,7 @@
         <a
             type="button"
             class="btn btn-dark"
-            href="{{ url_for('player_done', number=game.number, color=player.name.lower()) }}">
+            href="{{ url_for('player_done', number=game.number, color=player.color.key) }}">
             Done Planning
         </a>
 
@@ -31,28 +31,10 @@
         <a
             type="button"
             class="btn btn-dark"
-            href="{{ url_for('player_moves', number=game.number, color=player.name.lower()) }}">
+            href="{{ url_for('player_moves', number=game.number, color=player.color.key) }}">
             Plan Moves
         </a>
-        {% endif %} {% else %}
-
-        <div class="d-flex align-items-center">
-            <span class="fs-4 me-2">Choose Color:</span>
-            <a
-                type="button"
-                class="btn btn-{{ Color.BLUE.value }}"
-                href="{{ url_for('player', number=game.number, color='blue') }}">
-                Blue
-            </a>
-            <a
-                type="button"
-                class="btn btn-{{ Color.RED.value }} ms-1"
-                href="{{ url_for('player', number=game.number, color='red') }}">
-                Red
-            </a>
-        </div>
-
-        {% endif %}
+        {% endif %} {% else %} {% include "players.html"%} {% endif %}
     </div>
 </div>
 <table class="table table-bordered border-dark">

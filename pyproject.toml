@@ -11,6 +11,7 @@ python = "^3.9"
 
 flask = "^2.1"
 datafiles = "^1.4b3"
+minilog = "^2.1"
 
 [tool.poetry.dev-dependencies]
 
