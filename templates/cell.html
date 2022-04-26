@@ -1,4 +1,4 @@
-{% if waiting %}
+{% if player and player.state == State.WAITING %}
 
 <div class="d-flex flex-column justify-content-between" style="height: 100%">
     <div class="text-center">
@@ -26,7 +26,7 @@
     </div>
 </div>
 
-{% elif editing or (cell.moves and cell.color == player.color) %}
+{% elif editing or (player and cell.moves and cell.color == player.color) %}
 
 <div class="d-flex flex-column justify-content-between" style="height: 100%">
     <div class="text-center">
@@ -91,7 +91,7 @@
     </div>
 </div>
 
-{% elif planning and player and player.color == cell.color %}
+{% elif player and player.state == State.PLANNING and player.color == cell.color %}
 
 <div
     class="d-flex justify-content-center align-items-center"
