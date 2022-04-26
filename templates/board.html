@@ -26,7 +26,20 @@
             Done Planning
         </a>
 
-        {% elif waiting %} {{ game.message }} {% else %}
+        {% elif waiting %} {% if game.waiting %}
+
+        <span>{{ game.message }}</span>
+
+        {% else %}
+
+        <a
+            type="button"
+            class="btn btn-dark"
+            href="{{ url_for('done', number=game.number, color=player.color.key) }}">
+            Next Round
+        </a>
+
+        {% endif%} {% else %}
 
         <a
             type="button"

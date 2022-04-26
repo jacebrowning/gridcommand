@@ -132,13 +132,17 @@ class Game:
     board: Board = Board()
 
     @property
-    def message(self) -> str:
+    def waiting(self) -> int:
         finished = total = 0
         for player in self.players:
             total += 1
             if player.round == self.round:
                 finished += 1
-        count = total - finished
+        return total - finished
+
+    @property
+    def message(self) -> str:
+        count = self.waiting
         s = "" if count == 1 else "s"
         return f"Waiting for {count} other player{s}..."
 
@@ -254,12 +258,16 @@ def move(number: int, row: int, col: int, direction: str):
     return render_template("cell.html", game=game, cell=cell, editing=True)
 
 
-@app.post("/game/<int:number>/_done/")
-def done(number: int):
+@app.get("/game/<int:number>/_done/<color>")
+def done(number: int, color: str):
     game = Game(number)
-    # TODO: Process moves
-    game.round += 1
-    return render_template("board.html", game=game)
+    _color = Color[color.upper()]
+    for player in game.players:
+        if player.color is _color:
+            if player.round == game.round:
+                # TODO: Process moves
+                game.round += 1
+    return redirect(url_for("player", number=game.number, color=player.color.key))
 
 
 if __name__ == "__main__":
