@@ -7,7 +7,7 @@
     {% for player in game.players %}
     <a
         type="button"
-        class="btn btn-{{ player.color.value }} {% if player.claimed %} disabled {% endif %} ms-1"
+        class="btn btn-{{ player.color.value }} {% if player.state.value %} disabled {% endif %} ms-1"
         href="{{ url_for('player', number=game.number, color=player.color.key) }}">
         {{ player.color.title }}
     </a>

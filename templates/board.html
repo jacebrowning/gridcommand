@@ -17,7 +17,7 @@
             Start Game
         </a>
 
-        {% elif player %} {% if planning %}
+        {% elif player %} {% if player.state == State.PLANNING %}
 
         <a
             type="button"
@@ -26,7 +26,19 @@
             Done Planning
         </a>
 
-        {% elif waiting %} {{ game.message }} {% else %}
+        {% elif player.state == State.WAITING %}
+        <span>{{ game.message }}</span>
+
+        {% if not game.waiting %}
+
+        <a
+            type="button"
+            class="btn btn-dark ms-2"
+            href="{{ url_for('done', number=game.number, color=player.color.key) }}">
+            Next Round
+        </a>
+
+        {% endif%} {% else %}
 
         <a
             type="button"

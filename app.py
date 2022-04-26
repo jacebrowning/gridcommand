@@ -31,11 +31,18 @@ class Color(Enum):
         return self.name.title()
 
 
+class State(Enum):
+    UNKNOWN = None
+    READY = "ready"
+    PLANNING = "planning"
+    WAITING = "waiting"
+
+
 @datafile
 class Player:
     color: Color
-    claimed: bool = False
     round: int = 0
+    state: State = State.UNKNOWN
 
 
 @datafile
@@ -132,13 +139,12 @@ class Game:
     board: Board = Board()
 
     @property
+    def waiting(self) -> int:
+        return sum(1 for p in self.players if p.state is State.PLANNING)
+
+    @property
     def message(self) -> str:
-        finished = total = 0
-        for player in self.players:
-            total += 1
-            if player.round == self.round:
-                finished += 1
-        count = total - finished
+        count = self.waiting
         s = "" if count == 1 else "s"
         return f"Waiting for {count} other player{s}..."
 
@@ -159,10 +165,17 @@ class Game:
                     cell = random.choice(cells[color])
                     cell.value += 1
 
+    def get_player(self, color: str) -> Player:
+        _color = Color[color.upper()]
+        for player in self.players:
+            if player.color is _color:
+                return player
+        raise ValueError(f"Unknown player color: {color}")
+
 
 @app.context_processor
 def constants():
-    return dict(Color=Color)
+    return dict(Color=Color, State=State)
 
 
 @app.get("/")
@@ -197,43 +210,34 @@ def players(number: int):
     game = Game(number)
     if "partial" in request.args:
         return render_template("players.html", game=game)
-    game.round = game.round or 1
+    game.round = 1
     return render_template("game.html", game=game)
 
 
 @app.get("/game/<int:number>/player/<color>/")
 def player(number: int, color: str):
     game = Game(number)
-    _color = Color[color.upper()]
-    for player in game.players:
-        if player.color is _color:
-            player.claimed = True
-            return render_template("game.html", game=game, player=player)
-    log.error(f"Unknown color: {color}")
-    return redirect(url_for("players"))
+    player = game.get_player(color)
+    with datafiles.frozen(player):
+        player.round = game.round
+        player.state = State.READY
+    return render_template("game.html", game=game, player=player)
 
 
 @app.get("/game/<int:number>/player/<color>/moves/")
 def player_moves(number: int, color: str):
     game = Game(number)
-    _color = Color[color.upper()]
-    for player in game.players:
-        if player.color is _color:
-            return render_template("game.html", game=game, player=player, planning=True)
-    log.error(f"Unknown color: {color}")
-    return redirect(url_for("players"))
+    player = game.get_player(color)
+    player.state = State.PLANNING
+    return render_template("game.html", game=game, player=player)
 
 
 @app.get("/game/<int:number>/player/<color>/done/")
 def player_done(number: int, color: str):
     game = Game(number)
-    _color = Color[color.upper()]
-    for player in game.players:
-        if player.color is _color:
-            player.round = game.round
-            return render_template("game.html", game=game, player=player, waiting=True)
-    log.error(f"Unknown color: {color}")
-    return redirect(url_for("players"))
+    player = game.get_player(color)
+    player.state = State.WAITING
+    return render_template("game.html", game=game, player=player)
 
 
 @app.post("/game/<int:number>/_cell/<int:row>/<int:col>/")
@@ -254,12 +258,17 @@ def move(number: int, row: int, col: int, direction: str):
     return render_template("cell.html", game=game, cell=cell, editing=True)
 
 
-@app.post("/game/<int:number>/_done/")
-def done(number: int):
+@app.get("/game/<int:number>/_done/<color>")
+def done(number: int, color: str):
     game = Game(number)
-    # TODO: Process moves
-    game.round += 1
-    return render_template("board.html", game=game)
+    player = game.get_player(color)
+    if player.round == game.round:
+        with datafiles.frozen(game):
+            for cell in game.board.cells:
+                # TODO: Process moves
+                cell.up = cell.down = cell.left = cell.right = 0
+        game.round += 1
+    return redirect(url_for("player", number=game.number, color=player.color.key))
 
 
 if __name__ == "__main__":
