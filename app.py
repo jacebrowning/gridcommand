@@ -8,7 +8,7 @@ from datafiles import datafile, field
 from flask import Flask, redirect, render_template, request, url_for
 
 SIZE = 5
-UNITS = 20
+UNITS = SIZE * 4
 FILL = 2 / 3
 
 app = Flask(__name__)
