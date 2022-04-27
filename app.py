@@ -52,8 +52,7 @@ class Cell:
 
     color: Color = Color.NONE
 
-    value: int = 0
-
+    center: int = 0
     up: int = 0
     down: int = 0
     left: int = 0
@@ -61,6 +60,10 @@ class Cell:
 
     def __bool__(self):
         return self.color is not Color.NONE
+
+    @property
+    def value(self) -> int:
+        return self.center + self.up + self.down + self.left + self.right
 
     @property
     def can_move_up(self) -> bool:
@@ -83,15 +86,15 @@ class Cell:
         return any((self.up, self.down, self.left, self.right))
 
     def move(self, count: int, direction: str):
-        if self.value:
+        if self.center:
             with datafiles.frozen(self):
-                self.value -= count
+                self.center -= count
                 value = getattr(self, direction)
                 setattr(self, direction, value + count)
 
     def reset(self):
         with datafiles.frozen(self):
-            self.value = self.value + self.up + self.down + self.left + self.right
+            self.center = self.center + self.up + self.down + self.left + self.right
             self.up = self.down = self.left = self.right = 0
 
 
@@ -157,13 +160,13 @@ class Game:
                 if random.random() < FILL:
                     player = random.choice(self.players)
                     cell.color = player.color
-                    cell.value = 1
+                    cell.center = 1
                     units[player.color] -= 1
                     cells[player.color].append(cell)
             for color, count in units.items():
                 for _ in range(count):
                     cell = random.choice(cells[color])
-                    cell.value += 1
+                    cell.center += 1
 
     def get_player(self, color: str) -> Player:
         _color = Color[color.upper()]

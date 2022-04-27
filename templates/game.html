@@ -1,7 +1,7 @@
-{% extends 'base.html' %} {% block content %} {% if waiting %}
+{% extends 'base.html' %} {% block content %} {% if player.state == State.WAITING %}
 <div
     hx-get="{{ url_for('player_done', number=game.number, color=player.color.key) }}"
-    hx-trigger="every 1s">
+    hx-trigger="every 5s">
     {% include 'board.html' %}
 </div>
 {% else %}

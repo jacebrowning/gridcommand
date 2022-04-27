@@ -12,7 +12,7 @@
             {{ cell.left or '' }}
         </span>
 
-        <span class="text-{{ cell.color.value }} fs-1"> {{ cell.value }} </span>
+        <span class="text-{{ cell.color.value }} fs-1"> {{ cell.center }} </span>
 
         <span class="text-{{ cell.color.value }} py-2 px-1 fs-5">
             {{ cell.right or '' }}
@@ -60,7 +60,7 @@
             class="text-{{ cell.color.value }} fs-3"
             hx-post="{{ url_for('move', number=game.number, row=cell.row, col=cell.col, direction='center') }}"
             hx-target="closest td">
-            {{ cell.value }}
+            {{ cell.center }}
         </span>
 
         {% if cell.can_move_right %}
@@ -98,10 +98,13 @@
     style="height: 100%"
     hx-post="{{ url_for('cell', number=game.number, row=cell.row, col=cell.col) }}"
     hx-target="closest td">
-    <button class="btn btn-outline-{{ cell.color.value }} fs-1 px-4 d-none d-md-inline">
+    <button
+        type="button"
+        class="btn btn-outline-{{ cell.color.value }} fs-1 px-4 d-none d-md-inline">
         {{ cell.value }}
     </button>
     <button
+        type="button"
         class="btn btn-outline-{{ cell.color.value }} fs-1 px-3 d-sm-inline d-md-none">
         {{ cell.value }}
     </button>

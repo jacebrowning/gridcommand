@@ -10,17 +10,13 @@
             hx-target="#board">
             New Board
         </button>
-        <a
-            type="button"
-            class="btn btn-dark"
-            href="{{ url_for('players', number=game.number) }}">
+        <a class="btn btn-dark" href="{{ url_for('players', number=game.number) }}">
             Start Game
         </a>
 
         {% elif player %} {% if player.state == State.PLANNING %}
 
         <a
-            type="button"
             class="btn btn-dark"
             href="{{ url_for('player_done', number=game.number, color=player.color.key) }}">
             Done Planning
@@ -32,7 +28,6 @@
         {% if not game.waiting %}
 
         <a
-            type="button"
             class="btn btn-dark ms-2"
             href="{{ url_for('done', number=game.number, color=player.color.key) }}">
             Next Round
@@ -41,7 +36,6 @@
         {% endif%} {% else %}
 
         <a
-            type="button"
             class="btn btn-dark"
             href="{{ url_for('player_moves', number=game.number, color=player.color.key) }}">
             Plan Moves
