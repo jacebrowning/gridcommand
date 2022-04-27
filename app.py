@@ -37,6 +37,10 @@ class State(Enum):
     PLANNING = "planning"
     WAITING = "waiting"
 
+    @property
+    def title(self) -> str:
+        return self.name.title()
+
 
 @datafile
 class Player:
@@ -143,7 +147,7 @@ class Game:
 
     @property
     def waiting(self) -> int:
-        return sum(1 for p in self.players if p.state is State.PLANNING)
+        return sum(1 for p in self.players if p.state is not State.WAITING)
 
     @property
     def message(self) -> str:
