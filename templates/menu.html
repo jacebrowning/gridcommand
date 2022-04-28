@@ -1,0 +1,66 @@
+<div class="d-flex justify-content-between align-items-center py-4">
+    <div class="d-flex align-items-center fs-2 text-nowrap">
+        Round {{ game.round }}{% if player %}: {{ player.state.title }}{% endif %}
+    </div>
+    <div>
+        {% if game.round == 0 %}
+
+        <button
+            type="button"
+            class="btn btn-outline-secondary"
+            hx-post="{{ url_for('randomize', number=game.number) }}"
+            hx-target="#board">
+            New Board
+        </button>
+        <a class="btn btn-dark" href="{{ url_for('players', number=game.number) }}">
+            Start Game
+        </a>
+
+        {% elif player %} {% if player.state == State.PLANNING %}
+
+        <a
+            class="btn btn-{{ player.color.value }}"
+            href="{{ url_for('player_done', number=game.number, color=player.color.key) }}">
+            Done
+        </a>
+
+        {% elif player.state == State.WAITING %} {% if game.waiting %}
+
+        <div class="ms-3">{{ game.message }}</div>
+
+        {% else %}
+
+        <a
+            class="btn btn-{{ player.color.value }} ms-2"
+            href="{{ url_for('done', number=game.number, color=player.color.key) }}">
+            Next Round
+        </a>
+
+        {% endif%} {% else %}
+
+        <div class="btn-group">
+            <a
+                class="btn btn-{{ player.color.value }}"
+                href="{{ url_for('player_moves', number=game.number, color=player.color.key) }}">
+                Plan Moves
+            </a>
+            <button
+                type="button"
+                class="btn btn-{{ player.color.value }} dropdown-toggle dropdown-toggle-split"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a
+                        class="dropdown-item"
+                        href="{{ url_for('players', number=game.number) }}">
+                        Switch Player
+                    </a>
+                </li>
+            </ul>
+        </div>
+        {% endif %} {% else %} {% include "players.html"%} {% endif %}
+    </div>
+</div>

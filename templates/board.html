@@ -1,57 +1,12 @@
-<div class="d-flex justify-content-between align-items-center">
-    <h1 class="py-4 fs-2">
-        Round {{ game.round }}{% if player %}: {{ player.state.title }}{% endif %}
-    </h1>
-    <div>
-        {% if game.round == 0 %}
+{% include 'menu.html' %}
 
-        <button
-            type="button"
-            class="btn btn-outline-secondary"
-            hx-post="{{ url_for('randomize', number=game.number) }}"
-            hx-target="#board">
-            New Board
-        </button>
-        <a class="btn btn-dark" href="{{ url_for('players', number=game.number) }}">
-            Start Game
-        </a>
-
-        {% elif player %} {% if player.state == State.PLANNING %}
-
-        <a
-            class="btn btn-{{ player.color.value }}"
-            href="{{ url_for('player_done', number=game.number, color=player.color.key) }}">
-            Done
-        </a>
-
-        {% elif player.state == State.WAITING %} {% if game.waiting %}
-
-        <span>{{ game.message }}</span>
-
-        {% else %}
-
-        <a
-            class="btn btn-{{ player.color.value }} ms-2"
-            href="{{ url_for('done', number=game.number, color=player.color.key) }}">
-            Next Round
-        </a>
-
-        {% endif%} {% else %}
-
-        <a
-            class="btn btn-{{ player.color.value }}"
-            href="{{ url_for('player_moves', number=game.number, color=player.color.key) }}">
-            Plan Moves
-        </a>
-        {% endif %} {% else %} {% include "players.html"%} {% endif %}
-    </div>
-</div>
 <table class="table table-bordered border-dark">
     <tbody>
         {% for row in game.board %}
 
         <tr>
             {% for cell in row %}
+
             <td
                 class="d-none d-md-table-cell"
                 style="width: 20%; height: 15vmin; padding: 7px 10px 10px 10px">
@@ -65,6 +20,7 @@
 
             {% endfor %}
         </tr>
+
         {% endfor %}
     </tbody>
 </table>

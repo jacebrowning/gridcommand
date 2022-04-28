@@ -6,7 +6,7 @@
     <span class="fs-4 me-1">Choose Color:</span>
     {% for player in game.players %}
     <a
-        class="btn btn-{{ player.color.value }} {% if player.state.value %} disabled {% endif %} ms-1"
+        class="btn btn-{{ player.color.value }} {% if player.state.value and not game.round %} disabled {% endif %} ms-1"
         href="{{ url_for('player', number=game.number, color=player.color.key) }}">
         {{ player.color.title }}
     </a>
