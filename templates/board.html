@@ -24,3 +24,13 @@
         {% endfor %}
     </tbody>
 </table>
+
+<div class="d-flex justify-content-between align-items-center">
+    <div class="text-muted">{{ game.message }}</div>
+    <div
+        class="spinner-border spinner-border-sm text-secondary htmx-indicator"
+        role="status"
+        id="spinner">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>

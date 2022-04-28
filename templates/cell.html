@@ -35,7 +35,8 @@
             type="button"
             class="btn btn-sm btn-outline-{{ cell.color.value }} py-0 px-3"
             hx-post="{{ url_for('move', number=game.number, row=cell.row, col=cell.col, direction='up') }}"
-            hx-target="closest td">
+            hx-target="closest td"
+            hx-indicator="#spinner">
             {{ cell.up }}
         </button>
         {% else %}
@@ -49,7 +50,8 @@
             type="button"
             class="btn btn-sm btn-outline-{{ cell.color.value }} py-2 px-1"
             hx-post="{{ url_for('move', number=game.number, row=cell.row, col=cell.col, direction='left') }}"
-            hx-target="closest td">
+            hx-target="closest td"
+            hx-indicator="#spinner">
             {{ cell.left }}
         </button>
         {% else %}
@@ -59,7 +61,8 @@
         <span
             class="text-{{ cell.color.value }} fs-3"
             hx-post="{{ url_for('move', number=game.number, row=cell.row, col=cell.col, direction='center') }}"
-            hx-target="closest td">
+            hx-target="closest td"
+            hx-indicator="#spinner">
             {{ cell.center }}
         </span>
 
@@ -68,7 +71,8 @@
             type="button"
             class="btn btn-sm btn-outline-{{ cell.color.value }} py-2 px-1"
             hx-post="{{ url_for('move', number=game.number, row=cell.row, col=cell.col, direction='right') }}"
-            hx-target="closest td">
+            hx-target="closest td"
+            hx-indicator="#spinner">
             {{ cell.right }}
         </button>
         {% else %}
@@ -82,7 +86,8 @@
             type="button"
             class="btn btn-sm btn-outline-{{ cell.color.value }} py-0 px-3"
             hx-post="{{ url_for('move', number=game.number, row=cell.row, col=cell.col, direction='down') }}"
-            hx-target="closest td">
+            hx-target="closest td"
+            hx-indicator="#spinner">
             {{ cell.down }}
         </button>
         {% else %}
@@ -97,7 +102,8 @@
     class="d-flex justify-content-center align-items-center"
     style="height: 100%"
     hx-post="{{ url_for('cell', number=game.number, row=cell.row, col=cell.col) }}"
-    hx-target="closest td">
+    hx-target="closest td"
+    hx-indicator="#spinner">
     <button
         type="button"
         class="btn btn-outline-{{ cell.color.value }} fs-1 px-4 d-none d-md-inline">

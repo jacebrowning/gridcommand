@@ -1,12 +1,13 @@
 <div
     class="d-flex align-items-center"
     hx-get="{{ url_for('players', number=game.number) }}?partial=true"
-    hx-trigger="every 1s"
-    hx-swap="outerHTML">
+    hx-trigger="{% if game.choosing %}every 1s{% endif %}"
+    hx-swap="outerHTML"
+    hx-indicator="#spinner">
     <span class="fs-4 me-1">Choose Color:</span>
     {% for player in game.players %}
     <a
-        class="btn btn-{{ player.color.value }} {% if player.state.value and not game.round %} disabled {% endif %} ms-1"
+        class="btn btn-{{ player.color.value }} {% if player.state.value and game.choosing %} disabled {% endif %} ms-1"
         href="{{ url_for('player', number=game.number, color=player.color.key) }}">
         {{ player.color.title }}
     </a>

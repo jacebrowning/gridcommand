@@ -1,5 +1,6 @@
 import random
 from enum import Enum
+from functools import cached_property
 from typing import Iterator
 
 import datafiles
@@ -7,7 +8,7 @@ import log
 from datafiles import datafile, field
 from flask import Flask, redirect, render_template, request, url_for
 
-SIZE = 5
+SIZE = 3
 UNITS = SIZE * 4
 FILL = 2 / 3
 
@@ -127,6 +128,7 @@ class Board:
         raise LookupError(f"Unknown cell: {xy}")
 
     def reset(self):
+        assert SIZE <= 5  # see board.html width limits
         self.cells = []
         for row in range(SIZE):
             for col in range(SIZE):
@@ -145,15 +147,27 @@ class Game:
     )
     board: Board = Board()
 
-    @property
+    @cached_property
+    def choosing(self) -> int:
+        return sum(1 for p in self.players if p.state is State.UNKNOWN)
+
+    @cached_property
     def waiting(self) -> int:
+        if any(p.round < self.round for p in self.players):
+            return 0
         return sum(1 for p in self.players if p.state is not State.WAITING)
 
     @property
     def message(self) -> str:
-        count = self.waiting
-        s = "" if count == 1 else "s"
-        return f"Waiting for {count} other player{s}..."
+        if self.round == 0:
+            return ""
+        if self.choosing:
+            s = "" if self.choosing == 1 else "s"
+            return f"Waiting for {self.choosing} player{s} to pick a color..."
+        if self.waiting:
+            s = "" if self.waiting == 1 else "s"
+            return f"Waiting for {self.waiting} player{s} to plan moves..."
+        return ""
 
     def initialize(self):
         units = {player.color: UNITS for player in self.players}
@@ -272,7 +286,7 @@ def done(number: int, color: str):
     if player.round == game.round:
         with datafiles.frozen(game):
             for cell in game.board.cells:
-                # TODO: Process moves
+                # TODO: Actually process moves
                 cell.up = cell.down = cell.left = cell.right = 0
         game.round += 1
     return redirect(url_for("player", number=game.number, color=player.color.key))
