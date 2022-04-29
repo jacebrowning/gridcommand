@@ -4,12 +4,13 @@
     hx-trigger="{% if game.choosing %}every 2s{% endif %}"
     hx-swap="outerHTML"
     hx-indicator="#spinner">
-    <span class="fs-4 me-1">Choose Color:</span>
+    <span class="fs-4 me-1 text-end">Player:</span>
     {% for player in game.players %}
     <a
         class="btn btn-{{ player.color.value }} {% if player.state.value and game.choosing %} disabled {% endif %} ms-1"
         href="{{ url_for('player', code=game.code, color=player.color.key) }}">
-        {{ player.color.title }}
+        <span class="d-none d-sm-inline">{{ player.color.title }}</span>
+        <span class="d-inline d-sm-none">{{ player.color.title[0] }}</span>
     </a>
     {% endfor %}
 </div>

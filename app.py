@@ -11,7 +11,7 @@ SIZE = 3
 UNITS = SIZE * 4
 FILL = 2 / 3
 
-CODES = "ABCDEFGHJKLMNPQRSTUVXYZ23456789"
+CODES = "ABCDEFGHJKMNPQRSTUVXYZ23456789"
 
 app = Flask(__name__)
 
@@ -239,7 +239,7 @@ def choose(code: str):
     game = Game(code)
     game.round = 1
     if "partial" in request.args:
-        return render_template("players.html", game=game)
+        return render_template("choose.html", game=game)
     return render_template("game.html", game=game)
 
 
