@@ -11,7 +11,7 @@ SIZE = 3
 UNITS = SIZE * 4
 FILL = 2 / 3
 
-CODES = "ABCDEFGHJKMNPQRSTUVXYZ23456789"
+CODES = "ABCDEFGHJKLMNPQRSTUVXYZ234567892345678923456789"
 
 app = Flask(__name__)
 
@@ -139,9 +139,7 @@ class Board:
 @datafile("data/games/{self.code}.yml", defaults=True)
 class Game:
 
-    code: str = field(
-        default_factory=lambda: "".join(random.choices(CODES, k=4)).lower()
-    )
+    code: str = field(default_factory=lambda: "".join(random.choices(CODES, k=4)))
 
     round: int = 0
     players: list[Player] = field(
