@@ -26,13 +26,13 @@ endif
 
 .PHONY: format
 format: install
-	poetry run autoflake . --in-place --remove-all-unused-imports
-	poetry run isort .
-	poetry run black .
+	poetry run autoflake *.py --in-place --remove-all-unused-imports
+	poetry run isort *.py
+	poetry run black *.py
 
 .PHONY: check
 check: install
-	poetry run mypy .
+	poetry run mypy *.py
 
 # RUN
 

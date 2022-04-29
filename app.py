@@ -4,13 +4,14 @@ from functools import cached_property
 from typing import Iterator
 
 import datafiles
-import log
 from datafiles import datafile, field
 from flask import Flask, redirect, render_template, request, url_for
 
 SIZE = 3
 UNITS = SIZE * 4
 FILL = 2 / 3
+
+CODES = "ABCDEFGHJKLMNPQRSTUVXYZ23456789"
 
 app = Flask(__name__)
 
@@ -135,10 +136,12 @@ class Board:
                 self.cells.append(Cell(row, col))
 
 
-@datafile("data/games/{self.number}.yml", defaults=True)
+@datafile("data/games/{self.code}.yml", defaults=True)
 class Game:
 
-    number: int
+    code: str = field(
+        default_factory=lambda: "".join(random.choices(CODES, k=4)).lower()
+    )
 
     round: int = 0
     players: list[Player] = field(
@@ -206,38 +209,37 @@ def index():
 
 @app.get("/game/")
 def create():
-    number = sum(1 for _ in Game.objects.all()) + 1
-    game = Game(number)
+    game = Game()
     game.initialize()
-    return redirect(url_for("setup", number=number))
+    return redirect(url_for("setup", code=game.code))
 
 
-@app.get("/game/<int:number>/")
-def setup(number: int):
-    game = Game(number)
+@app.get("/game/<code>/")
+def setup(code: str):
+    game = Game(code)
     return render_template("game.html", game=game)
 
 
-@app.post("/game/<int:number>/_randomize/")
-def randomize(number: int):
-    game = Game(number)
+@app.post("/game/<code>/_randomize/")
+def randomize(code: str):
+    game = Game(code)
     assert game.round == 0
     game.initialize()
     return render_template("board.html", game=game)
 
 
-@app.get("/game/<int:number>/player/")
-def players(number: int):
-    game = Game(number)
+@app.get("/game/<code>/player/")
+def players(code: str):
+    game = Game(code)
     if "partial" in request.args:
         return render_template("players.html", game=game)
     game.round = 1
     return render_template("game.html", game=game)
 
 
-@app.get("/game/<int:number>/player/<color>/")
-def player(number: int, color: str):
-    game = Game(number)
+@app.get("/game/<code>/player/<color>/")
+def player(code: str, color: str):
+    game = Game(code)
     player = game.get_player(color)
     with datafiles.frozen(player):
         player.round = game.round
@@ -245,32 +247,32 @@ def player(number: int, color: str):
     return render_template("game.html", game=game, player=player)
 
 
-@app.get("/game/<int:number>/player/<color>/moves/")
-def player_moves(number: int, color: str):
-    game = Game(number)
+@app.get("/game/<code>/player/<color>/moves/")
+def player_moves(code: str, color: str):
+    game = Game(code)
     player = game.get_player(color)
     player.state = State.PLANNING
     return render_template("game.html", game=game, player=player)
 
 
-@app.get("/game/<int:number>/player/<color>/done/")
-def player_done(number: int, color: str):
-    game = Game(number)
+@app.get("/game/<code>/player/<color>/done/")
+def player_done(code: str, color: str):
+    game = Game(code)
     player = game.get_player(color)
     player.state = State.WAITING
     return render_template("game.html", game=game, player=player)
 
 
-@app.post("/game/<int:number>/_cell/<int:row>/<int:col>/")
-def cell(number: int, row: int, col: int):
-    game = Game(number)
+@app.post("/game/<code>/_cell/<int:row>/<int:col>/")
+def cell(code: str, row: int, col: int):
+    game = Game(code)
     cell = game.board[row, col]
     return render_template("cell.html", game=game, cell=cell, editing=True)
 
 
-@app.post("/game/<int:number>/_cell/<int:row>/<int:col>/<direction>/")
-def move(number: int, row: int, col: int, direction: str):
-    game = Game(number)
+@app.post("/game/<code>/_cell/<int:row>/<int:col>/<direction>/")
+def move(code: str, row: int, col: int, direction: str):
+    game = Game(code)
     cell = game.board[row, col]
     if direction == "center":
         cell.reset()
@@ -279,9 +281,9 @@ def move(number: int, row: int, col: int, direction: str):
     return render_template("cell.html", game=game, cell=cell, editing=True)
 
 
-@app.get("/game/<int:number>/_done/<color>")
-def done(number: int, color: str):
-    game = Game(number)
+@app.get("/game/<code>/_done/<color>")
+def done(code: str, color: str):
+    game = Game(code)
     player = game.get_player(color)
     if player.round == game.round:
         with datafiles.frozen(game):
@@ -289,7 +291,7 @@ def done(number: int, color: str):
                 # TODO: Actually process moves
                 cell.up = cell.down = cell.left = cell.right = 0
         game.round += 1
-    return redirect(url_for("player", number=game.number, color=player.color.key))
+    return redirect(url_for("player", code=game.code, color=player.color.key))
 
 
 if __name__ == "__main__":

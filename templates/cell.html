@@ -34,7 +34,7 @@
         <button
             type="button"
             class="btn btn-sm btn-outline-{{ cell.color.value }} py-0 px-3"
-            hx-post="{{ url_for('move', number=game.number, row=cell.row, col=cell.col, direction='up') }}"
+            hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='up') }}"
             hx-target="closest td"
             hx-indicator="#spinner">
             {{ cell.up }}
@@ -49,7 +49,7 @@
         <button
             type="button"
             class="btn btn-sm btn-outline-{{ cell.color.value }} py-2 px-1"
-            hx-post="{{ url_for('move', number=game.number, row=cell.row, col=cell.col, direction='left') }}"
+            hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='left') }}"
             hx-target="closest td"
             hx-indicator="#spinner">
             {{ cell.left }}
@@ -60,7 +60,7 @@
 
         <span
             class="text-{{ cell.color.value }} fs-3"
-            hx-post="{{ url_for('move', number=game.number, row=cell.row, col=cell.col, direction='center') }}"
+            hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='center') }}"
             hx-target="closest td"
             hx-indicator="#spinner">
             {{ cell.center }}
@@ -70,7 +70,7 @@
         <button
             type="button"
             class="btn btn-sm btn-outline-{{ cell.color.value }} py-2 px-1"
-            hx-post="{{ url_for('move', number=game.number, row=cell.row, col=cell.col, direction='right') }}"
+            hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='right') }}"
             hx-target="closest td"
             hx-indicator="#spinner">
             {{ cell.right }}
@@ -85,7 +85,7 @@
         <button
             type="button"
             class="btn btn-sm btn-outline-{{ cell.color.value }} py-0 px-3"
-            hx-post="{{ url_for('move', number=game.number, row=cell.row, col=cell.col, direction='down') }}"
+            hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='down') }}"
             hx-target="closest td"
             hx-indicator="#spinner">
             {{ cell.down }}
@@ -101,7 +101,7 @@
 <div
     class="d-flex justify-content-center align-items-center"
     style="height: 100%"
-    hx-post="{{ url_for('cell', number=game.number, row=cell.row, col=cell.col) }}"
+    hx-post="{{ url_for('cell', code=game.code, row=cell.row, col=cell.col) }}"
     hx-target="closest td"
     hx-indicator="#spinner">
     <button

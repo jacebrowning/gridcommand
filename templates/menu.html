@@ -8,12 +8,12 @@
         <button
             type="button"
             class="btn btn-outline-secondary"
-            hx-post="{{ url_for('randomize', number=game.number) }}"
+            hx-post="{{ url_for('randomize', code=game.code) }}"
             hx-target="#board"
             hx-indicator="#spinner">
             New Board
         </button>
-        <a class="btn btn-dark" href="{{ url_for('players', number=game.number) }}">
+        <a class="btn btn-dark" href="{{ url_for('players', code=game.code) }}">
             Start Game
         </a>
 
@@ -21,7 +21,7 @@
 
         <a
             class="btn btn-{{ player.color.value }}"
-            href="{{ url_for('player_done', number=game.number, color=player.color.key) }}">
+            href="{{ url_for('player_done', code=game.code, color=player.color.key) }}">
             Done
         </a>
 
@@ -30,12 +30,12 @@
         <div class="btn-group">
             <a
                 class="btn btn-{{ player.color.value }} ms-2 {% if game.waiting %}disabled{% endif %}"
-                href="{{ url_for('done', number=game.number, color=player.color.key) }}">
+                href="{{ url_for('done', code=game.code, color=player.color.key) }}">
                 Next Round
             </a>
             <a
                 class="btn btn-outline-secondary"
-                href="{{ url_for('players', number=game.number) }}">
+                href="{{ url_for('players', code=game.code) }}">
                 ⇄ <span class="d-none d-sm-inline">Switch Player</span>
             </a>
         </div>
@@ -45,12 +45,12 @@
         <div class="btn-group">
             <a
                 class="btn btn-{{ player.color.value }}"
-                href="{{ url_for('player_moves', number=game.number, color=player.color.key) }}">
+                href="{{ url_for('player_moves', code=game.code, color=player.color.key) }}">
                 Plan Moves
             </a>
             <a
                 class="btn btn-outline-secondary"
-                href="{{ url_for('players', number=game.number) }}">
+                href="{{ url_for('players', code=game.code) }}">
                 ⇄ <span class="d-none d-sm-inline">Switch Player</span>
             </a>
         </div>
