@@ -3,7 +3,7 @@
 {% block content %}
 <div id="board"
     {% if player and player.state == State.WAITING %}
-    hx-get="{{ url_for('player_done', code=game.code, color=player.color.key) }}"
+    hx-get="{{ url_for('player', code=game.code, color=player.color.key) }}"
     hx-trigger="every 5s"
     hx-target=".container"
     hx-swap="outerHTML"

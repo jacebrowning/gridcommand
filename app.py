@@ -151,6 +151,10 @@ class Game:
     board: Board = Board()
 
     @cached_property
+    def url(self) -> str:
+        return url_for("setup", code=self.code, _external=True)
+
+    @cached_property
     def choosing(self) -> int:
         return sum(1 for p in self.players if p.state is State.UNKNOWN)
 
@@ -217,6 +221,8 @@ def create():
 @app.get("/game/<code>/")
 def setup(code: str):
     game = Game(code)
+    if game.round:
+        return redirect(url_for("choose", code=game.code))
     return render_template("game.html", game=game)
 
 
@@ -229,11 +235,11 @@ def randomize(code: str):
 
 
 @app.get("/game/<code>/player/")
-def players(code: str):
+def choose(code: str):
     game = Game(code)
+    game.round = 1
     if "partial" in request.args:
         return render_template("players.html", game=game)
-    game.round = 1
     return render_template("game.html", game=game)
 
 
@@ -243,24 +249,39 @@ def player(code: str, color: str):
     player = game.get_player(color)
     with datafiles.frozen(player):
         player.round = game.round
-        player.state = State.READY
+        if player.state is State.UNKNOWN:
+            player.state = State.READY
     return render_template("game.html", game=game, player=player)
 
 
-@app.get("/game/<code>/player/<color>/moves/")
-def player_moves(code: str, color: str):
+@app.post("/game/<code>/player/<color>/_plan/")
+def player_plan(code: str, color: str):
     game = Game(code)
     player = game.get_player(color)
     player.state = State.PLANNING
-    return render_template("game.html", game=game, player=player)
+    return render_template("board.html", game=game, player=player)
 
 
-@app.get("/game/<code>/player/<color>/done/")
+@app.post("/game/<code>/player/<color>/_done/")
 def player_done(code: str, color: str):
     game = Game(code)
     player = game.get_player(color)
     player.state = State.WAITING
-    return render_template("game.html", game=game, player=player)
+    return render_template("board.html", game=game, player=player)
+
+
+@app.get("/game/<code>/player/<color>/_next")
+def player_next(code: str, color: str):
+    game = Game(code)
+    player = game.get_player(color)
+    player.state = State.READY
+    if player.round == game.round:
+        with datafiles.frozen(game):
+            for cell in game.board.cells:
+                # TODO: Actually process moves
+                cell.up = cell.down = cell.left = cell.right = 0
+        game.round += 1
+    return redirect(url_for("player", code=game.code, color=player.color.key))
 
 
 @app.post("/game/<code>/_cell/<int:row>/<int:col>/")
@@ -279,19 +300,6 @@ def move(code: str, row: int, col: int, direction: str):
     else:
         cell.move(1, direction)
     return render_template("cell.html", game=game, cell=cell, editing=True)
-
-
-@app.get("/game/<code>/_done/<color>")
-def done(code: str, color: str):
-    game = Game(code)
-    player = game.get_player(color)
-    if player.round == game.round:
-        with datafiles.frozen(game):
-            for cell in game.board.cells:
-                # TODO: Actually process moves
-                cell.up = cell.down = cell.left = cell.right = 0
-        game.round += 1
-    return redirect(url_for("player", code=game.code, color=player.color.key))
 
 
 if __name__ == "__main__":

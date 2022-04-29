@@ -1,6 +1,12 @@
 <div class="d-flex justify-content-between align-items-center py-4">
     <div class="d-flex align-items-center fs-2 text-nowrap me-2">
-        Round {{ game.round }}{% if player %}: {{ player.state.title }}{% endif %}
+        {% if game.round and not game.choosing %} Round {{ game.round }}{% if player %}:
+        {{ player.state.title }}{% endif %} {% else %} Game Code: {{ game.code.upper()
+        }}
+        <button class="btn btn-outline-dark ms-2" data-clipboard-text="{{ game.url }}">
+            📋
+        </button>
+        {% endif %}
     </div>
     <div>
         {% if game.round == 0 %}
@@ -13,29 +19,32 @@
             hx-indicator="#spinner">
             New Board
         </button>
-        <a class="btn btn-dark" href="{{ url_for('players', code=game.code) }}">
+        <a class="btn btn-dark" href="{{ url_for('choose', code=game.code) }}">
             Start Game
         </a>
 
         {% elif player %} {% if player.state == State.PLANNING %}
 
-        <a
+        <button
+            type="button"
             class="btn btn-{{ player.color.value }}"
-            href="{{ url_for('player_done', code=game.code, color=player.color.key) }}">
+            hx-post="{{ url_for('player_done', code=game.code, color=player.color.key) }}"
+            hx-target="#board"
+            hx-indicator="#spinner">
             Done
-        </a>
+        </button>
 
         {% elif player.state == State.WAITING %}
 
         <div class="btn-group">
             <a
-                class="btn btn-{{ player.color.value }} ms-2 {% if game.waiting %}disabled{% endif %}"
-                href="{{ url_for('done', code=game.code, color=player.color.key) }}">
+                class="btn btn-{{ player.color.value }} ms-2 {% if game.choosing or game.waiting %}disabled{% endif %}"
+                href="{{ url_for('player_next', code=game.code, color=player.color.key) }}">
                 Next Round
             </a>
             <a
                 class="btn btn-outline-secondary"
-                href="{{ url_for('players', code=game.code) }}">
+                href="{{ url_for('choose', code=game.code) }}">
                 ⇄ <span class="d-none d-sm-inline">Switch Player</span>
             </a>
         </div>
@@ -43,14 +52,17 @@
         {% else %}
 
         <div class="btn-group">
-            <a
-                class="btn btn-{{ player.color.value }}"
-                href="{{ url_for('player_moves', code=game.code, color=player.color.key) }}">
+            <button
+                type="button"
+                class="btn btn-{{ player.color.value }} {% if game.choosing %}disabled{% endif %}"
+                hx-post="{{ url_for('player_plan', code=game.code, color=player.color.key) }}"
+                hx-target="#board"
+                hx-indicator="#spinner">
                 Plan Moves
-            </a>
+            </button>
             <a
                 class="btn btn-outline-secondary"
-                href="{{ url_for('players', code=game.code) }}">
+                href="{{ url_for('choose', code=game.code) }}">
                 ⇄ <span class="d-none d-sm-inline">Switch Player</span>
             </a>
         </div>
