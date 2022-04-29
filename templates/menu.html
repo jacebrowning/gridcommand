@@ -1,14 +1,13 @@
 <div class="d-flex justify-content-between align-items-center py-4">
     <div class="d-flex align-items-center fs-2 text-nowrap me-2">
         {% if game.round and not game.choosing %} Round {{ game.round }}{% if player %}:
-        {{ player.state.title }}{% endif %} {% else %} Game Code: {{ game.code.upper()
-        }}
+        {{ player.state.title }}{% endif %} {% else %} Code: {{ game.code.upper() }}
         <button class="btn btn-outline-dark ms-2" data-clipboard-text="{{ game.url }}">
-            📋
+            📋 <span class="d-none d-sm-inline">Copy URL</span
         </button>
         {% endif %}
     </div>
-    <div>
+    <div class="btn-group">
         {% if game.round == 0 %}
 
         <button
@@ -17,7 +16,7 @@
             hx-post="{{ url_for('randomize', code=game.code) }}"
             hx-target="#board"
             hx-indicator="#spinner">
-            New Board
+            🔀 <span class="d-none d-sm-inline">New Board</span>
         </button>
         <a class="btn btn-dark" href="{{ url_for('choose', code=game.code) }}">
             Start Game
@@ -31,7 +30,7 @@
             hx-post="{{ url_for('player_done', code=game.code, color=player.color.key) }}"
             hx-target="#board"
             hx-indicator="#spinner">
-            Done
+            Done Planning
         </button>
 
         {% elif player.state == State.WAITING %}
@@ -45,7 +44,7 @@
             <a
                 class="btn btn-outline-secondary"
                 href="{{ url_for('choose', code=game.code) }}">
-                ⇄ <span class="d-none d-sm-inline">Switch Player</span>
+                ⇄ <span class="d-none d-md-inline">Switch Player</span>
             </a>
         </div>
 
@@ -63,9 +62,9 @@
             <a
                 class="btn btn-outline-secondary"
                 href="{{ url_for('choose', code=game.code) }}">
-                ⇄ <span class="d-none d-sm-inline">Switch Player</span>
+                ⇄ <span class="d-none d-md-inline">Switch Player</span>
             </a>
         </div>
-        {% endif %} {% else %} {% include "players.html"%} {% endif %}
+        {% endif %} {% else %} {% include "choose.html"%} {% endif %}
     </div>
 </div>
