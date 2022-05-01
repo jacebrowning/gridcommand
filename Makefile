@@ -36,13 +36,14 @@ check: install
 
 .PHONY: test
 test: install
-	poetry run pomace exec test.py
+	poetry run pomace exec test.py --headless
 
 # RUN
 
 .PHONY: run
 run: install
-	status=1; \
+	@ echo "poetry run python app.py"
+	@ status=1; \
 	while [ $$status -eq 1 ] ; do \
 		poetry run python app.py; \
 		status=$$?; \
