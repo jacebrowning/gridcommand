@@ -1,14 +1,1 @@
-{% extends 'base.html' %}
-
-{% block content %}
-<div id="board"
-    {% if player and player.state == State.WAITING %}
-    hx-get="{{ url_for('player', code=game.code, color=player.color.key) }}"
-    hx-trigger="every 5s"
-    hx-target=".container"
-    hx-swap="outerHTML"
-    hx-indicator="#spinner"
-    {% endif %}>
-    {% include 'board.html' %}
-</div>
-{% endblock %}
+{% extends 'base.html' %} {% block content %} {% include 'board.html' %} {% endblock %}

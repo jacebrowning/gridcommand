@@ -1,0 +1,10 @@
+<div class="btn-group">
+    <a
+        class="btn btn-{{ player.color.value }} ms-2 {% if game.choosing or game.waiting %}disabled{% endif %}"
+        href="{{ url_for('player_next', code=game.code, color=player.color.key) }}">
+        Next Round
+    </a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('choose', code=game.code) }}">
+        ⇄ <span class="d-none d-md-inline">Switch Player</span>
+    </a>
+</div>

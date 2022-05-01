@@ -1,36 +1,45 @@
-{% include 'menu.html' %}
+<div id="board"
+    {% if player and player.state == State.WAITING %}
+    hx-get="{{ url_for('player', code=game.code, color=player.color.key) }}"
+    hx-trigger="every 5s"
+    hx-target="#board"
+    hx-indicator="#spinner"
+    {% endif %}>
 
-<table class="table table-bordered border-dark">
-    <tbody>
-        {% for row in game.board %}
+    {% include 'menu.html' %}
 
-        <tr>
-            {% for cell in row %}
+    <table class="table table-bordered border-dark">
+        <tbody>
+            {% for row in game.board %}
 
-            <td
-                class="d-none d-md-table-cell"
-                style="width: 20%; height: 15vmin; padding: 7px 10px 10px 10px">
-                {% if cell %} {% include "cell.html" %} {% endif %}
-            </td>
-            <td
-                class="d-sm-table-cell d-md-none"
-                style="width: 20%; height: 26vw; padding: 0 3px 3px 3px">
-                {% if cell %} {% include "cell.html" %} {% endif %}
-            </td>
+            <tr>
+                {% for cell in row %}
+
+                <td
+                    class="d-none d-md-table-cell"
+                    style="width: 20%; height: 15vmin; padding: 7px 10px 10px 10px">
+                    {% if cell %} {% include "cell.html" %} {% endif %}
+                </td>
+                <td
+                    class="d-sm-table-cell d-md-none"
+                    style="width: 20%; height: 26vw; padding: 0 3px 3px 3px">
+                    {% if cell %} {% include "cell.html" %} {% endif %}
+                </td>
+
+                {% endfor %}
+            </tr>
 
             {% endfor %}
-        </tr>
+        </tbody>
+    </table>
 
-        {% endfor %}
-    </tbody>
-</table>
-
-<div class="d-flex justify-content-between align-items-center">
-    <div class="text-muted">{{ game.message }}</div>
-    <div
-        class="spinner-border spinner-border-sm text-secondary htmx-indicator"
-        role="status"
-        id="spinner">
-        <span class="visually-hidden">Loading...</span>
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="text-muted">{{ game.message }}</div>
+        <div
+            class="spinner-border spinner-border-sm text-secondary htmx-indicator"
+            role="status"
+            id="spinner">
+            <span class="visually-hidden">Loading...</span>
+        </div>
     </div>
 </div>

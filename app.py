@@ -11,7 +11,8 @@ SIZE = 3
 UNITS = SIZE * 4
 FILL = 2 / 3
 
-CODES = "ABCDEFGHJKLMNPQRSTUVXYZ234567892345678923456789"
+LETTERS = "ABCDEFGHJKLMNPQRTUVXYZ"
+NUMBERS = "2346789"
 
 app = Flask(__name__)
 
@@ -136,10 +137,21 @@ class Board:
                 self.cells.append(Cell(row, col))
 
 
+def generate_code() -> str:
+    return "".join(
+        [
+            random.choice(LETTERS),
+            random.choice(NUMBERS),
+            random.choice(LETTERS),
+            random.choice(NUMBERS),
+        ]
+    )
+
+
 @datafile("data/games/{self.code}.yml", defaults=True)
 class Game:
 
-    code: str = field(default_factory=lambda: "".join(random.choices(CODES, k=4)))
+    code: str = field(default_factory=generate_code)
 
     round: int = 0
     players: list[Player] = field(
@@ -235,9 +247,9 @@ def randomize(code: str):
 @app.get("/game/<code>/player/")
 def choose(code: str):
     game = Game(code)
-    game.round = 1
+    game.round = game.round or 1
     if "partial" in request.args:
-        return render_template("choose.html", game=game)
+        return render_template("menu/choose.html", game=game)
     return render_template("game.html", game=game)
 
 
@@ -246,9 +258,11 @@ def player(code: str, color: str):
     game = Game(code)
     player = game.get_player(color)
     with datafiles.frozen(player):
-        player.round = game.round
-        if player.state is State.UNKNOWN:
+        if game.round > player.round:
+            player.round = game.round
             player.state = State.READY
+        # if player.state is State.UNKNOWN:
+        #     player.state = State.READY
     return render_template("game.html", game=game, player=player)
 
 
@@ -256,6 +270,8 @@ def player(code: str, color: str):
 def player_plan(code: str, color: str):
     game = Game(code)
     player = game.get_player(color)
+    if "partial" in request.args:
+        return render_template("menu/plan.html", game=game, player=player)
     player.state = State.PLANNING
     return render_template("board.html", game=game, player=player)
 

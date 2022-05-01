@@ -3,12 +3,15 @@
         {% if game.round and not game.choosing %} Round {{ game.round }}{% if player %}:
         {{ player.state.title }}{% endif %} {% else %} Code: {{ game.code }}
         <button class="btn btn-outline-dark ms-2" data-clipboard-text="{{ game.url }}">
-            📋 <span class="d-none d-sm-inline">Copy URL</span
+            📋 <span class="d-none d-sm-inline">Copy URL</span>
         </button>
         {% endif %}
     </div>
+
     <div class="btn-group">
         {% if game.round == 0 %}
+
+        <!-- Phase 1 -->
 
         <button
             type="button"
@@ -22,49 +25,26 @@
             Start Game
         </a>
 
-        {% elif player %} {% if player.state == State.PLANNING %}
+        {% elif not player %}
 
-        <button
-            type="button"
-            class="btn btn-{{ player.color.value }}"
-            hx-post="{{ url_for('player_done', code=game.code, color=player.color.key) }}"
-            hx-target="#board"
-            hx-indicator="#spinner">
-            Done Planning
-        </button>
+        <!-- Phase 2 -->
 
-        {% elif player.state == State.WAITING %}
+        {% include "menu/choose.html"%} {% else %}
 
-        <div class="btn-group">
-            <a
-                class="btn btn-{{ player.color.value }} ms-2 {% if game.choosing or game.waiting %}disabled{% endif %}"
-                href="{{ url_for('player_next', code=game.code, color=player.color.key) }}">
-                Next Round
-            </a>
-            <a
-                class="btn btn-outline-secondary"
-                href="{{ url_for('choose', code=game.code) }}">
-                ⇄ <span class="d-none d-md-inline">Switch Player</span>
-            </a>
-        </div>
+        <!-- Phase 3 -->
 
-        {% else %}
+        {% if player.state == State.PLANNING %}
 
-        <div class="btn-group">
-            <button
-                type="button"
-                class="btn btn-{{ player.color.value }} {% if game.choosing %}disabled{% endif %}"
-                hx-post="{{ url_for('player_plan', code=game.code, color=player.color.key) }}"
-                hx-target="#board"
-                hx-indicator="#spinner">
-                Plan Moves
-            </button>
-            <a
-                class="btn btn-outline-secondary"
-                href="{{ url_for('choose', code=game.code) }}">
-                ⇄ <span class="d-none d-md-inline">Switch Player</span>
-            </a>
-        </div>
-        {% endif %} {% else %} {% include "choose.html"%} {% endif %}
+        <!-- Phase 3.2 -->
+
+        {% include "menu/done.html" %} {% elif player.state == State.WAITING %}
+
+        <!-- Phase 3.3 -->
+
+        {% include "menu/next.html" %} {% else %}
+
+        <!-- Phase 3.1 -->
+
+        {% include "menu/plan.html" %} {% endif %} {% endif %}
     </div>
 </div>
