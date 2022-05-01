@@ -52,14 +52,9 @@ run: install
 
 .PHONY: serve
 serve:
-	status=1; \
-	while [ $$status -eq 1 ] ; do \
-		git pull; \
-		poetry install --no-dev; \
-		poetry run flask run; \
-		status=$$?; \
-		sleep 1; \
-	done; \
+	git pull
+	poetry install --no-dev
+	poetry run gunicorn --workers 4 --bind 0.0.0.0:5000 app:app
 
 # CLEANUP
 
