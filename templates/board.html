@@ -42,4 +42,8 @@
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
+
+    {% if player and player.state == State.WAITING %}
+    {% include "moves.html" %}
+    {% endif %}
 </div>
