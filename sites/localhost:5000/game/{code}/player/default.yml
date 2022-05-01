@@ -1,0 +1,33 @@
+locators:
+  inclusions:
+    - mode: ''
+      value: ''
+      index: 0
+      uses: 0
+  exclusions:
+    - mode: ''
+      value: ''
+      index: 0
+      uses: 0
+actions:
+  - verb: ''
+    name: ''
+    locators:
+      - mode: ''
+        value: ''
+        index: 0
+        uses: 0
+  - verb: click
+    name: blue
+    locators:
+      - mode: text
+        value: Blue
+        index: 0
+        uses: 2
+  - verb: click
+    name: red
+    locators:
+      - mode: text
+        value: Red
+        index: 0
+        uses: 2

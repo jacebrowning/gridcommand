@@ -1,0 +1,78 @@
+locators:
+  inclusions:
+    - mode: ''
+      value: ''
+      index: 0
+      uses: 0
+  exclusions:
+    - mode: ''
+      value: ''
+      index: 0
+      uses: 0
+actions:
+  - verb: ''
+    name: ''
+    locators:
+      - mode: ''
+        value: ''
+        index: 0
+        uses: 0
+  - verb: click
+    name: switch_player
+    locators:
+      - mode: text
+        value: Switch Player
+        index: 0
+        uses: 2
+  - verb: click
+    name: plan_movies
+    locators:
+      - mode: ''
+        value: ''
+        index: 0
+        uses: 0
+      - mode: text
+        value: Plan Movies
+        index: 0
+        uses: -1
+      - mode: text
+        value: Plan movies
+        index: 0
+        uses: -1
+      - mode: text
+        value: plan movies
+        index: 0
+        uses: -1
+      - mode: value
+        value: Plan Movies
+        index: 0
+        uses: -1
+      - mode: value
+        value: Plan movies
+        index: 0
+        uses: -1
+      - mode: value
+        value: plan movies
+        index: 0
+        uses: -1
+  - verb: click
+    name: plan_moves
+    locators:
+      - mode: id
+        value: plan
+        index: 0
+        uses: 2
+  - verb: click
+    name: done_planning
+    locators:
+      - mode: id
+        value: done
+        index: 0
+        uses: 2
+  - verb: click
+    name: next_round
+    locators:
+      - mode: id
+        value: next
+        index: 0
+        uses: 2

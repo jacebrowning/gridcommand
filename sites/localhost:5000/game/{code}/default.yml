@@ -1,0 +1,33 @@
+locators:
+  inclusions:
+    - mode: ''
+      value: ''
+      index: 0
+      uses: 0
+  exclusions:
+    - mode: ''
+      value: ''
+      index: 0
+      uses: 0
+actions:
+  - verb: ''
+    name: ''
+    locators:
+      - mode: ''
+        value: ''
+        index: 0
+        uses: 0
+  - verb: click
+    name: new_board
+    locators:
+      - mode: text
+        value: New Board
+        index: 0
+        uses: 2
+  - verb: click
+    name: start_game
+    locators:
+      - mode: css
+        value: .btn-dark
+        index: 0
+        uses: 2

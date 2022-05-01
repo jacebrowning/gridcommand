@@ -261,8 +261,6 @@ def player(code: str, color: str):
         if game.round > player.round:
             player.round = game.round
             player.state = State.READY
-        # if player.state is State.UNKNOWN:
-        #     player.state = State.READY
     return render_template("game.html", game=game, player=player)
 
 

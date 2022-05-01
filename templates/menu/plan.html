@@ -7,6 +7,7 @@
     <button
         type="button"
         class="btn btn-{{ player.color.value }} {% if game.choosing %}disabled{% endif %}"
+        id="plan"
         hx-post="{{ url_for('player_plan', code=game.code, color=player.color.key) }}"
         hx-target="#board"
         hx-indicator="#spinner">

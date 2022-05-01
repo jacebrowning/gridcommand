@@ -1,7 +1,8 @@
 <div class="btn-group">
     <a
         class="btn btn-{{ player.color.value }} ms-2 {% if game.choosing or game.waiting %}disabled{% endif %}"
-        href="{{ url_for('player_next', code=game.code, color=player.color.key) }}">
+        href="{{ url_for('player_next', code=game.code, color=player.color.key) }}"
+        id="next">
         Next Round
     </a>
     <a class="btn btn-outline-secondary" href="{{ url_for('choose', code=game.code) }}">

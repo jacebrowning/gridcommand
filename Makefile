@@ -2,7 +2,7 @@
 all: install
 
 .PHONY: ci
-ci: format check
+ci: format check test
 
 # INSTALL
 
@@ -33,6 +33,10 @@ format: install
 .PHONY: check
 check: install
 	poetry run mypy *.py
+
+.PHONY: test
+test: install
+	poetry run pomace exec test.py
 
 # RUN
 
