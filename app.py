@@ -505,6 +505,7 @@ def move(code: str, row: int, col: int, direction: str):
 if __name__ == "__main__":
     from livereload import Server
 
+    log.reset()
     log.init()
     log.silence("datafiles", allow_warning=True)
 
