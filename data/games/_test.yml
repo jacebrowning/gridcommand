@@ -1,0 +1,85 @@
+round: 1
+players:
+  - color: primary
+    round: 1
+    state: waiting
+  - color: danger
+    round: 1
+    state: waiting
+  - color: success
+    round: 1
+    state: waiting
+board:
+  cells:
+    - row: 0
+      col: 0
+      color: dark
+      center: 0
+      up: 0
+      down: 0
+      left: 0
+      right: 0
+    - row: 0
+      col: 1
+      color: danger
+      center: 0
+      up: 0
+      down: 0
+      left: 0
+      right: 3
+    - row: 0
+      col: 2
+      color: success
+      center: 12
+      up: 0
+      down: 0
+      left: 0
+      right: 0
+    - row: 1
+      col: 0
+      color: danger
+      center: 2
+      up: 0
+      down: 0
+      left: 0
+      right: 0
+    - row: 1
+      col: 1
+      color: danger
+      center: 1
+      up: 0
+      down: 0
+      left: 0
+      right: 0
+    - row: 1
+      col: 2
+      color: primary
+      center: 2
+      up: 2
+      down: 0
+      left: 0
+      right: 0
+    - row: 2
+      col: 0
+      color: primary
+      center: 2
+      up: 0
+      down: 0
+      left: 0
+      right: 0
+    - row: 2
+      col: 1
+      color: danger
+      center: 4
+      up: 0
+      down: 0
+      left: 0
+      right: 2
+    - row: 2
+      col: 2
+      color: primary
+      center: 4
+      up: 0
+      down: 0
+      left: 2
+      right: 0
