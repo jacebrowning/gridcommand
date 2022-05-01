@@ -1,0 +1,29 @@
+Fortifications:
+
+<ul>
+    {% for move in game.board.fortifications %}
+    <li>{{ move }}</li>
+    {% else %}
+    <li>(none)</li>
+    {% endfor %}
+</ul>
+
+Borders Clashes:
+
+<ul>
+    {% for move in game.board.border_clashes %}
+    <li>{{ move }}</li>
+    {% else %}
+    <li>(none)</li>
+    {% endfor %}
+</ul>
+
+Attacks:
+
+<ul>
+    {% for move in game.board.attacks %}
+    <li>{{ move }}</li>
+    {% else %}
+    <li>(none)</li>
+    {% endfor %}
+</ul>

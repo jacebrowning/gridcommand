@@ -1,9 +1,11 @@
 import random
+from contextlib import suppress
 from enum import Enum
 from functools import cached_property
 from typing import Iterator
 
 import datafiles
+import log
 from datafiles import datafile, field
 from flask import Flask, redirect, render_template, request, url_for
 
@@ -33,6 +35,17 @@ class Color(Enum):
     def title(self) -> str:
         return self.name.title()
 
+    @property
+    def icon(self) -> str:
+        values = {
+            self.BLUE: "🟦",
+            self.RED: "🟥",
+            self.GREEN: "🟩",
+            self.YELLOW: "🟨",
+            self.NONE: "∅",
+        }
+        return values[self]  # type: ignore
+
 
 class State(Enum):
     UNKNOWN = None
@@ -52,7 +65,7 @@ class Player:
     state: State = State.UNKNOWN
 
 
-@datafile
+@datafile(order=True)
 class Cell:
     row: int
     col: int
@@ -65,8 +78,14 @@ class Cell:
     left: int = 0
     right: int = 0
 
+    def __str__(self):
+        return f"{self.color.icon} ({self.row},{self.col})"
+
     def __bool__(self):
         return self.color is not Color.NONE
+
+    def __hash__(self):
+        return hash((self.row, self.col))
 
     @property
     def value(self) -> int:
@@ -106,6 +125,120 @@ class Cell:
 
 
 @datafile
+class Move:
+    start: Cell
+    direction: str
+    finish: Cell
+
+    def __str__(self):
+        return f"{self.outgoing} {self.start} {self.arrow} {self.finish.center} {self.finish}"
+
+    def __bool__(self):
+        raise NotImplementedError
+
+    @property
+    def outgoing(self) -> int:
+        return getattr(self.start, self.direction)
+
+    @property
+    def incoming(self) -> int:
+        return getattr(self.finish, self.reverse)
+
+    @property
+    def reverse(self):
+        return {"up": "down", "down": "up", "left": "right", "right": "left"}[
+            self.direction
+        ]
+
+    @property
+    def arrow(self) -> str:
+        return {
+            "up": "⬆️",
+            "down": "⬇️",
+            "left": "⬅️",
+            "right": "➡️",
+            "left-right": "↔",
+            "up-down": "↕",
+        }[self.direction]
+
+    def perform(self):
+        raise NotImplementedError
+
+
+@datafile
+class Fortification(Move):
+    def __bool__(self):
+        return bool(self.start.color == self.finish.color and self.outgoing)
+
+    def perform(self):
+        self.finish.center += self.outgoing
+        setattr(self.start, self.direction, 0)
+        if not self.start.center:
+            self.start.color = Color.NONE
+
+
+@datafile
+class BorderClash(Move):
+    def __str__(self):
+        return (
+            f"{self.outgoing} {self.start} {self.arrow} {self.incoming} {self.finish}"
+        )
+
+    def __bool__(self):
+        return bool(
+            self.start.color != self.finish.color and self.outgoing and self.incoming
+        )
+
+    @property
+    def outgoing(self) -> int:
+        return getattr(self.start, self.direction.split("-")[1])
+
+    @property
+    def incoming(self) -> int:
+        return getattr(self.finish, self.direction.split("-")[0])
+
+    def perform(self):
+        while self.outgoing and self.incoming:
+            offense = sum(random.randint(1, 6) for _ in range(self.outgoing))
+            defense = sum(random.randint(1, 6) for _ in range(self.incoming))
+            log.info(f"{offense} vs. {defense}")
+            if offense > defense:
+                setattr(self.start, self.direction.split("-")[1], self.outgoing - 1)
+            else:
+                setattr(self.finish, self.direction.split("-")[0], self.incoming - 1)
+
+
+@datafile
+class Attack(Move):
+    def __bool__(self):
+        return bool(
+            self.start.color != self.finish.color
+            and self.outgoing
+            and not self.incoming
+        )
+
+    def perform(self):
+        while self.outgoing and self.finish.center:
+            offense = sum(random.randint(1, 6) for _ in range(self.outgoing))
+            defense = sum(random.randint(1, 6) for _ in range(self.finish.center))
+            log.info(
+                f"{self.outgoing} {self.start} @ {offense} vs. {self.finish.center} {self.finish} @ {defense}"
+            )
+            if offense > defense:
+                self.finish.center -= 1
+            else:
+                setattr(self.start, self.direction, self.outgoing - 1)
+
+        if self.outgoing:
+            self.finish.color = self.start.color
+            self.finish.center = self.outgoing
+            setattr(self.start, self.direction, 0)
+
+        if not self.start.center:
+            self.start.color = Color.NONE
+
+
+@datafile
 class Board:
 
     cells: list[Cell] = field(default_factory=list)
@@ -122,12 +255,55 @@ class Board:
                 index += 1
         yield row
 
-    def __getitem__(self, xy) -> Cell:
+    def __getitem__(self, xy: tuple[int, int]) -> Cell:
         row, col = xy
         for cell in self.cells:
             if cell.row == row and cell.col == col:
                 return cell
         raise LookupError(f"Unknown cell: {xy}")
+
+    @property
+    def fortifications(self) -> Iterator[Fortification]:
+        for start in self.cells:
+            for direction, finish in self.get_neighbors(start):
+                if move := Fortification(start, direction, finish):
+                    yield move
+
+    @property
+    def border_clashes(self) -> Iterator[BorderClash]:
+        pairs = set()
+        for start in self.cells:
+            for direction, finish in self.get_neighbors(start):
+                pair = tuple(sorted([start, finish]))  # type: ignore
+                if pair not in pairs:
+                    pairs.add(pair)
+                    if direction in {"up", "down"}:
+                        direction = "up-down"
+                    if direction in {"left", "right"}:
+                        direction = "left-right"
+                    if move := BorderClash(start, direction, finish):
+                        yield move
+
+    @property
+    def attacks(self) -> Iterator[Attack]:
+        for start in self.cells:
+            for direction, finish in self.get_neighbors(start):
+                if move := Attack(start, direction, finish):
+                    yield move
+
+    def get_neighbors(self, cell: Cell) -> Iterator[tuple[str, Cell]]:
+        with suppress(LookupError):
+            xy = cell.row, cell.col - 1
+            yield "left", self[xy]
+        with suppress(LookupError):
+            xy = cell.row, cell.col + 1
+            yield "right", self[xy]
+        with suppress(LookupError):
+            xy = cell.row - 1, cell.col
+            yield "up", self[xy]
+        with suppress(LookupError):
+            xy = cell.row + 1, cell.col
+            yield "down", self[xy]
 
     def reset(self):
         assert SIZE <= 5  # see board.html width limits
@@ -295,9 +471,15 @@ def player_next(code: str, color: str):
     player.state = State.READY
     if player.round == game.round:
         with datafiles.frozen(game):
-            for cell in game.board.cells:
-                # TODO: Actually process moves
-                cell.up = cell.down = cell.left = cell.right = 0
+            move: Move
+            for move in game.board.fortifications:
+                move.perform()
+            for move in game.board.border_clashes:
+                move.perform()
+            # TODO: Handle mass attacks
+            # TODO: Handle spoils of war
+            for move in game.board.attacks:
+                move.perform()
         game.round += 1
     return redirect(url_for("player", code=game.code, color=player.color.key))
 
@@ -322,6 +504,9 @@ def move(code: str, row: int, col: int, direction: str):
 
 if __name__ == "__main__":
     from livereload import Server
+
+    log.init()
+    log.silence("datafiles", allow_warning=True)
 
     app.debug = True
     server = Server(app.wsgi_app)

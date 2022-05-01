@@ -42,7 +42,7 @@ board:
       up: 0
       down: 0
       left: 0
-      right: 0
+      right: 1
     - row: 1
       col: 1
       color: danger
@@ -57,7 +57,7 @@ board:
       center: 2
       up: 2
       down: 0
-      left: 0
+      left: 3
       right: 0
     - row: 2
       col: 0
