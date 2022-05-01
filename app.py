@@ -5,6 +5,7 @@ from functools import cached_property
 from typing import Iterator
 
 import datafiles
+import log
 from datafiles import datafile, field
 from flask import Flask, redirect, render_template, request, url_for
 
@@ -145,12 +146,9 @@ class Move:
 
     @property
     def reverse(self):
-        return {
-            "up": "down",
-            "down": "up",
-            "left": "right",
-            "right": "left",
-        }[self.direction]
+        return {"up": "down", "down": "up", "left": "right", "right": "left"}[
+            self.direction
+        ]
 
     @property
     def arrow(self) -> str:
@@ -175,6 +173,8 @@ class Fortification(Move):
     def perform(self):
         self.finish.center += self.outgoing
         setattr(self.start, self.direction, 0)
+        if not self.start.center:
+            self.start.color = Color.NONE
 
 
 @datafile
@@ -198,7 +198,14 @@ class BorderClash(Move):
         return getattr(self.finish, self.direction.split("-")[0])
 
     def perform(self):
-        raise NotImplementedError
+        while self.outgoing and self.incoming:
+            offense = sum(random.randint(1, 6) for _ in range(self.outgoing))
+            defense = sum(random.randint(1, 6) for _ in range(self.incoming))
+            log.info(f"{offense} vs. {defense}")
+            if offense > defense:
+                setattr(self.start, self.direction.split("-")[1], self.outgoing - 1)
+            else:
+                setattr(self.finish, self.direction.split("-")[0], self.incoming - 1)
 
 
 @datafile
@@ -209,6 +216,26 @@ class Attack(Move):
             and self.outgoing
             and not self.incoming
         )
+
+    def perform(self):
+        while self.outgoing and self.finish.center:
+            offense = sum(random.randint(1, 6) for _ in range(self.outgoing))
+            defense = sum(random.randint(1, 6) for _ in range(self.finish.center))
+            log.info(
+                f"{self.outgoing} {self.start} @ {offense} vs. {self.finish.center} {self.finish} @ {defense}"
+            )
+            if offense > defense:
+                self.finish.center -= 1
+            else:
+                setattr(self.start, self.direction, self.outgoing - 1)
+
+        if self.outgoing:
+            self.finish.color = self.start.color
+            self.finish.center = self.outgoing
+            setattr(self.start, self.direction, 0)
+
+        if not self.start.center:
+            self.start.color = Color.NONE
 
 
 @datafile
@@ -477,6 +504,9 @@ def move(code: str, row: int, col: int, direction: str):
 
 if __name__ == "__main__":
     from livereload import Server
+
+    log.init()
+    log.silence("datafiles", allow_warning=True)
 
     app.debug = True
     server = Server(app.wsgi_app)

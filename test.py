@@ -1,6 +1,6 @@
 import pomace
 
-page = pomace.visit("http://localhost:5000", delay=1)
+page = pomace.visit("http://localhost:5000", delay=2)
 
 page.click_new_board(wait=1)
 page = page.click_start_game(wait=1)
