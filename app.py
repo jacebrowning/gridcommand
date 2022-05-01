@@ -236,6 +236,12 @@ def setup(code: str):
     return render_template("game.html", game=game)
 
 
+@app.get("/game/<code>.json")
+def debug(code: str):
+    game = Game(code)
+    return game.datafile.data
+
+
 @app.post("/game/<code>/_randomize/")
 def randomize(code: str):
     game = Game(code)
