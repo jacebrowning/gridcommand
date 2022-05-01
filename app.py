@@ -212,9 +212,15 @@ class BorderClash(Move):
 
     def perform(self):
         while self.outgoing and self.incoming:
-            offense = sum(random.randint(1, 6) for _ in range(self.outgoing))
-            defense = sum(random.randint(1, 6) for _ in range(self.incoming))
-            log.info(f"{offense} vs. {defense}")
+            offense = sorted(
+                [random.randint(1, 6) for _ in range(self.outgoing)], reverse=True
+            )
+            defense = sorted(
+                [random.randint(1, 6) for _ in range(self.incoming)], reverse=True
+            )
+            log.info(
+                f"{self.outgoing} {self.start} @ {offense} vs. {self.incoming} {self.finish} @ {defense}"
+            )
             if offense > defense:
                 setattr(self.start, self.direction.split("-")[1], self.outgoing - 1)
             else:
@@ -232,8 +238,12 @@ class Attack(Move):
 
     def perform(self):
         while self.outgoing and self.finish.center:
-            offense = sum(random.randint(1, 6) for _ in range(self.outgoing))
-            defense = sum(random.randint(1, 6) for _ in range(self.finish.center))
+            offense = sorted(
+                [random.randint(1, 6) for _ in range(self.outgoing)], reverse=True
+            )
+            defense = sorted(
+                [random.randint(1, 6) for _ in range(self.finish.center)], reverse=True
+            )
             log.info(
                 f"{self.outgoing} {self.start} @ {offense} vs. {self.finish.center} {self.finish} @ {defense}"
             )
