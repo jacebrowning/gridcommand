@@ -44,8 +44,8 @@
     </div>
 
     {% if player and player.state == State.WAITING %}
-    <div class="mt-3 pt-3 px-3 border">
-    {% include "moves.html" %}
+    <div class="border font-monospace mt-3 pt-3 px-3">
+        {% include "moves.html" %}
     </div>
     {% endif %}
 </div>

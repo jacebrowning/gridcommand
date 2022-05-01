@@ -39,7 +39,7 @@ board:
       col: 0
       color: danger
       center: 2
-      up: 0
+      up: 2
       down: 0
       left: 0
       right: 1

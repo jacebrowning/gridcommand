@@ -42,7 +42,7 @@ class Color(Enum):
             self.RED: "🟥",
             self.GREEN: "🟩",
             self.YELLOW: "🟨",
-            self.NONE: "∅",
+            self.NONE: "□",
         }
         return values[self]  # type: ignore
 
@@ -131,6 +131,8 @@ class Move:
     finish: Cell
 
     def __str__(self):
+        if self.direction == "left":
+            return f"{self.finish.center} {self.finish} {self.arrow} {self.outgoing} {self.start}"
         return f"{self.outgoing} {self.start} {self.arrow} {self.finish.center} {self.finish}"
 
     def __bool__(self):
@@ -146,20 +148,25 @@ class Move:
 
     @property
     def reverse(self):
-        return {"up": "down", "down": "up", "left": "right", "right": "left"}[
-            self.direction
-        ]
+        values = {
+            "up": "down",
+            "down": "up",
+            "left": "right",
+            "right": "left",
+        }
+        return values[self.direction]
 
     @property
     def arrow(self) -> str:
-        return {
-            "up": "⬆️",
-            "down": "⬇️",
-            "left": "⬅️",
-            "right": "➡️",
-            "left-right": "↔",
-            "up-down": "↕",
-        }[self.direction]
+        values = {
+            "up": "⇧",
+            "down": "⇩",
+            "left": "⇦",
+            "right": "⇨",
+            "left-right": "⬄",
+            "up-down": "⇳",
+        }
+        return values[self.direction]
 
     def perform(self):
         raise NotImplementedError
@@ -179,6 +186,12 @@ class Fortification(Move):
 
 @datafile
 class BorderClash(Move):
+    def __post_init__(self):
+        if self.direction in {"up", "down"}:
+            self.direction = "up-down"
+        if self.direction in {"left", "right"}:
+            self.direction = "left-right"
+
     def __str__(self):
         return (
             f"{self.outgoing} {self.start} {self.arrow} {self.incoming} {self.finish}"
@@ -277,10 +290,6 @@ class Board:
                 pair = tuple(sorted([start, finish]))  # type: ignore
                 if pair not in pairs:
                     pairs.add(pair)
-                    if direction in {"up", "down"}:
-                        direction = "up-down"
-                    if direction in {"left", "right"}:
-                        direction = "left-right"
                     if move := BorderClash(start, direction, finish):
                         yield move
 
