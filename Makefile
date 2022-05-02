@@ -38,6 +38,7 @@ check: install
 
 .PHONY: test
 test: install
+	poetry run pytest
 	poetry run pomace exec tests/e2e.py --headless
 
 # RUN

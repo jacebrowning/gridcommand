@@ -4,8 +4,8 @@
     "editor.formatOnSave": true,
     "cSpell.words": ["ABCDEFGHJKLMNPQRTUVXYZ"],
     "files.exclude": {
-        "__pycache__": true,
-        ".cache": true,
-        ".venv": true
+        "**/__pycache__/": true,
+        ".cache/": true,
+        ".venv/": true
     }
 }
