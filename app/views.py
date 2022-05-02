@@ -124,10 +124,14 @@ def cell(code: str, row: int, col: int):
 def move(code: str, row: int, col: int, direction: str):
     game = Game(code)
     cell = game.board[row, col]
-    if direction == "center":
-        cell.reset()
-    else:
-        cell.move(1, direction)
+    with datafiles.frozen(cell):
+        if direction == "center":
+            cell.center = cell.center + cell.up + cell.down + cell.left + cell.right
+            cell.up = cell.down = cell.left = cell.right = 0
+        elif cell.center:
+            cell.center -= 1
+            value = getattr(cell, direction)
+            setattr(cell, direction, value + 1)
     return render_template("cell.html", game=game, cell=cell, editing=True)
 
 
