@@ -24,28 +24,31 @@ endif
 
 # TEST
 
+PACKAGES = app tests
+
 .PHONY: format
 format: install
-	poetry run autoflake *.py --in-place --remove-all-unused-imports
-	poetry run isort *.py
-	poetry run black *.py
+	poetry run autoflake --recursive $(PACKAGES) --in-place --remove-all-unused-imports
+	poetry run isort $(PACKAGES)
+	poetry run black $(PACKAGES)
 
 .PHONY: check
 check: install
-	poetry run mypy *.py
+	poetry run mypy $(PACKAGES)
 
 .PHONY: test
 test: install
-	poetry run pomace exec test.py --headless
+	poetry run pytest
+	poetry run pomace exec tests/e2e.py --headless
 
 # RUN
 
 .PHONY: run
 run: install
-	@ echo "poetry run python app.py"
+	@ echo "poetry run python run.py"
 	@ status=1; \
 	while [ $$status -eq 1 ] ; do \
-		poetry run python app.py; \
+		poetry run python run.py; \
 		status=$$?; \
 		sleep 1; \
 	done; \
@@ -54,7 +57,7 @@ run: install
 serve:
 	git pull
 	poetry install --no-dev
-	poetry run gunicorn --workers 4 --bind 0.0.0.0:5000 app:app
+	poetry run gunicorn --workers 4 --bind 0.0.0.0:5000 app.views:app
 
 # CLEANUP
 

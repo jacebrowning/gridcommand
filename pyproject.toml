@@ -1,9 +1,11 @@
 [tool.poetry]
 
 name = "gridcommand"
-version = "0.0"
+version = "1.0"
 description = "A grid-based clone of Same Time Risk."
 authors = ["Jace Browning <jacebrowning@gmail.com>"]
+
+packages = [{ include = "app" }]
 
 [tool.poetry.dependencies]
 
@@ -24,6 +26,7 @@ isort = "^5.10.1"
 autoflake = "^1.4"
 mypy = "^0.942"
 
+pytest = "^7.1.2"
 pomace = "^0.10.1"
 
 livereload = "=2.5.1"
@@ -43,6 +46,10 @@ ignore_missing_imports = true
 plugins = "datafiles.plugins:mypy"
 
 cache_dir = ".cache/mypy/"
+
+[tool.pytest.ini_options]
+
+cache_dir = ".cache/pytest/"
 
 [build-system]
 
