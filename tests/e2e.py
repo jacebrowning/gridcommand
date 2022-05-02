@@ -19,7 +19,7 @@ page.click_done_planning(wait=1)
 pomace.log.info("Switching players")
 page = page.click_switch_player(wait=1)
 
-pomace.log.info("PLanning blue moves")
+pomace.log.info("Planning blue moves")
 page = page.click_blue(wait=1)
 page.click_plan_moves(wait=1)
 page.click_done_planning(wait=1)
