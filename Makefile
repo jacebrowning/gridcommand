@@ -27,19 +27,24 @@ endif
 PACKAGES = app tests
 
 .PHONY: format
-format: install
+format: install format
 	poetry run autoflake --recursive $(PACKAGES) --in-place --remove-all-unused-imports
 	poetry run isort $(PACKAGES)
 	poetry run black $(PACKAGES)
 
 .PHONY: check
 check: install
+ifdef CI
+	git diff --exit-code
+endif
 	poetry run mypy $(PACKAGES)
 
 .PHONY: test
 test: install
 	poetry run pytest
+ifndef CI
 	poetry run pomace exec tests/e2e.py --headless
+endif
 
 # RUN
 
