@@ -5,6 +5,8 @@ version = "0.0"
 description = "A grid-based clone of Same Time Risk."
 authors = ["Jace Browning <jacebrowning@gmail.com>"]
 
+packages = [{ include = "app" }]
+
 [tool.poetry.dependencies]
 
 python = "^3.9"
