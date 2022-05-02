@@ -40,9 +40,17 @@ endif
 	poetry run mypy $(PACKAGES)
 
 .PHONY: test
-test: install
+test: test-unit test-e2e
+
+.PHONY: test-unit
+test-unit: install
 	poetry run pytest
-ifndef CI
+
+.PHONY: test-e2e
+test-e2e: install
+ifdef CI
+	poetry run honcho start --procfile tests/Procfile
+else
 	poetry run pomace exec tests/e2e.py --headless
 endif
 
@@ -60,8 +68,10 @@ run: install
 
 .PHONY: serve
 serve:
+ifndef CI
 	git pull
 	poetry install --no-dev
+endif
 	poetry run gunicorn --workers 4 --bind 0.0.0.0:5000 app.views:app
 
 # CLEANUP

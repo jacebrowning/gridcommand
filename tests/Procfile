@@ -1,0 +1,2 @@
+web: make serve
+e2e: make test-e2e
