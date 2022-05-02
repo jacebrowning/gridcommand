@@ -49,7 +49,11 @@ test-unit: install
 .PHONY: test-e2e
 test-e2e: install
 ifdef CI
+ifdef HONCHO_PROCESS_NAME
+	poetry run pomace exec tests/e2e.py --headless
+else
 	poetry run honcho start --procfile tests/Procfile
+endif
 else
 	poetry run pomace exec tests/e2e.py --headless
 endif
