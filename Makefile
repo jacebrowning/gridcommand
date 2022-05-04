@@ -70,12 +70,15 @@ run: install
 		sleep 1; \
 	done; \
 
-.PHONY: serve
-serve:
+.PHONY: build
+build:
 ifndef CI
 	git pull
 	poetry install --no-dev
 endif
+
+.PHONY: serve
+serve: build
 	poetry run gunicorn --workers 4 --bind 0.0.0.0:5000 app.views:app
 
 # CLEANUP
