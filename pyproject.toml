@@ -2,7 +2,7 @@
 
 name = "gridcommand"
 version = "1.0"
-description = "A grid-based clone of Same Time Risk."
+description = "Grid-based clone of Same Time Risk."
 authors = ["Jace Browning <jacebrowning@gmail.com>"]
 
 packages = [{ include = "app" }]
