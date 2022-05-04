@@ -71,7 +71,7 @@ run: install
 	done; \
 
 .PHONY: serve
-serve: build
+serve:
 ifndef CI
 	git pull
 	poetry install --no-dev
