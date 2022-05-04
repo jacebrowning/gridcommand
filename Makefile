@@ -58,7 +58,7 @@ else
 	poetry run pomace exec tests/e2e.py --headless
 endif
 
-# RUN
+# DEPLOY
 
 .PHONY: run
 run: install
@@ -70,16 +70,15 @@ run: install
 		sleep 1; \
 	done; \
 
-.PHONY: build
-build:
+.PHONY: serve
+serve: build
 ifndef CI
 	git pull
 	poetry install --no-dev
 endif
-
-.PHONY: serve
-serve: build
+ifndef PYTHONANYWHERE_DOMAIN
 	poetry run gunicorn --workers 4 --bind 0.0.0.0:5000 app.views:app
+endif
 
 # CLEANUP
 
