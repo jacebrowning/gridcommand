@@ -2,7 +2,7 @@
 all: install
 
 .PHONY: ci
-ci: format check test
+ci: check test
 
 # INSTALL
 
@@ -27,13 +27,13 @@ endif
 PACKAGES = app tests
 
 .PHONY: format
-format: install format
+format: install
 	poetry run autoflake --recursive $(PACKAGES) --in-place --remove-all-unused-imports
 	poetry run isort $(PACKAGES)
 	poetry run black $(PACKAGES)
 
 .PHONY: check
-check: install
+check: install format
 ifdef CI
 	git diff --exit-code
 endif
@@ -58,7 +58,7 @@ else
 	poetry run pomace exec tests/e2e.py --headless
 endif
 
-# DEPLOY
+# RUN
 
 .PHONY: run
 run: install
@@ -80,7 +80,7 @@ ifndef PYTHONANYWHERE_DOMAIN
 	poetry run gunicorn --workers 4 --bind 0.0.0.0:5000 app.views:app
 endif
 
-# CLEANUP
+# CLEAN
 
 .PHONY: clean
 clean:

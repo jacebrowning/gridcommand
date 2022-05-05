@@ -8,7 +8,7 @@ import datafiles
 from flask import url_for
 
 from .actions import Attack, BorderClash, Fortification
-from .constants import FILL, SIZE, UNITS, generate_code
+from .constants import FILL, PLAYERS, SIZE, UNITS, generate_code
 from .enums import Color, State
 from .types import Cell, Player
 
@@ -90,10 +90,7 @@ class Game:
     code: str = field(default_factory=generate_code)
 
     round: int = 0
-    players: list[Player] = field(
-        # TODO: Support more than two players
-        default_factory=lambda: [Player(Color.BLUE), Player(Color.RED)]
-    )
+    players: list[Player] = field(default_factory=Player.defaults)
     board: Board = Board()
 
     @cached_property
@@ -123,6 +120,7 @@ class Game:
         return ""
 
     def initialize(self):
+        self.players = self.players[:PLAYERS]
         units = {player.color: UNITS for player in self.players}
         cells = {player.color: [] for player in self.players}
         with datafiles.frozen(self):

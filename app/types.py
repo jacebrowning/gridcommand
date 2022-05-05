@@ -10,6 +10,15 @@ class Player:
     round: int = 0
     state: State = State.UNKNOWN
 
+    @classmethod
+    def defaults(cls) -> list["Player"]:
+        return [
+            cls(Color.BLUE),
+            cls(Color.RED),
+            cls(Color.GREEN),
+            cls(Color.YELLOW),
+        ]
+
 
 @dataclass(order=True)
 class Cell:
