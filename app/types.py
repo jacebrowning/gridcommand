@@ -1,4 +1,4 @@
-from dataclasses import KW_ONLY, dataclass
+from dataclasses import dataclass
 
 from .constants import SIZE
 from .enums import Color, State
@@ -28,7 +28,8 @@ class Cell:
     color: Color = Color.NONE
     center: int = 0
 
-    _: KW_ONLY
+    # TODO: Enable this once PythonAnywhere supports Python 3.10
+    # _: KW_ONLY
 
     up: int = 0
     down: int = 0
