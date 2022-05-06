@@ -53,9 +53,7 @@ cache_dir = ".cache/mypy/"
 
 cache_dir = ".cache/pytest/"
 
-addopts = """
---verbose
-"""
+addopts = "--verbose"
 
 [build-system]
 
