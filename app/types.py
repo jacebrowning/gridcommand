@@ -9,6 +9,7 @@ class Player:
     color: Color
     round: int = 0
     state: State = State.UNKNOWN
+    autoplay: bool = False
 
     @classmethod
     def defaults(cls) -> list["Player"]:

@@ -130,7 +130,9 @@ class Game:
     def waiting(self) -> int:
         if any(p.round < self.round for p in self.players):
             return 0
-        return sum(1 for p in self.players if p.state is not State.WAITING)
+        return sum(
+            1 for p in self.players if p.state is not State.WAITING and not p.autoplay
+        )
 
     @property
     def message(self) -> str:

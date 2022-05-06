@@ -71,6 +71,8 @@ def player(code: str, color: str):
         if game.round > player.round:
             player.round = game.round
             player.state = State.READY
+        if player.autoplay:
+            player.state = State.WAITING
     return render_template("game.html", game=game, player=player)
 
 
