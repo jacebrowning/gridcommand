@@ -27,3 +27,5 @@ page.click_done_planning(wait=1)
 pomace.log.info("Advancing the round")
 page.click_next_round(wait=1)
 assert "Round 2" in page
+
+print("\n🎉\n")

@@ -2,7 +2,6 @@ import datafiles
 import log
 from flask import Flask, redirect, render_template, request, url_for
 
-from .actions import Move
 from .enums import Color, State
 from .models import Game
 
@@ -100,15 +99,7 @@ def player_next(code: str, color: str):
     player.state = State.READY
     if player.round == game.round:
         with datafiles.frozen(game):
-            move: Move
-            for move in game.board.fortifications:
-                move.perform()
-            for move in game.board.border_clashes:
-                move.perform()
-            # TODO: Handle mass attacks
-            # TODO: Handle spoils of war
-            for move in game.board.attacks:
-                move.perform()
+            game.board.advance()
         game.round += 1
     return redirect(url_for("player", code=game.code, color=player.color.key))
 

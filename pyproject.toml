@@ -27,8 +27,12 @@ autoflake = "^1.4"
 mypy = "^0.942"
 
 pytest = "^7.1.2"
+pytest-describe = "*"
+pytest-expecter = "*"
+pytest-random = "*"
+pytest-cov = "*"
 pytest-watch = "^4.2.0"
-pomace = "^0.10.1"
+pomace = "^0.10.2"
 
 livereload = "=2.5.1"
 honcho = "^1.1.0"
@@ -51,9 +55,11 @@ cache_dir = ".cache/mypy/"
 
 [tool.pytest.ini_options]
 
-cache_dir = ".cache/pytest/"
+log_level = "DEBUG"
 
-addopts = "--verbose"
+addopts = "--no-header --random --cov=app --cov-report=term-missing:skip-covered --cov-report=html:.cache/htmlcov --no-cov-on-fail"
+
+cache_dir = ".cache/pytest/"
 
 [build-system]
 

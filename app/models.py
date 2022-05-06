@@ -2,9 +2,11 @@ import random
 from contextlib import suppress
 from dataclasses import dataclass, field
 from functools import cached_property
+from itertools import chain
 from typing import Iterator
 
 import datafiles
+import log
 from flask import url_for
 
 from .actions import Attack, BorderClash, Fortification
@@ -43,6 +45,8 @@ class Board:
             for direction, finish in self.get_neighbors(start):
                 if move := Fortification(start, direction, finish):
                     yield move
+                else:
+                    log.debug(f"Skipped non-fortification: {move}")
 
     @property
     def border_clashes(self) -> Iterator[BorderClash]:
@@ -54,6 +58,8 @@ class Board:
                     pairs.add(pair)
                     if move := BorderClash(start, direction, finish):
                         yield move
+                    else:
+                        log.debug(f"Skipped non-clash: {move}")
 
     @property
     def attacks(self) -> Iterator[Attack]:
@@ -61,6 +67,8 @@ class Board:
             for direction, finish in self.get_neighbors(start):
                 if move := Attack(start, direction, finish):
                     yield move
+                else:
+                    log.debug(f"Skipped non-attack: {move}")
 
     def get_neighbors(self, cell: Cell) -> Iterator[tuple[str, Cell]]:
         with suppress(LookupError):
@@ -82,6 +90,23 @@ class Board:
         for row in range(SIZE):
             for col in range(SIZE):
                 self.cells.append(Cell(row, col))
+
+    def advance(self) -> int:
+        count = 0
+        for move in chain(
+            self.fortifications,
+            self.border_clashes,
+            # TODO: Handle mass attacks
+            # TODO: Handle spoils of war
+            self.attacks,
+            self.fortifications,  # handle mass fortifications
+        ):
+            move.perform()
+            count += 1
+
+        s = "" if count == 1 else "s"
+        log.info(f"Applied {count} move{s}")
+        return count
 
 
 @datafiles.datafile("../data/games/{self.code}.yml", defaults=True)

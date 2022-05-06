@@ -15,8 +15,8 @@ class Move:
 
     def __str__(self):
         if self.direction == "left":
-            return f"{self.finish.center} {self.finish} {self.arrow} {self.outgoing} {self.start}"
-        return f"{self.outgoing} {self.start} {self.arrow} {self.finish.center} {self.finish}"
+            return f"{self.finish.center}ˣ{self.finish} {self.arrow} {self.outgoing}ˣ{self.start}"
+        return f"{self.outgoing}ˣ{self.start} {self.arrow} {self.finish.center}ˣ{self.finish}"
 
     def __bool__(self):
         raise NotImplementedError
@@ -61,6 +61,7 @@ class Fortification(Move):
         return bool(self.start.color == self.finish.color and self.outgoing)
 
     def perform(self):
+        log.info(f"Performing fortification: {self}")
         self.finish.center += self.outgoing
         setattr(self.start, self.direction, 0)
         if not self.start.center:
@@ -94,6 +95,7 @@ class BorderClash(Move):
         return getattr(self.finish, self.direction.split("-")[0])
 
     def perform(self):
+        log.info(f"Performing border clash: {self}")
         while self.outgoing and self.incoming:
             offense = sorted(
                 [random.randint(1, 6) for _ in range(self.outgoing)], reverse=True
@@ -120,6 +122,7 @@ class Attack(Move):
         )
 
     def perform(self):
+        log.info(f"Performing attack: {self}")
         while self.outgoing and self.finish.center:
             offense = sorted(
                 [random.randint(1, 6) for _ in range(self.outgoing)], reverse=True
