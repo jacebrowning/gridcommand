@@ -27,6 +27,7 @@ autoflake = "^1.4"
 mypy = "^0.942"
 
 pytest = "^7.1.2"
+pytest-watch = "^4.2.0"
 pomace = "^0.10.1"
 
 livereload = "=2.5.1"
@@ -51,6 +52,10 @@ cache_dir = ".cache/mypy/"
 [tool.pytest.ini_options]
 
 cache_dir = ".cache/pytest/"
+
+addopts = """
+--verbose
+"""
 
 [build-system]
 

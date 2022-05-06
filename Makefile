@@ -58,6 +58,10 @@ else
 	poetry run pomace exec tests/e2e.py --headless
 endif
 
+.PHONY: dev
+dev: install
+	poetry run ptw --beforerun "clear" --nobeep
+
 # RUN
 
 .PHONY: run
