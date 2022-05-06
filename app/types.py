@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import KW_ONLY, dataclass
 
 from .constants import SIZE
 from .enums import Color, State
@@ -26,15 +26,24 @@ class Cell:
     col: int
 
     color: Color = Color.NONE
-
     center: int = 0
+
+    _: KW_ONLY
+
     up: int = 0
     down: int = 0
     left: int = 0
     right: int = 0
 
+    def __post_init__(self):
+        if self.color is Color.NONE:
+            assert not self.value
+
+    def __repr__(self):
+        return f"<cell: {self.value}ˣ{self}>"
+
     def __str__(self):
-        return f"{self.color.icon} ({self.row},{self.col})"
+        return f"{self.color.icon} ＠({self.row},{self.col})"
 
     def __bool__(self):
         return self.color is not Color.NONE

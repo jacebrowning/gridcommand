@@ -60,7 +60,7 @@ endif
 
 .PHONY: dev
 dev: install
-	poetry run ptw --beforerun "clear" --nobeep
+	poetry run ptw --nobeep --beforerun "clear" --onpass "echo && make check && echo && make test-e2e"
 
 # RUN
 
