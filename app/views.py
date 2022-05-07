@@ -73,6 +73,8 @@ def player(code: str, color: str):
             player.state = State.READY
         if player.autoplay:
             player.state = State.WAITING
+    if "partial" in request.args:
+        return render_template("board.html", game=game, player=player)
     return render_template("game.html", game=game, player=player)
 
 
