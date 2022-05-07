@@ -7,6 +7,10 @@ from .enums import Color
 from .types import Cell
 
 
+def roll(count: int) -> list[int]:
+    return sorted([random.randint(1, 6) for _ in range(count)], reverse=True)
+
+
 @dataclass
 class Move:
     start: Cell
@@ -96,20 +100,31 @@ class BorderClash(Move):
 
     def perform(self):
         log.info(f"Performing border clash: {self}")
+        one = self.start.color.title
+        two = self.finish.color.title
         while self.outgoing and self.incoming:
-            offense = sorted(
-                [random.randint(1, 6) for _ in range(self.outgoing)], reverse=True
-            )
-            defense = sorted(
-                [random.randint(1, 6) for _ in range(self.incoming)], reverse=True
-            )
-            log.info(
-                f"{self.outgoing} {self.start} @ {offense} vs. {self.incoming} {self.finish} @ {defense}"
-            )
-            if offense > defense:
-                setattr(self.start, self.direction.split("-")[1], self.outgoing - 1)
-            else:
-                setattr(self.finish, self.direction.split("-")[0], self.incoming - 1)
+            attack = roll(self.outgoing)
+            defense = roll(self.incoming)
+            log.info(f"{one} rolled: {attack}")
+            log.info(f"{two} rolled: {defense}")
+            while attack and defense:
+                if attack[0] > defense[0]:
+                    log.info(f"{one} won: {attack} > {defense}")
+                    setattr(
+                        self.finish, self.direction.split("-")[0], self.incoming - 1
+                    )
+                elif defense[0] > attack[0]:
+                    log.info(f"{two} won: {defense} > {attack}")
+                    setattr(self.start, self.direction.split("-")[1], self.outgoing - 1)
+                else:
+                    log.info(f"Stalemate: {defense} = {attack}")
+                attack.pop(0)
+                defense.pop(0)
+
+        if self.outgoing:
+            log.info(f"{one} won border clash: {self.outgoing} persisted")
+        else:
+            log.info(f"{two} won border clash: {self.incoming} persisted")
 
 
 @dataclass
@@ -124,24 +139,27 @@ class Attack(Move):
     def perform(self):
         log.info(f"Performing attack: {self}")
         while self.outgoing and self.finish.center:
-            offense = sorted(
-                [random.randint(1, 6) for _ in range(self.outgoing)], reverse=True
-            )
-            defense = sorted(
-                [random.randint(1, 6) for _ in range(self.finish.center)], reverse=True
-            )
-            log.info(
-                f"{self.outgoing} {self.start} @ {offense} vs. {self.finish.center} {self.finish} @ {defense}"
-            )
-            if offense > defense:
-                self.finish.center -= 1
-            else:
-                setattr(self.start, self.direction, self.outgoing - 1)
+            attack = roll(self.outgoing)
+            defense = roll(self.finish.center)
+            log.info(f"Attack rolled: {attack}")
+            log.info(f"Defense rolled: {defense}")
+            while attack and defense:
+                if attack[0] > defense[0]:
+                    log.info(f"Attack won round: {attack} > {defense}")
+                    self.finish.center -= 1
+                else:
+                    log.info(f"Defense won round: {defense} > {attack}")
+                    setattr(self.start, self.direction, self.outgoing - 1)
+                attack.pop(0)
+                defense.pop(0)
 
         if self.outgoing:
+            log.info(f"Attack won attack: {self.outgoing} persisted")
             self.finish.color = self.start.color
             self.finish.center = self.outgoing
             setattr(self.start, self.direction, 0)
+        else:
+            log.info(f"Defense won attack: {self.finish.center} persisted")
 
         if not self.start.center:
             self.start.color = Color.NONE

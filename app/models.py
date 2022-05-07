@@ -158,7 +158,11 @@ class Game:
         return ""
 
     def initialize(self):
-        self.players = self.players[:PLAYERS]
+        if PLAYERS == 1:
+            self.players = self.players[:2]
+            self.players[-1].autoplay = True
+        else:
+            self.players = self.players[:PLAYERS]
         units = {player.color: UNITS for player in self.players}
         cells = {player.color: [] for player in self.players}
         with datafiles.frozen(self):
