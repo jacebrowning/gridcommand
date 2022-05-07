@@ -70,6 +70,11 @@ class Board:
                 else:
                     log.debug(f"Skipped non-attack: {move}")
 
+    def get_cells(self, color: Color) -> Iterator[Cell]:
+        for cell in self.cells:
+            if cell.color is color:
+                yield cell
+
     def get_neighbors(self, cell: Cell) -> Iterator[tuple[str, Cell]]:
         with suppress(LookupError):
             xy = cell.row, cell.col - 1

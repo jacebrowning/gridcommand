@@ -103,6 +103,9 @@ def player_next(code: str, color: str):
         with datafiles.frozen(game):
             game.board.advance()
             game.round += 1
+            for player in game.players:
+                if not any(game.board.get_cells(player.color)):
+                    player.autoplay = True
     return redirect(url_for("player", code=game.code, color=player.color.key))
 
 
