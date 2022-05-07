@@ -4,6 +4,9 @@
     hx-trigger="{% if game.choosing %}every 2s{% endif %}"
     hx-swap="outerHTML"
     hx-indicator="#spinner">
+    <a class="btn btn-outline-secondary" href="{{ url_for('choose', code=game.code) }}">
+        ⇄ <span class="d-none d-md-inline">Switch Player</span>
+    </a>
     <button
         type="button"
         class="btn btn-{{ player.color.value }} {% if game.choosing %}disabled{% endif %}"
@@ -13,7 +16,4 @@
         hx-indicator="#spinner">
         Plan Moves
     </button>
-    <a class="btn btn-outline-secondary" href="{{ url_for('choose', code=game.code) }}">
-        ⇄ <span class="d-none d-md-inline">Switch Player</span>
-    </a>
 </div>
