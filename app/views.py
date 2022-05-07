@@ -102,7 +102,7 @@ def player_next(code: str, color: str):
     if player.round == game.round:
         with datafiles.frozen(game):
             game.board.advance()
-        game.round += 1
+            game.round += 1
     return redirect(url_for("player", code=game.code, color=player.color.key))
 
 

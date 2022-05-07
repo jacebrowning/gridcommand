@@ -24,7 +24,7 @@ class Color(Enum):
             self.RED: "🟥",
             self.GREEN: "🟩",
             self.YELLOW: "🟨",
-            self.NONE: "□",
+            self.NONE: "⬜",
         }
         return values[self]  # type: ignore
 

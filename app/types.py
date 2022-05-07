@@ -45,7 +45,7 @@ class Cell:
         return f"<cell: {self.value}ˣ{self}>"
 
     def __str__(self):
-        return f"{self.color.icon} ＠({self.row},{self.col})"
+        return f"{self.color.icon}﹫({self.row},{self.col})"
 
     def __bool__(self):
         return self.color is not Color.NONE
