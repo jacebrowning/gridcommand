@@ -20,6 +20,13 @@ class Player:
             cls(Color.YELLOW),
         ]
 
+    def __post_init__(self):
+        if self.autoplay and self.state is State.UNKNOWN:
+            self.state = State.WAITING
+
+    def __str__(self):
+        return self.color.key
+
 
 @dataclass(order=True)
 class Cell:

@@ -132,10 +132,18 @@ class Game:
         return sum(1 for p in self.players if p.state is State.UNKNOWN)
 
     @cached_property
-    def waiting(self) -> int:
-        return sum(1 for p in self.players if p.round < self.round) or sum(
-            1 for p in self.players if p.state is not State.WAITING and not p.autoplay
-        )
+    def planning(self) -> int:
+        count = 0
+        for player in self.players:
+            if player.autoplay:
+                pass
+            elif player.state is not State.WAITING:
+                log.info(f"Waiting for {player} to plan their moves")
+                count += 1
+            elif player.round < self.round:
+                log.info(f"Waiting for {player} to advance the game")
+                count += 1
+        return count
 
     @property
     def message(self) -> str:
@@ -144,9 +152,9 @@ class Game:
         if self.choosing:
             s = "" if self.choosing == 1 else "s"
             return f"Waiting for {self.choosing} player{s} to pick a color..."
-        if self.waiting:
-            s = "" if self.waiting == 1 else "s"
-            return f"Waiting for {self.waiting} player{s} to plan moves..."
+        if self.planning:
+            s = "" if self.planning == 1 else "s"
+            return f"Waiting for {self.planning} player{s} to plan moves..."
         return ""
 
     def initialize(self):
@@ -166,6 +174,15 @@ class Game:
                 for _ in range(count):
                     cell = random.choice(cells[color])
                     cell.center += 1
+
+    def advance(self) -> int:
+        count = self.board.advance()
+        self.round += 1
+        for player in self.players:
+            if not any(self.board.get_cells(player.color)):
+                log.info(f"Player eliminated: {player}")
+                player.autoplay = True
+        return count
 
     def get_player(self, color: str) -> Player:
         _color = Color[color.upper()]

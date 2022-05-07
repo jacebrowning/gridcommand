@@ -4,7 +4,7 @@
     </a>
     {% if not player.autoplay %}
     <a
-        class="btn btn-{{ player.color.value }} {% if game.choosing or game.waiting %}disabled{% endif %}"
+        class="btn btn-{{ player.color.value }} {% if game.choosing or game.planning %}disabled{% endif %}"
         href="{{ url_for('player_next', code=game.code, color=player.color.key) }}"
         id="next">
         Next Round
