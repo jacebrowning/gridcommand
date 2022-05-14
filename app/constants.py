@@ -1,7 +1,8 @@
+import os
 import random
 
-SIZE = 3  # 3 to 5
-PLAYERS = 2  # 2 to 4
+SIZE = int(os.getenv("SIZE", "5"))  # 3 to 5
+PLAYERS = int(os.getenv("PLAYERS", "5"))  # 2 to 4
 FILL = 2 / 3  # 0.1 to 1.0
 UNITS = SIZE * 4  # 1 to 10
 

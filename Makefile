@@ -65,7 +65,7 @@ dev: install
 # RUN
 
 .PHONY: run
-run: install
+run: install .envrc
 	@ echo "poetry run python run.py"
 	@ status=1; \
 	while [ $$status -eq 1 ] ; do \
@@ -73,6 +73,11 @@ run: install
 		status=$$?; \
 		sleep 1; \
 	done; \
+
+.envrc:
+	echo "export SIZE=5" >> $@
+	echo "export PLAYERS=2" >> $@
+	- direnv allow
 
 .PHONY: serve
 serve:
