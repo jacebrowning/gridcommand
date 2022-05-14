@@ -18,6 +18,16 @@ Borders Clashes:
     {% endfor %}
 </ul>
 
+Mass Attacks:
+
+<ul>
+    {% for move in game.board.mass_attacks %}
+    <li>{{ move }}</li>
+    {% else %}
+    <li>(none)</li>
+    {% endfor %}
+</ul>
+
 Attacks:
 
 <ul>

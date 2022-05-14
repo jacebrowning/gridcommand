@@ -163,3 +163,50 @@ class Attack(Move):
 
         if not self.start.center:
             self.start.color = Color.NONE
+
+
+@dataclass
+class MassAttack:
+    moves: list[Attack]
+    finish: Cell
+
+    def __bool__(self):
+        count = sum(1 for move in self.moves if move)
+        return count >= 2
+
+    def __str__(self):
+        return " ➕ ".join(str(m) for m in self.moves)
+
+    @property
+    def outgoing(self) -> int:
+        count = 0
+        for move in self.moves:
+            count += move.outgoing
+        return count
+
+    def perform(self):
+        log.info(f"Performing mass attack: {self}")
+        while self.outgoing and self.finish.center:
+            attack = roll(self.outgoing)
+            defense = roll(self.finish.center)
+            log.info(f"Attack rolled: {attack}")
+            log.info(f"Defense rolled: {defense}")
+            while attack and defense:
+                if attack[0] > defense[0]:
+                    log.info(f"Attack won round: {attack} > {defense}")
+                    self.finish.center -= 1
+                else:
+                    log.info(f"Defense won round: {defense} > {attack}")
+                    # TODO: Cause the weakest attacker to lose a unit
+                    for move in self.moves:
+                        if move.outgoing:
+                            setattr(move.start, move.direction, move.outgoing - 1)
+                            break
+                attack.pop(0)
+                defense.pop(0)
+
+        if not self.outgoing:
+            log.info(f"Defense won attack: {self.finish.center} persisted")
+            for move in self.moves:
+                if not move.start.value:
+                    move.start.color = Color.NONE

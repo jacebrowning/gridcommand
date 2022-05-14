@@ -9,7 +9,7 @@ import datafiles
 import log
 from flask import url_for
 
-from .actions import Attack, BorderClash, Fortification
+from .actions import Attack, BorderClash, Fortification, MassAttack
 from .constants import FILL, PLAYERS, SIZE, UNITS, generate_code
 from .enums import Color, State
 from .types import Cell, Player
@@ -62,6 +62,19 @@ class Board:
                         log.debug(f"Skipped non-clash: {move}")
 
     @property
+    def mass_attacks(self) -> Iterator[MassAttack]:
+        for finish in self.cells:
+            moves = []
+            for direction, start in self.get_neighbors(finish, invert=True):
+                if attack := Attack(start, direction, finish):
+                    moves.append(attack)
+            if moves:
+                if move := MassAttack(moves, finish):
+                    yield move
+                else:
+                    log.debug(f"Skipped not-mass: {move}")
+
+    @property
     def attacks(self) -> Iterator[Attack]:
         for start in self.cells:
             for direction, finish in self.get_neighbors(start):
@@ -75,19 +88,19 @@ class Board:
             if cell.color is color:
                 yield cell
 
-    def get_neighbors(self, cell: Cell) -> Iterator[tuple[str, Cell]]:
+    def get_neighbors(self, cell: Cell, *, invert=False) -> Iterator[tuple[str, Cell]]:
         with suppress(LookupError):
             xy = cell.row, cell.col - 1
-            yield "left", self[xy]
+            yield "right" if invert else "left", self[xy]
         with suppress(LookupError):
             xy = cell.row, cell.col + 1
-            yield "right", self[xy]
+            yield "left" if invert else "right", self[xy]
         with suppress(LookupError):
             xy = cell.row - 1, cell.col
-            yield "up", self[xy]
+            yield "down" if invert else "up", self[xy]
         with suppress(LookupError):
             xy = cell.row + 1, cell.col
-            yield "down", self[xy]
+            yield "up" if invert else "down", self[xy]
 
     def reset(self):
         assert SIZE <= 5  # see board.html width limits
@@ -101,12 +114,12 @@ class Board:
         for move in chain(
             self.fortifications,
             self.border_clashes,
-            # TODO: Handle mass attacks
+            self.mass_attacks,
             # TODO: Handle spoils of war
             self.attacks,
-            self.fortifications,  # handle mass fortifications
+            self.fortifications,
         ):
-            move.perform()
+            move.perform()  # type: ignore
             count += 1
 
         s = "" if count == 1 else "s"
