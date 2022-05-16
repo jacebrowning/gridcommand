@@ -188,13 +188,24 @@ class Game:
         cells = {player.color: [] for player in self.players}
         with datafiles.frozen(self):
             self.board.reset()
+
+            self.board[(0, 0)].color = Color.BLUE
+            self.board[(0, 0)].center = 1
+            self.board[(SIZE - 1, SIZE - 1)].color = Color.RED
+            self.board[(SIZE - 1, SIZE - 1)].center = 1
+            self.board[(0, SIZE - 1)].color = Color.GREEN
+            self.board[(0, SIZE - 1)].center = 1
+            self.board[(SIZE - 1, 0)].color = Color.YELLOW
+            self.board[(SIZE - 1, 0)].center = 1
+
             for cell in self.board.cells:
-                if random.random() < FILL:
+                if cell.color is Color.NONE and random.random() < FILL:
                     player = random.choice(self.players)
                     cell.color = player.color
                     cell.center = 1
                     units[player.color] -= 1
                     cells[player.color].append(cell)
+
             for color, count in units.items():
                 for _ in range(count):
                     cell = random.choice(cells[color])
