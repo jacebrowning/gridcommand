@@ -47,6 +47,8 @@ class Cell:
     def __post_init__(self):
         if self.color is Color.NONE:
             assert not self.value, f"Unowned cell contains {self.value} unit(s)"
+        else:
+            assert self.value, f"Empty cell owned by {self.color.key} player"
 
     def __repr__(self):
         return f"<cell: {self.value}ˣ{self}>"

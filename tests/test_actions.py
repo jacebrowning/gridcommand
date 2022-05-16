@@ -18,104 +18,140 @@ def fixed_roll(count: int):
     return rolls[count]
 
 
-def describe_fortifications():
-    def single_fortification():
-        board = Board()
-        board.cells = [
-            Cell(0, 0, Color.BLUE, 1, right=1),
-            Cell(0, 1, Color.BLUE, 1),
-        ]
+def test_fortification_with_1_cell():
+    board = Board()
+    board.cells = [
+        Cell(0, 0, Color.BLUE, 1, right=1),
+        Cell(0, 1, Color.BLUE, 1),
+    ]
 
-        board.advance()
+    assert board.advance() == 1
 
-        expect(board.cells) == [
-            Cell(0, 0, Color.BLUE, 1),
-            Cell(0, 1, Color.BLUE, 2),
-        ]
-
-    def mass_fortification():
-        board = Board()
-        board.cells = [
-            Cell(0, 0, Color.BLUE, 1, right=1),
-            Cell(0, 1, Color.BLUE, 1),
-            Cell(0, 2, Color.BLUE, 1, left=1),
-        ]
-
-        board.advance()
-
-        expect(board.cells) == [
-            Cell(0, 0, Color.BLUE, 1),
-            Cell(0, 1, Color.BLUE, 3),
-            Cell(0, 2, Color.BLUE, 1),
-        ]
+    expect(board.cells) == [
+        Cell(0, 0, Color.BLUE, 1),
+        Cell(0, 1, Color.BLUE, 2),
+    ]
 
 
-def describe_marchs():
-    def single_march():
-        board = Board()
-        board.cells = [
-            Cell(0, 0, Color.BLUE, 1, right=1),
-            Cell(0, 1, Color.NONE, 0),
-        ]
+def test_fortification_with_2_cells():
+    board = Board()
+    board.cells = [
+        Cell(0, 0, Color.BLUE, 1, right=1),
+        Cell(0, 1, Color.BLUE, 1),
+        Cell(0, 2, Color.BLUE, 1, left=1),
+    ]
 
-        board.advance()
+    assert board.advance() == 2
 
-        expect(board.cells) == [
-            Cell(0, 0, Color.BLUE, 1),
-            Cell(0, 1, Color.BLUE, 1),
-        ]
-
-    def mass_march():
-        board = Board()
-        board.cells = [
-            Cell(0, 0, Color.BLUE, 1, right=1),
-            Cell(0, 1, Color.NONE, 0),
-            Cell(0, 2, Color.BLUE, 1, left=1),
-        ]
-
-        board.advance()
-
-        expect(board.cells) == [
-            Cell(0, 0, Color.BLUE, 1),
-            Cell(0, 1, Color.BLUE, 2),
-            Cell(0, 2, Color.BLUE, 1),
-        ]
+    expect(board.cells) == [
+        Cell(0, 0, Color.BLUE, 1),
+        Cell(0, 1, Color.BLUE, 3),
+        Cell(0, 2, Color.BLUE, 1),
+    ]
 
 
-def describe_attacks():
-    def losing_mass_attack():
-        board = Board()
-        board.cells = [
-            Cell(0, 0, Color.BLUE, 0, right=1),
-            Cell(0, 1, Color.RED, 2),
-            Cell(0, 2, Color.BLUE, 1, left=1),
-        ]
+def test_march_with_1_cell():
+    board = Board()
+    board.cells = [
+        Cell(0, 0, Color.BLUE, 1, right=1),
+        Cell(0, 1, Color.NONE, 0),
+    ]
 
-        with patch("app.actions.roll", fixed_roll):
-            board.advance()
+    assert board.advance() == 1
 
-        expect(board.cells) == [
-            Cell(0, 0, Color.NONE, 0),
-            Cell(0, 1, Color.RED, 2),
-            Cell(0, 2, Color.BLUE, 1),
-        ]
+    expect(board.cells) == [
+        Cell(0, 0, Color.BLUE, 1),
+        Cell(0, 1, Color.BLUE, 1),
+    ]
 
-    def winning_mass_attack():
-        board = Board()
-        board.cells = [
-            Cell(0, 0, Color.BLUE, 0, right=1),
-            Cell(0, 1, Color.RED, 2),
-            Cell(0, 2, Color.BLUE, 0, left=3),
-        ]
 
-        with patch(
-            "app.actions.roll",
-            Mock(side_effect=[[6, 1, 1, 1], [3, 3], [6, 1, 1], [3], [6, 1], [3]]),
-        ):
-            board.advance()
+def test_march_with_2_cells():
+    board = Board()
+    board.cells = [
+        Cell(0, 0, Color.BLUE, 1, right=1),
+        Cell(0, 1, Color.NONE, 0),
+        Cell(0, 2, Color.BLUE, 1, left=1),
+    ]
 
-        expect(board.cells) == [
-            Cell(0, 0, Color.NONE, 0),
-            Cell(0, 1, Color.BLUE, 3),
-            Cell(0, 2, Color.NONE, 0),
-        ]
+    assert board.advance() == 2
+
+    expect(board.cells) == [
+        Cell(0, 0, Color.BLUE, 1),
+        Cell(0, 1, Color.BLUE, 2),
+        Cell(0, 2, Color.BLUE, 1),
+    ]
+
+
+def test_mass_attack_with_2_cells_and_win():
+    board = Board()
+    board.cells = [
+        Cell(0, 0, Color.BLUE, 0, right=1),
+        Cell(0, 1, Color.RED, 2),
+        Cell(0, 2, Color.BLUE, 1, left=1),
+    ]
+
+    with patch("app.actions.roll", fixed_roll):
+        assert board.advance() == 1
+
+    expect(board.cells) == [
+        Cell(0, 0, Color.NONE, 0),
+        Cell(0, 1, Color.RED, 2),
+        Cell(0, 2, Color.BLUE, 1),
+    ]
+
+
+def test_mass_attack_with_2_cells_and_loss():
+    board = Board()
+    board.cells = [
+        Cell(0, 0, Color.BLUE, 0, right=1),
+        Cell(0, 1, Color.RED, 2),
+        Cell(0, 2, Color.BLUE, 0, left=3),
+    ]
+
+    with patch(
+        "app.actions.roll",
+        Mock(side_effect=[[6, 1, 1, 1], [3, 3], [6, 1, 1], [3], [6, 1], [3]]),
+    ):
+        assert board.advance() == 2
+
+    expect(board.cells) == [
+        Cell(0, 0, Color.NONE, 0),
+        Cell(0, 1, Color.BLUE, 3),
+        Cell(0, 2, Color.NONE, 0),
+    ]
+
+
+def test_spoils_of_war_with_2_cells():
+    board = Board()
+    board.cells = [
+        Cell(0, 0, Color.BLUE, 0, right=2),
+        Cell(0, 1, Color.NONE, 0),
+        Cell(0, 2, Color.RED, 1, left=1),
+    ]
+
+    with patch("app.actions.roll", fixed_roll):
+        assert board.advance() == 2
+
+    expect(board.cells) == [
+        Cell(0, 0, Color.NONE, 0),
+        Cell(0, 1, Color.BLUE, 2),
+        Cell(0, 2, Color.RED, 1),
+    ]
+
+
+def test_spoils_of_war_with_3_cells():
+    board = Board()
+    board.cells = [
+        Cell(0, 0, Color.BLUE, 0, right=2),
+        Cell(0, 1, Color.RED, 1),
+        Cell(0, 2, Color.GREEN, 0, left=2),
+    ]
+
+    with patch("app.actions.roll", fixed_roll):
+        assert board.advance() == 3
+
+    expect(board.cells) == [
+        Cell(0, 0, Color.NONE, 0),
+        Cell(0, 1, Color.BLUE, 2),
+        Cell(0, 2, Color.NONE, 0),
+    ]
