@@ -137,3 +137,21 @@ def test_spoils_of_war_with_2_cells():
         Cell(0, 1, Color.BLUE, 2),
         Cell(0, 2, Color.RED, 1),
     ]
+
+
+def test_spoils_of_war_with_3_cells():
+    board = Board()
+    board.cells = [
+        Cell(0, 0, Color.BLUE, 0, right=2),
+        Cell(0, 1, Color.RED, 1),
+        Cell(0, 2, Color.GREEN, 0, left=2),
+    ]
+
+    with patch("app.actions.roll", fixed_roll):
+        assert board.advance() == 3
+
+    expect(board.cells) == [
+        Cell(0, 0, Color.NONE, 0),
+        Cell(0, 1, Color.BLUE, 2),
+        Cell(0, 2, Color.NONE, 0),
+    ]
