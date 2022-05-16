@@ -114,17 +114,17 @@ class BorderClash(Move):
                         self.finish, self.direction.split("-")[0], self.incoming - 1
                     )
                 elif defense[0] > attack[0]:
-                    log.info(f"{two} won: {defense} > {attack}")
+                    log.info(f"{two} won: {attack} < {defense}")
                     setattr(self.start, self.direction.split("-")[1], self.outgoing - 1)
                 else:
-                    log.info(f"Stalemate: {defense} = {attack}")
+                    log.info(f"Stalemate: {attack} = {defense}")
                 attack.pop(0)
                 defense.pop(0)
 
         if self.outgoing:
-            log.info(f"{one} won border clash: {self.outgoing} persisted")
+            log.info(f"{one} won battle: {self.outgoing} persisted")
         else:
-            log.info(f"{two} won border clash: {self.incoming} persisted")
+            log.info(f"{two} won battle: {self.incoming} persisted")
 
 
 @dataclass
@@ -135,6 +135,9 @@ class Attack(Move):
             and self.outgoing
             and not self.incoming
         )
+
+    def __lt__(self, other):
+        return self.outgoing < other.outgoing
 
     def perform(self):
         log.info(f"Performing attack: {self}")
@@ -148,18 +151,18 @@ class Attack(Move):
                     log.info(f"Attack won round: {attack} > {defense}")
                     self.finish.center -= 1
                 else:
-                    log.info(f"Defense won round: {defense} > {attack}")
+                    log.info(f"Defense won round: {attack} < {defense}")
                     setattr(self.start, self.direction, self.outgoing - 1)
                 attack.pop(0)
                 defense.pop(0)
 
         if self.outgoing:
-            log.info(f"Attack won attack: {self.outgoing} persisted")
+            log.info(f"Attack won battle: {self.outgoing} persisted")
             self.finish.color = self.start.color
             self.finish.center = self.outgoing
             setattr(self.start, self.direction, 0)
         else:
-            log.info(f"Defense won attack: {self.finish.center} persisted")
+            log.info(f"Defense won battle: {self.finish.center} persisted")
 
         if not self.start.center:
             self.start.color = Color.NONE
@@ -196,17 +199,18 @@ class MassAttack:
                     log.info(f"Attack won round: {attack} > {defense}")
                     self.finish.center -= 1
                 else:
-                    log.info(f"Defense won round: {defense} > {attack}")
-                    # TODO: Cause the weakest attacker to lose a unit
-                    for move in self.moves:
-                        if move.outgoing:
-                            setattr(move.start, move.direction, move.outgoing - 1)
-                            break
+                    log.info(f"Defense won round: {attack} < {defense}")
+                    moves = [m for m in sorted(self.moves) if m.outgoing]
+                    move = moves[0]
+                    setattr(move.start, move.direction, move.outgoing - 1)
                 attack.pop(0)
                 defense.pop(0)
 
-        if not self.outgoing:
-            log.info(f"Defense won attack: {self.finish.center} persisted")
-            for move in self.moves:
-                if not move.start.value:
-                    move.start.color = Color.NONE
+        if self.outgoing:
+            log.info(f"Attack won battle: {self.outgoing} persisted")
+        else:
+            log.info(f"Defense won battle: {self.finish.center} persisted")
+
+        for move in self.moves:
+            if not move.start.value:
+                move.start.color = Color.NONE

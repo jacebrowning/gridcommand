@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from expecter import expect
 
@@ -108,11 +108,14 @@ def describe_attacks():
             Cell(0, 2, Color.BLUE, 0, left=3),
         ]
 
-        with patch("app.actions.roll", fixed_roll):
+        with patch(
+            "app.actions.roll",
+            Mock(side_effect=[[6, 1, 1, 1], [3, 3], [6, 1, 1], [3], [6, 1], [3]]),
+        ):
             board.advance()
 
         expect(board.cells) == [
             Cell(0, 0, Color.NONE, 0),
-            Cell(0, 1, Color.BLUE, 4),
+            Cell(0, 1, Color.BLUE, 3),
             Cell(0, 2, Color.NONE, 0),
         ]
