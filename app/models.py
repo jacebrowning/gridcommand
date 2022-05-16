@@ -157,10 +157,19 @@ class Game:
                 count += 1
         return count
 
+    @cached_property
+    def over(self) -> str:
+        remaining = [p for p in self.players if not p.autoplay]
+        if len(remaining) == 1:
+            return remaining[0].color.title
+        return ""
+
     @property
     def message(self) -> str:
         if self.round == 0:
             return ""
+        if self.over:
+            return f"{self.over} player wins!"
         if self.choosing:
             s = "" if self.choosing == 1 else "s"
             return f"Waiting for {self.choosing} player{s} to pick a color..."

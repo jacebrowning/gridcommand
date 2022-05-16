@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    {% if player and player.state == State.WAITING %}
+    {% if player and player.state == State.WAITING and not game.over %}
     <div class="border font-monospace mt-3 pt-3 px-3">
         {% include "moves.html" %}
     </div>
