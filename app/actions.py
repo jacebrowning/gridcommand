@@ -1,5 +1,6 @@
 import random
 from dataclasses import dataclass
+from typing import Protocol
 
 import log
 
@@ -11,8 +12,21 @@ def roll(count: int) -> list[int]:
     return sorted([random.randint(1, 6) for _ in range(count)], reverse=True)
 
 
+class Performable(Protocol):
+    @property
+    def outgoing(self) -> int:
+        """Number of units moving from the attack to the defense."""
+
+    @property
+    def incoming(self) -> int:
+        """Number of units moving from the defense to the attack."""
+
+    def perform(self):
+        """Execute the move until one side is eliminated."""
+
+
 @dataclass
-class Move:
+class Move(Performable):
     start: Cell
     direction: str
     finish: Cell
@@ -169,7 +183,7 @@ class Attack(Move):
 
 
 @dataclass
-class MassAttack:
+class MassAttack(Performable):
     moves: list[Attack]
     finish: Cell
 

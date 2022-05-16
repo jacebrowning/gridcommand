@@ -119,7 +119,7 @@ class Board:
             self.attacks,
             self.fortifications,
         ):
-            move.perform()  # type: ignore
+            move.perform()
             count += 1
 
         s = "" if count == 1 else "s"
