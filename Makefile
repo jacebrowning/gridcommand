@@ -60,6 +60,7 @@ endif
 
 .PHONY: dev
 dev: install
+	cp tests/files/test.yml data/games
 	poetry run ptw --nobeep --beforerun "clear" --onpass "echo && make check && echo"
 
 # RUN

@@ -1,5 +1,6 @@
 import random
 from dataclasses import dataclass
+from typing import Protocol
 
 import log
 
@@ -11,8 +12,21 @@ def roll(count: int) -> list[int]:
     return sorted([random.randint(1, 6) for _ in range(count)], reverse=True)
 
 
+class Performable(Protocol):
+    @property
+    def outgoing(self) -> int:
+        """Number of units moving from the attack to the defense."""
+
+    @property
+    def incoming(self) -> int:
+        """Number of units moving from the defense to the attack."""
+
+    def perform(self):
+        """Execute the move until one side is eliminated."""
+
+
 @dataclass
-class Move:
+class Move(Performable):
     start: Cell
     direction: str
     finish: Cell
@@ -114,17 +128,17 @@ class BorderClash(Move):
                         self.finish, self.direction.split("-")[0], self.incoming - 1
                     )
                 elif defense[0] > attack[0]:
-                    log.info(f"{two} won: {defense} > {attack}")
+                    log.info(f"{two} won: {attack} < {defense}")
                     setattr(self.start, self.direction.split("-")[1], self.outgoing - 1)
                 else:
-                    log.info(f"Stalemate: {defense} = {attack}")
+                    log.info(f"Stalemate: {attack} = {defense}")
                 attack.pop(0)
                 defense.pop(0)
 
         if self.outgoing:
-            log.info(f"{one} won border clash: {self.outgoing} persisted")
+            log.info(f"{one} won battle: {self.outgoing} persisted")
         else:
-            log.info(f"{two} won border clash: {self.incoming} persisted")
+            log.info(f"{two} won battle: {self.incoming} persisted")
 
 
 @dataclass
@@ -135,6 +149,9 @@ class Attack(Move):
             and self.outgoing
             and not self.incoming
         )
+
+    def __lt__(self, other):
+        return self.outgoing < other.outgoing
 
     def perform(self):
         log.info(f"Performing attack: {self}")
@@ -148,18 +165,66 @@ class Attack(Move):
                     log.info(f"Attack won round: {attack} > {defense}")
                     self.finish.center -= 1
                 else:
-                    log.info(f"Defense won round: {defense} > {attack}")
+                    log.info(f"Defense won round: {attack} < {defense}")
                     setattr(self.start, self.direction, self.outgoing - 1)
                 attack.pop(0)
                 defense.pop(0)
 
         if self.outgoing:
-            log.info(f"Attack won attack: {self.outgoing} persisted")
+            log.info(f"Attack won battle: {self.outgoing} persisted")
             self.finish.color = self.start.color
             self.finish.center = self.outgoing
             setattr(self.start, self.direction, 0)
         else:
-            log.info(f"Defense won attack: {self.finish.center} persisted")
+            log.info(f"Defense won battle: {self.finish.center} persisted")
 
         if not self.start.center:
             self.start.color = Color.NONE
+
+
+@dataclass
+class MassAttack(Performable):
+    moves: list[Attack]
+    finish: Cell
+
+    def __bool__(self):
+        count = sum(1 for move in self.moves if move)
+        return count >= 2
+
+    def __str__(self):
+        return " ➕ ".join(str(m) for m in self.moves)
+
+    @property
+    def outgoing(self) -> int:
+        count = 0
+        for move in self.moves:
+            count += move.outgoing
+        return count
+
+    def perform(self):
+        log.info(f"Performing mass attack: {self}")
+        while self.outgoing and self.finish.center:
+            attack = roll(self.outgoing)
+            defense = roll(self.finish.center)
+            log.info(f"Attack rolled: {attack}")
+            log.info(f"Defense rolled: {defense}")
+            while attack and defense:
+                if attack[0] > defense[0]:
+                    log.info(f"Attack won round: {attack} > {defense}")
+                    self.finish.center -= 1
+                else:
+                    log.info(f"Defense won round: {attack} < {defense}")
+                    moves = [m for m in sorted(self.moves) if m.outgoing]
+                    move = moves[0]
+                    setattr(move.start, move.direction, move.outgoing - 1)
+                attack.pop(0)
+                defense.pop(0)
+
+        if self.outgoing:
+            log.info(f"Attack won battle: {self.outgoing} persisted")
+        else:
+            log.info(f"Defense won battle: {self.finish.center} persisted")
+
+        for move in self.moves:
+            if not move.start.value:
+                move.start.color = Color.NONE
