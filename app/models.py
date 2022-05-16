@@ -115,7 +115,6 @@ class Board:
             self.fortifications,
             self.border_clashes,
             self.mass_attacks,
-            # TODO: Handle spoils of war
             self.attacks,
             self.fortifications,
         ):

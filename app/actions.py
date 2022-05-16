@@ -123,22 +123,22 @@ class BorderClash(Move):
             log.info(f"{two} rolled: {defense}")
             while attack and defense:
                 if attack[0] > defense[0]:
-                    log.info(f"{one} won: {attack} > {defense}")
+                    log.info(f"{one} won roll: {attack} > {defense}")
                     setattr(
                         self.finish, self.direction.split("-")[0], self.incoming - 1
                     )
                 elif defense[0] > attack[0]:
-                    log.info(f"{two} won: {attack} < {defense}")
+                    log.info(f"{two} won roll: {attack} < {defense}")
                     setattr(self.start, self.direction.split("-")[1], self.outgoing - 1)
                 else:
-                    log.info(f"Stalemate: {attack} = {defense}")
+                    log.info(f"Stalemate roll: {attack} = {defense}")
                 attack.pop(0)
                 defense.pop(0)
 
         if self.outgoing:
-            log.info(f"{one} won battle: {self.outgoing} persisted")
+            log.info(f"{one} won border clash: {self.outgoing} persisted")
         else:
-            log.info(f"{two} won battle: {self.incoming} persisted")
+            log.info(f"{two} won border clash: {self.incoming} persisted")
 
 
 @dataclass
@@ -154,7 +154,8 @@ class Attack(Move):
         return self.outgoing < other.outgoing
 
     def perform(self):
-        log.info(f"Performing attack: {self}")
+        action = "attack" if self.finish.center else "march"
+        log.info(f"Performing {action}: {self}")
         while self.outgoing and self.finish.center:
             attack = roll(self.outgoing)
             defense = roll(self.finish.center)
@@ -162,21 +163,22 @@ class Attack(Move):
             log.info(f"Defense rolled: {defense}")
             while attack and defense:
                 if attack[0] > defense[0]:
-                    log.info(f"Attack won round: {attack} > {defense}")
+                    log.info(f"Attack won roll: {attack} > {defense}")
                     self.finish.center -= 1
                 else:
-                    log.info(f"Defense won round: {attack} < {defense}")
+                    log.info(f"Defense won roll: {attack} < {defense}")
                     setattr(self.start, self.direction, self.outgoing - 1)
                 attack.pop(0)
                 defense.pop(0)
 
         if self.outgoing:
-            log.info(f"Attack won battle: {self.outgoing} persisted")
+            if action != "march":
+                log.info(f"Attack won attack: {self.outgoing} persisted")
             self.finish.color = self.start.color
             self.finish.center = self.outgoing
             setattr(self.start, self.direction, 0)
         else:
-            log.info(f"Defense won battle: {self.finish.center} persisted")
+            log.info(f"Defense won attack: {self.finish.center} persisted")
 
         if not self.start.center:
             self.start.color = Color.NONE
@@ -188,6 +190,8 @@ class MassAttack(Performable):
     finish: Cell
 
     def __bool__(self):
+        if not self.finish.value:
+            return False
         count = sum(1 for move in self.moves if move)
         return count >= 2
 
@@ -210,10 +214,10 @@ class MassAttack(Performable):
             log.info(f"Defense rolled: {defense}")
             while attack and defense:
                 if attack[0] > defense[0]:
-                    log.info(f"Attack won round: {attack} > {defense}")
+                    log.info(f"Attack won roll: {attack} > {defense}")
                     self.finish.center -= 1
                 else:
-                    log.info(f"Defense won round: {attack} < {defense}")
+                    log.info(f"Defense won roll: {attack} < {defense}")
                     moves = [m for m in sorted(self.moves) if m.outgoing]
                     move = moves[0]
                     setattr(move.start, move.direction, move.outgoing - 1)
@@ -221,9 +225,10 @@ class MassAttack(Performable):
                 defense.pop(0)
 
         if self.outgoing:
-            log.info(f"Attack won battle: {self.outgoing} persisted")
+            log.info(f"Attack won mass attack: {self.outgoing} persisted")
+            self.finish.color = Color.NONE
         else:
-            log.info(f"Defense won battle: {self.finish.center} persisted")
+            log.info(f"Defense won mass attack: {self.finish.center} persisted")
 
         for move in self.moves:
             if not move.start.value:
