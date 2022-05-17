@@ -10,7 +10,7 @@ import log
 from flask import url_for
 
 from .actions import Attack, BorderClash, Fortification, MassAttack
-from .constants import FILL, PLAYERS, SIZE, UNITS, generate_code
+from .constants import EXTRA, FILL, PLAYERS, SIZE, UNITS, generate_code
 from .enums import Color, State
 from .types import Cell, Player
 
@@ -40,7 +40,7 @@ class Board:
         raise LookupError(f"Unknown cell: {xy}")
 
     @property
-    def fortifications(self) -> Iterator[Fortification]:
+    def tactical_moves(self) -> Iterator[Fortification]:
         for start in self.cells:
             for direction, finish in self.get_neighbors(start):
                 if move := Fortification(start, direction, finish):
@@ -109,14 +109,24 @@ class Board:
             for col in range(SIZE):
                 self.cells.append(Cell(row, col))
 
+    def initialize(self):
+        self[(0, 0)].color = Color.BLUE
+        self[(0, 0)].center = 1
+        self[(SIZE - 1, SIZE - 1)].color = Color.RED
+        self[(SIZE - 1, SIZE - 1)].center = 1
+        self[(0, SIZE - 1)].color = Color.GREEN
+        self[(0, SIZE - 1)].center = 1
+        self[(SIZE - 1, 0)].color = Color.YELLOW
+        self[(SIZE - 1, 0)].center = 1
+
     def advance(self) -> int:
         count = 0
         for move in chain(
-            self.fortifications,
+            self.tactical_moves,
             self.border_clashes,
             self.mass_attacks,
             self.attacks,
-            self.fortifications,
+            self.tactical_moves,
         ):
             move.perform()
             count += 1
@@ -124,6 +134,20 @@ class Board:
         s = "" if count == 1 else "s"
         log.info(f"Applied {count} move{s}")
         return count
+
+    def fortify(self, player: Player):
+        cells = list(self.get_cells(player.color))
+        if not any(cells):
+            log.info(f"Player eliminated: {player}")
+            player.autoplay = True
+        else:
+            home = cells[0]
+            for cell in cells:
+                if cell.value > home.value:
+                    home = cell
+            extra = max(1, int(len(cells) * EXTRA))
+            log.info(f"Fortifying {home} with {extra} units")
+            home.center += extra
 
 
 @datafiles.datafile("../data/games/{self.code}.yml", defaults=True)
@@ -159,7 +183,7 @@ class Game:
 
     @cached_property
     def over(self) -> str:
-        remaining = [p for p in self.players if not p.autoplay]
+        remaining = [p for p in self.players if any(self.board.get_cells(p.color))]
         if len(remaining) == 1:
             return remaining[0].color.title
         return ""
@@ -184,19 +208,13 @@ class Game:
             self.players[-1].autoplay = True
         else:
             self.players = self.players[:PLAYERS]
+
         units = {player.color: UNITS for player in self.players}
         cells = {player.color: [] for player in self.players}
+
         with datafiles.frozen(self):
             self.board.reset()
-
-            self.board[(0, 0)].color = Color.BLUE
-            self.board[(0, 0)].center = 1
-            self.board[(SIZE - 1, SIZE - 1)].color = Color.RED
-            self.board[(SIZE - 1, SIZE - 1)].center = 1
-            self.board[(0, SIZE - 1)].color = Color.GREEN
-            self.board[(0, SIZE - 1)].center = 1
-            self.board[(SIZE - 1, 0)].color = Color.YELLOW
-            self.board[(SIZE - 1, 0)].center = 1
+            self.board.initialize()
 
             for cell in self.board.cells:
                 if cell.color is Color.NONE and random.random() < FILL:
@@ -215,9 +233,7 @@ class Game:
         count = self.board.advance()
         self.round += 1
         for player in self.players:
-            if not any(self.board.get_cells(player.color)):
-                log.info(f"Player eliminated: {player}")
-                player.autoplay = True
+            self.board.fortify(player)
         return count
 
     def get_player(self, color: str) -> Player:
