@@ -1,5 +1,6 @@
 import os
 import random
+import sys
 
 SIZE = int(os.getenv("SIZE", "5"))  # 3 to 5
 PLAYERS = int(os.getenv("PLAYERS", "4"))  # 2 to 4
@@ -9,6 +10,8 @@ EXTRA = 1 / 3  # 0.0 to 1.0
 
 LETTERS = "ABCDEFGHJKLMNPQRTUVXYZ"
 NUMBERS = "2346789"
+
+TESTING = "pytest" in sys.modules
 
 
 def generate_code() -> str:

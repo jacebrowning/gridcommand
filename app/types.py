@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 
-from .constants import SIZE
+import log
+
+from .constants import SIZE, TESTING
 from .enums import Color, State
 
 
@@ -46,21 +48,37 @@ class Cell:
 
     def __post_init__(self):
         if self.color is Color.NONE:
-            assert not self.value, f"Unowned cell contains {self.value} unit(s)"
+            message = f"Unowned cell {self.point} contains {self.value} unit(s)"
+            if self.value:
+                log.error(message)
+                if TESTING:
+                    raise ValueError(message)
+                else:
+                    self.center = 0
         else:
-            assert self.value, f"Empty cell owned by {self.color.key} player"
+            message = f"Empty cell owned by {self.color.key} player"
+            if not self.value:
+                log.error(message)
+                if TESTING:
+                    raise ValueError(message)
+                else:
+                    self.color = Color.NONE
 
     def __repr__(self):
         return f"<cell: {self.value}ˣ{self}>"
 
     def __str__(self):
-        return f"{self.color.icon} ﹫({self.row},{self.col})"
+        return f"{self.color.icon} ﹫{self.point}"
 
     def __bool__(self):
         return self.color is not Color.NONE
 
     def __hash__(self):
         return hash((self.row, self.col))
+
+    @property
+    def point(self) -> str:
+        return f"({self.row},{self.col})"
 
     @property
     def value(self) -> int:

@@ -2,7 +2,13 @@
     "python.formatting.provider": "black",
     "python.linting.mypyEnabled": true,
     "editor.formatOnSave": true,
-    "cSpell.words": ["ABCDEFGHJKLMNPQRTUVXYZ", "livereload", "showfspath"],
+    "cSpell.words": [
+        "ABCDEFGHJKLMNPQRTUVXYZ",
+        "autoplay",
+        "livereload",
+        "showfspath",
+        "dataclass"
+    ],
     "files.exclude": {
         "**/__pycache__/": true,
         ".cache/": true,
