@@ -4,7 +4,7 @@
         game.round }}{% if player and not player.autoplay %}: {{ player.state.title }}
         {% endif %} {% else %} Code: {{ game.code }}
         <button class="btn btn-outline-dark ms-2" data-clipboard-text="{{ game.url }}">
-            📋 <span class="d-none d-sm-inline">Copy URL</span>
+            📋 Copy URL
         </button>
         {% endif %}
     </div>
@@ -58,7 +58,7 @@
             hx-post="{{ url_for('randomize', code=game.code) }}"
             hx-target="#board"
             hx-indicator="#spinner">
-            🔀 <span class="d-none d-sm-inline">New Board</span>
+            🔀 <span class="d-none d-lg-inline">New Board</span>
         </button>
         <a class="btn btn-dark" href="{{ url_for('choose', code=game.code) }}">
             Start Game

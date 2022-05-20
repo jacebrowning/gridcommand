@@ -224,6 +224,9 @@ class Game:
                     cell.center = 1
                     units[player.color] -= 1
                     cells[player.color].append(cell)
+                elif cell.color in cells:
+                    units[cell.color] -= 1
+                    cells[cell.color].append(cell)
 
             for color, count in units.items():
                 for _ in range(count):
