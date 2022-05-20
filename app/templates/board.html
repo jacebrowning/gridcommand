@@ -1,4 +1,5 @@
-<div id="board"
+<div
+    id="board"
     {% if player and player.state == State.WAITING %}
     hx-get="{{ url_for('player', code=game.code, color=player.color.key) }}?partial=true"
     hx-trigger="every 5s"
@@ -34,7 +35,15 @@
     </table>
 
     <div class="d-flex justify-content-between align-items-center">
-        <div class="text-muted">{{ game.message }}</div>
+        <!-- TODO: Trigger update via events -->
+        <div
+            class="text-muted"
+            hx-get="{{ url_for('message', code=game.code) }}"
+            hx-target="#message"
+            hx-swap="innerHTML"
+            id="message">
+            {{ game.message }}
+        </div>
         <div
             class="spinner-border spinner-border-sm text-secondary htmx-indicator"
             role="status"
@@ -44,8 +53,6 @@
     </div>
 
     {% if player and player.state == State.WAITING and not game.over %}
-    <div class="border font-monospace mt-3 pt-3 px-3">
-        {% include "moves.html" %}
-    </div>
+    <div class="border font-monospace mt-3 pt-3 px-3">{% include "moves.html" %}</div>
     {% endif %}
 </div>

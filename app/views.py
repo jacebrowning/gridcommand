@@ -46,6 +46,12 @@ def debug(code: str):
     return game.datafile.data
 
 
+@app.get("/game/<code>/_message/")
+def message(code: str):
+    game = Game(code)
+    return game.message
+
+
 @app.post("/game/<code>/_randomize/")
 def randomize(code: str):
     game = Game(code)

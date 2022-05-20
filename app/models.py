@@ -137,17 +137,17 @@ class Board:
 
     def fortify(self, player: Player):
         cells = list(self.get_cells(player.color))
-        if not any(cells):
-            log.info(f"Player eliminated: {player}")
-            player.autoplay = True
-        else:
+        if any(cells):
+            extra = max(1, int(len(cells) * EXTRA))
+            log.info(f"Fortifying {player} with {extra} units")
             home = cells[0]
             for cell in cells:
                 if cell.value > home.value:
                     home = cell
-            extra = max(1, int(len(cells) * EXTRA))
-            log.info(f"Fortifying {home} with {extra} units")
             home.center += extra
+        elif not player.autoplay:
+            log.info(f"{player.color.title} player eliminated")
+            player.autoplay = True
 
 
 @datafiles.datafile("../data/games/{self.code}.yml", defaults=True)
