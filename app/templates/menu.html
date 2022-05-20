@@ -1,5 +1,5 @@
-<div class="d-flex flex-wrap justify-content-between align-items-center py-4">
-    <div class="d-flex align-items-center fs-2 text-nowrap me-2 mb-2">
+<div class="d-flex flex-wrap justify-content-between align-items-center py-4 gap-2">
+    <div class="d-flex align-items-center fs-2 text-nowrap me-2">
         {% if game.over %}Game Over {% elif game.round and not game.choosing %} Round {{
         game.round }}{% if player and not player.autoplay %}: {{ player.state.title }}
         {% endif %} {% else %} Code: {{ game.code }}
@@ -8,6 +8,44 @@
         </button>
         {% endif %}
     </div>
+
+    {% if game.round == 0 %}
+
+    <!-- Phase 1 -->
+
+    <div class="d-flex align-items-center">
+        <span class="fs-4 me-2 text-end">Players:</span>
+        <div class="btn-group">
+            <button
+                id="two-players"
+                class="btn btn-outline-secondary {% if game.players|length == 2 %} active {% endif %}"
+                hx-post="{{ url_for('randomize', code=game.code) }}"
+                hx-vals='{ "players": 2 }'
+                hx-target="#board"
+                hx-indicator="#spinner">
+                2
+            </button>
+            <button
+                id="three-players"
+                class="btn btn-outline-secondary {% if game.players|length == 3 %} active {% endif %}"
+                hx-post="{{ url_for('randomize', code=game.code) }}"
+                hx-vals='{ "players": 3 }'
+                hx-target="#board"
+                hx-indicator="#spinner">
+                3
+            </button>
+            <button
+                id="four-players"
+                class="btn btn-outline-secondary {% if game.players|length == 4 %} active {% endif %}"
+                hx-post="{{ url_for('randomize', code=game.code) }}"
+                hx-vals='{ "players": 4 }'
+                hx-target="#board"
+                hx-indicator="#spinner">
+                4
+            </button>
+        </div>
+    </div>
+    {% endif %}
 
     <div class="btn-group">
         {% if game.round == 0 %}

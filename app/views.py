@@ -50,7 +50,8 @@ def debug(code: str):
 def randomize(code: str):
     game = Game(code)
     assert game.round == 0
-    game.initialize()
+    players = int(request.form.get("players", len(game.players)))
+    game.initialize(players)
     return render_template("board.html", game=game)
 
 
