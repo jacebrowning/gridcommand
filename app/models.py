@@ -202,15 +202,16 @@ class Game:
             return f"Waiting for {self.planning} player{s} to plan moves..."
         return ""
 
-    def initialize(self):
-        if PLAYERS == 1:
+    def initialize(self, count: int = PLAYERS):
+        self.players = Player.defaults()
+        if count == 1:
             self.players = self.players[:2]
             self.players[-1].autoplay = True
         else:
-            self.players = self.players[:PLAYERS]
+            self.players = self.players[:count]
 
-        units = {player.color: UNITS for player in self.players}
-        cells = {player.color: [] for player in self.players}
+        units: dict[Color, int] = {player.color: UNITS for player in self.players}
+        cells: dict[Color, list[Cell]] = {player.color: [] for player in self.players}
 
         with datafiles.frozen(self):
             self.board.reset()

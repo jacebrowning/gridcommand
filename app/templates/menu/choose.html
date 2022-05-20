@@ -4,7 +4,7 @@
     hx-trigger="{% if game.choosing %}every 5s{% endif %}"
     hx-swap="outerHTML"
     hx-indicator="#spinner">
-    <span class="fs-4 me-1 text-end">Player:</span>
+    <span class="fs-4 me-2 text-end">Player:</span>
     {% for player in game.players %}
     <a
         class="btn btn-{{ player.color.value }} {% if player.state.value and game.choosing or player.autoplay %} disabled {% endif %} ms-1"

@@ -2,8 +2,11 @@ import pomace
 
 page = pomace.visit("http://localhost:5000", delay=2)
 
-pomace.log.info("Starting the game")
+pomace.log.info("Creating two-player game")
+page.click_two_players(wait=1)
 page.click_new_board(wait=1)
+
+pomace.log.info("Starting the game")
 page = page.click_start_game(wait=1)
 
 pomace.log.info("Adding players")

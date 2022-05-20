@@ -31,3 +31,14 @@ actions:
         value: .btn-dark
         index: 0
         uses: 2
+  - verb: click
+    name: two_players
+    locators:
+      - mode: id
+        value: 2players
+        index: 0
+        uses: 0
+      - mode: id
+        value: two-players
+        index: 0
+        uses: 1
