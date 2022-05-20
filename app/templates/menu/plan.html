@@ -1,8 +1,8 @@
 <div
     class="btn-group"
-    hx-post="{{ url_for('player_plan', code=game.code, color=player.color.key) }}?partial=true"
+    hx-post="{{ url_for('player_plan', code=game.code, color=player.color.key) }}"
     hx-trigger="{% if game.choosing %}every 5s{% endif %}"
-    hx-swap="outerHTML"
+    hx-target="#board"
     hx-indicator="#spinner">
     <a class="btn btn-outline-secondary" href="{{ url_for('choose', code=game.code) }}">
         ⇄ <span class="d-none d-md-inline">Switch Player</span>

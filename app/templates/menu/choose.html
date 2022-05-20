@@ -2,7 +2,7 @@
     class="d-flex align-items-center"
     hx-get="{{ url_for('choose', code=game.code) }}?partial=true"
     hx-trigger="{% if game.choosing %}every 5s{% endif %}"
-    hx-swap="outerHTML"
+    hx-target="#board"
     hx-indicator="#spinner">
     <span class="fs-4 me-2 text-end">Player:</span>
     {% for player in game.players %}

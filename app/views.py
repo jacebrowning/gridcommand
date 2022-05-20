@@ -5,13 +5,6 @@ from flask import Flask, redirect, render_template, request, url_for
 from .enums import Color, State
 from .models import Game
 
-SIZE = 3
-UNITS = SIZE * 4
-FILL = 2 / 3
-
-LETTERS = "ABCDEFGHJKLMNPQRTUVXYZ"
-NUMBERS = "2346789"
-
 app = Flask(__name__)
 
 
@@ -40,18 +33,6 @@ def setup(code: str):
     return render_template("game.html", game=game)
 
 
-@app.get("/game/<code>.json")
-def debug(code: str):
-    game = Game(code)
-    return game.datafile.data
-
-
-@app.get("/game/<code>/_message/")
-def message(code: str):
-    game = Game(code)
-    return game.message
-
-
 @app.post("/game/<code>/_randomize/")
 def randomize(code: str):
     game = Game(code)
@@ -66,7 +47,7 @@ def choose(code: str):
     game = Game(code)
     game.round = game.round or 1
     if "partial" in request.args:
-        return render_template("menu/choose.html", game=game)
+        return render_template("board.html", game=game)
     return render_template("game.html", game=game)
 
 
@@ -89,8 +70,6 @@ def player(code: str, color: str):
 def player_plan(code: str, color: str):
     game = Game(code)
     player = game.get_player(color)
-    if "partial" in request.args:
-        return render_template("menu/plan.html", game=game, player=player)
     player.state = State.PLANNING
     return render_template("board.html", game=game, player=player)
 
