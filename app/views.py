@@ -37,9 +37,12 @@ def setup(code: str):
 def randomize(code: str):
     game = Game(code)
     assert game.round == 0
-    grid = int(request.form.get("grid", game.board.size))
+    size = int(request.form.get("size", game.board.size))
     players = int(request.form.get("players", len(game.players)))
-    game.initialize(grid, players)
+    if "shared" in request.form:
+        game.shared = request.form["shared"] == "1"
+    else:
+        game.initialize(size, players)
     return render_template("board.html", game=game)
 
 
@@ -71,7 +74,8 @@ def player(code: str, color: str):
 def player_plan(code: str, color: str):
     game = Game(code)
     player = game.get_player(color)
-    player.state = State.PLANNING
+    if "partial" not in request.args:
+        player.state = State.PLANNING
     return render_template("board.html", game=game, player=player)
 
 
