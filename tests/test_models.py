@@ -7,7 +7,7 @@ from app.models import Cell, Game
 @pytest.fixture
 def game():
     g = Game()
-    g.initialize(1)
+    g.initialize(count=1)
     g.board.cells = [
         Cell(0, 0, Color.BLUE, 1),
         Cell(0, 1, Color.BLUE, 2),

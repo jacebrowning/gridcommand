@@ -13,77 +13,25 @@
 
     <!-- Phase 1 -->
 
-    <div class="d-flex align-items-center">
-        <span class="fs-4 me-2 text-end">Players:</span>
-        <div class="btn-group">
-            <button
-                id="two-players"
-                class="btn btn-outline-secondary {% if game.players|length == 2 %} active {% endif %}"
-                hx-post="{{ url_for('randomize', code=game.code) }}"
-                hx-vals='{ "players": 2 }'
-                hx-target="#board"
-                hx-indicator="#spinner">
-                2
-            </button>
-            <button
-                id="three-players"
-                class="btn btn-outline-secondary {% if game.players|length == 3 %} active {% endif %}"
-                hx-post="{{ url_for('randomize', code=game.code) }}"
-                hx-vals='{ "players": 3 }'
-                hx-target="#board"
-                hx-indicator="#spinner">
-                3
-            </button>
-            <button
-                id="four-players"
-                class="btn btn-outline-secondary {% if game.players|length == 4 %} active {% endif %}"
-                hx-post="{{ url_for('randomize', code=game.code) }}"
-                hx-vals='{ "players": 4 }'
-                hx-target="#board"
-                hx-indicator="#spinner">
-                4
-            </button>
-        </div>
-    </div>
-    {% endif %}
+    {% include "menu/setup.html" %} {% elif not player %}
 
-    <div class="btn-group">
-        {% if game.round == 0 %}
+    <!-- Phase 2 -->
 
-        <!-- Phase 1 -->
+    {% include "menu/choose.html"%} {% else %}
 
-        <button
-            type="button"
-            class="btn btn-outline-secondary"
-            hx-post="{{ url_for('randomize', code=game.code) }}"
-            hx-target="#board"
-            hx-indicator="#spinner">
-            🔀 <span class="d-none d-lg-inline">New Board</span>
-        </button>
-        <a class="btn btn-dark" href="{{ url_for('choose', code=game.code) }}">
-            Start Game
-        </a>
+    <!-- Phase 3 -->
 
-        {% elif not player %}
+    {% if player.state == State.PLANNING %}
 
-        <!-- Phase 2 -->
+    <!-- Phase 3.2 -->
 
-        {% include "menu/choose.html"%} {% else %}
+    {% include "menu/done.html" %} {% elif player.state == State.WAITING %}
 
-        <!-- Phase 3 -->
+    <!-- Phase 3.3 -->
 
-        {% if player.state == State.PLANNING %}
+    {% include "menu/next.html" %} {% elif not game.over %}
 
-        <!-- Phase 3.2 -->
+    <!-- Phase 3.1 -->
 
-        {% include "menu/done.html" %} {% elif player.state == State.WAITING %}
-
-        <!-- Phase 3.3 -->
-
-        {% include "menu/next.html" %} {% elif not game.over %}
-
-        <!-- Phase 3.1 -->
-
-        {% include "menu/plan.html" %} {% endif %} {% endif %}
-    </div>
+    {% include "menu/plan.html" %} {% endif %} {% endif %}
 </div>

@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 @app.context_processor
 def constants():
-    return dict(Color=Color, State=State)
+    return dict(Color=Color, State=State, debug=app.debug)
 
 
 @app.get("/")
@@ -37,8 +37,9 @@ def setup(code: str):
 def randomize(code: str):
     game = Game(code)
     assert game.round == 0
+    grid = int(request.form.get("grid", game.board.size))
     players = int(request.form.get("players", len(game.players)))
-    game.initialize(players)
+    game.initialize(grid, players)
     return render_template("board.html", game=game)
 
 
