@@ -1,0 +1,62 @@
+locators:
+  inclusions:
+    - mode: ''
+      value: ''
+      index: 0
+      uses: 0
+  exclusions:
+    - mode: ''
+      value: ''
+      index: 0
+      uses: 0
+actions:
+  - verb: ''
+    name: ''
+    locators:
+      - mode: ''
+        value: ''
+        index: 0
+        uses: 0
+  - verb: click
+    name: new_game
+    locators:
+      - mode: ''
+        value: ''
+        index: 0
+        uses: 0
+      - mode: text
+        value: New Game
+        index: 0
+        uses: -1
+      - mode: text
+        value: New game
+        index: 0
+        uses: -1
+      - mode: text
+        value: new game
+        index: 0
+        uses: -1
+      - mode: value
+        value: New Game
+        index: 0
+        uses: -1
+      - mode: value
+        value: New game
+        index: 0
+        uses: -1
+      - mode: value
+        value: new game
+        index: 0
+        uses: -1
+      - mode: text (partial)
+        value: New Game
+        index: 0
+        uses: 2
+      - mode: text (partial)
+        value: New game
+        index: 0
+        uses: 0
+      - mode: text (partial)
+        value: new game
+        index: 0
+        uses: 0

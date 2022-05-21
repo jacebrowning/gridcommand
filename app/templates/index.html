@@ -1,0 +1,26 @@
+{% extends 'base.html' %} {% block content %} {% if game %} {% include 'board.html' %}
+{% else %}
+
+<div class="py-4">
+    <h1>Grid Command</h1>
+
+    <div class="d-inline-flex align-items-center pt-3">
+        <a class="btn btn-primary text-nowrap" href="{{ url_for('create') }}">
+            New Game
+        </a>
+
+        <form action="{{ url_for('create') }}" method="post">
+            <div class="input-group ps-2">
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Code"
+                    name="code"
+                    required />
+                <button class="btn btn-secondary" type="submit">Join Game</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endif %} {% endblock %}
