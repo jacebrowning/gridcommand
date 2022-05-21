@@ -137,14 +137,17 @@ class Board:
 
     def fortify(self, player: Player):
         cells = list(self.get_cells(player.color))
+        cells.sort(key=lambda x: x.value, reverse=True)
         if any(cells):
             extra = max(1, int(len(cells) * EXTRA))
-            log.info(f"Fortifying {player} with {extra} units")
-            home = cells[0]
-            for cell in cells:
-                if cell.value > home.value:
-                    home = cell
-            home.center += extra
+            s = "" if extra == 1 else "s"
+            log.info(f"Fortifying {player} with {extra} unit{s}")
+            while extra:
+                for cell in cells:
+                    if extra:
+                        log.info(f"+1 {cell}")
+                        cell.center += 1
+                        extra -= 1
         elif not player.autoplay:
             log.info(f"{player.color.title} player eliminated")
             player.autoplay = True
