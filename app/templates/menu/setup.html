@@ -1,11 +1,11 @@
 <div class="d-flex align-items-center">
-    <span class="fs-4 me-2 text-end">Grid:</span>
+    <span class="fs-4 me-2 text-end">Size:</span>
     <div class="btn-group">
         <button
             id="3x3"
             class="btn btn-outline-secondary {% if game.board.size == 3 %} active {% endif %}"
             hx-post="{{ url_for('randomize', code=game.code) }}"
-            hx-vals='{ "grid": 3 }'
+            hx-vals='{ "size": 3 }'
             hx-target="#board"
             hx-indicator="#spinner">
             3
@@ -14,7 +14,7 @@
             id="4x4"
             class="btn btn-outline-secondary {% if game.board.size == 4 %} active {% endif %}"
             hx-post="{{ url_for('randomize', code=game.code) }}"
-            hx-vals='{ "grid": 4 }'
+            hx-vals='{ "size": 4 }'
             hx-target="#board"
             hx-indicator="#spinner">
             4
@@ -23,7 +23,7 @@
             id="5x5"
             class="btn btn-outline-secondary {% if game.board.size == 5 %} active {% endif %}"
             hx-post="{{ url_for('randomize', code=game.code) }}"
-            hx-vals='{ "grid": 5 }'
+            hx-vals='{ "size": 5 }'
             hx-target="#board"
             hx-indicator="#spinner">
             5
@@ -64,6 +64,20 @@
     </div>
 </div>
 
+<div
+    class="form-check"
+    hx-post="{{ url_for('randomize', code=game.code) }}"
+    hx-vals='{ "shared": {{ 0 if game.shared else 1 }} }'
+    hx-target="#board"
+    hx-indicator="#spinner">
+    {% if game.shared %}
+    <input class="form-check-input" type="checkbox" value="" id="shared" checked />
+    {% else %}
+    <input class="form-check-input" type="checkbox" value="" id="shared" />
+    {% endif %}
+    <label class="form-check-label" for="shared">Shared device</label>
+</div>
+
 <div class="btn-group">
     <button
         type="button"
@@ -71,7 +85,7 @@
         hx-post="{{ url_for('randomize', code=game.code) }}"
         hx-target="#board"
         hx-indicator="#spinner">
-        🔀 <span class="d-none d-lg-inline">New Board</span>
+        🔀 <span class="d-none d-sm-inline">New Board</span>
     </button>
     <a class="btn btn-dark" href="{{ url_for('choose', code=game.code) }}">
         Start Game

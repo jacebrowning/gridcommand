@@ -1,15 +1,17 @@
 <div
     class="btn-group"
-    hx-post="{{ url_for('player_plan', code=game.code, color=player.color.key) }}"
+    hx-post="{{ url_for('player_plan', code=game.code, color=player.color.key) }}?partial=true"
     hx-trigger="{% if game.choosing %}every 5s{% endif %}"
     hx-target="#board"
     hx-indicator="#spinner">
+    {% if game.shared %}
     <a class="btn btn-outline-secondary" href="{{ url_for('choose', code=game.code) }}">
         ⇄ <span class="d-none d-md-inline">Switch Player</span>
     </a>
+    {% endif %}
     <button
         type="button"
-        class="btn btn-{{ player.color.value }} {% if game.choosing %}disabled{% endif %}"
+        class="btn btn-{{ player.color.value }} {% if game.shared and game.choosing %} disabled {% endif %}"
         id="plan"
         hx-post="{{ url_for('player_plan', code=game.code, color=player.color.key) }}"
         hx-target="#board"

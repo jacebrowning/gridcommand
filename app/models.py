@@ -11,7 +11,7 @@ import log
 from flask import url_for
 
 from .actions import Attack, BorderClash, Fortification, MassAttack
-from .constants import EXTRA, FILL, PLAYERS, SIZE, UNITS, generate_code
+from .constants import EXTRA, FILL, PLAYERS, SHARED, SIZE, UNITS, generate_code
 from .enums import Color, State
 from .types import Cell, Player
 
@@ -165,6 +165,7 @@ class Game:
 
     round: int = 0
     players: list[Player] = field(default_factory=Player.defaults)
+    shared: bool = SHARED
     board: Board = Board()
 
     @cached_property
@@ -210,13 +211,13 @@ class Game:
             return f"Waiting for {self.planning} player{s} to plan moves..."
         return ""
 
-    def initialize(self, size: int = SIZE, count: int = PLAYERS):
+    def initialize(self, size: int = SIZE, players: int = PLAYERS):
         self.players = Player.defaults()
-        if count == 1:
+        if players == 1:
             self.players = self.players[:2]
             self.players[-1].autoplay = True
         else:
-            self.players = self.players[:count]
+            self.players = self.players[:players]
 
         units: dict[Color, int] = {player.color: UNITS for player in self.players}
         cells: dict[Color, list[Cell]] = {player.color: [] for player in self.players}

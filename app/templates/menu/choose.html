@@ -9,8 +9,7 @@
     <a
         class="btn btn-{{ player.color.value }} {% if player.state.value and game.choosing or player.autoplay %} btn-outline-{{ player.color.value }} disabled {% endif %} ms-1"
         href="{{ url_for('player', code=game.code, color=player.color.key) }}">
-        <span class="d-none d-md-inline">{{ player.color.title }}</span>
-        <span class="d-inline d-md-none">{{ player.color.title[0] }}</span>
+        {{ player.color.title }}
     </a>
     {% endfor %}
 </div>

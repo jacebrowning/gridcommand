@@ -4,7 +4,7 @@
         game.round }}{% if player and not player.autoplay %}: {{ player.state.title }}
         {% endif %} {% else %} Code: {{ game.code }}
         <button class="btn btn-outline-dark ms-2" data-clipboard-text="{{ game.url }}">
-            📋 Copy URL
+            📋 <span class="d-none d-sm-inline">Copy URL</span>
         </button>
         {% endif %}
     </div>
