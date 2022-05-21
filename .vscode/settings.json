@@ -5,9 +5,10 @@
     "cSpell.words": [
         "ABCDEFGHJKLMNPQRTUVXYZ",
         "autoplay",
+        "dataclass",
         "livereload",
-        "showfspath",
-        "dataclass"
+        "pluginmanager",
+        "showfspath"
     ],
     "files.exclude": {
         "**/__pycache__/": true,
