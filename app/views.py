@@ -15,13 +15,21 @@ def constants():
 
 @app.get("/")
 def index():
-    return redirect(url_for("create"))
+    return render_template("index.html")
 
 
 @app.get("/game/")
+@app.post("/game/")
 def create():
-    game = Game()
-    game.initialize()
+    if request.method == "POST":
+        code = request.form["code"].upper()
+        game = Game.objects.get_or_none(code)
+        if not game:
+            log.error(f"No such game: {code}")
+            return redirect(url_for("index"))
+    else:
+        game = Game()
+        game.initialize()
     return redirect(url_for("setup", code=game.code))
 
 
@@ -30,7 +38,7 @@ def setup(code: str):
     game = Game(code)
     if game.round:
         return redirect(url_for("choose", code=game.code))
-    return render_template("game.html", game=game)
+    return render_template("index.html", game=game)
 
 
 @app.post("/game/<code>/_randomize/")
@@ -52,7 +60,7 @@ def choose(code: str):
     game.round = game.round or 1
     if "partial" in request.args:
         return render_template("board.html", game=game)
-    return render_template("game.html", game=game)
+    return render_template("index.html", game=game)
 
 
 @app.get("/game/<code>/player/<color>/")
@@ -67,7 +75,7 @@ def player(code: str, color: str):
             player.state = State.WAITING
     if "partial" in request.args:
         return render_template("board.html", game=game, player=player)
-    return render_template("game.html", game=game, player=player)
+    return render_template("index.html", game=game, player=player)
 
 
 @app.post("/game/<code>/player/<color>/_plan/")

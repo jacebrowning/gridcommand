@@ -35,10 +35,13 @@ actions:
     name: two_players
     locators:
       - mode: id
-        value: 2players
-        index: 0
-        uses: 0
-      - mode: id
         value: two-players
         index: 0
-        uses: 1
+        uses: 2
+  - verb: click
+    name: shared_device
+    locators:
+      - mode: text
+        value: Shared device
+        index: 0
+        uses: 2

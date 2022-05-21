@@ -76,3 +76,46 @@ actions:
         value: next
         index: 0
         uses: 2
+  - verb: click
+    name: red
+    locators:
+      - mode: ''
+        value: ''
+        index: 0
+        uses: 0
+      - mode: text
+        value: Red
+        index: 0
+        uses: -1
+      - mode: text
+        value: Red
+        index: 0
+        uses: -1
+      - mode: text
+        value: red
+        index: 0
+        uses: -1
+      - mode: value
+        value: Red
+        index: 0
+        uses: -1
+      - mode: value
+        value: Red
+        index: 0
+        uses: -1
+      - mode: value
+        value: red
+        index: 0
+        uses: -1
+      - mode: text (partial)
+        value: Red
+        index: 0
+        uses: -1
+      - mode: text (partial)
+        value: Red
+        index: 0
+        uses: -1
+      - mode: text (partial)
+        value: red
+        index: 0
+        uses: -1
