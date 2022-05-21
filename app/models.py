@@ -1,3 +1,4 @@
+import math
 import random
 from contextlib import suppress
 from dataclasses import dataclass, field
@@ -38,6 +39,10 @@ class Board:
             if cell.row == row and cell.col == col:
                 return cell
         raise LookupError(f"Unknown cell: {xy}")
+
+    @property
+    def size(self) -> int:
+        return int(math.sqrt(len(self.cells)))
 
     @property
     def tactical_moves(self) -> Iterator[Fortification]:
@@ -102,22 +107,22 @@ class Board:
             xy = cell.row + 1, cell.col
             yield "up" if invert else "down", self[xy]
 
-    def reset(self):
-        assert SIZE <= 5  # see board.html width limits
+    def reset(self, size: int):
+        assert size <= 5  # see board.html width limits
         self.cells = []
-        for row in range(SIZE):
-            for col in range(SIZE):
-                self.cells.append(Cell(row, col))
+        for row in range(size):
+            for col in range(size):
+                self.cells.append(Cell(row, col, size=size))
 
     def initialize(self):
         self[(0, 0)].color = Color.BLUE
         self[(0, 0)].center = 1
-        self[(SIZE - 1, SIZE - 1)].color = Color.RED
-        self[(SIZE - 1, SIZE - 1)].center = 1
-        self[(0, SIZE - 1)].color = Color.GREEN
-        self[(0, SIZE - 1)].center = 1
-        self[(SIZE - 1, 0)].color = Color.YELLOW
-        self[(SIZE - 1, 0)].center = 1
+        self[(self.size - 1, self.size - 1)].color = Color.RED
+        self[(self.size - 1, self.size - 1)].center = 1
+        self[(0, self.size - 1)].color = Color.GREEN
+        self[(0, self.size - 1)].center = 1
+        self[(self.size - 1, 0)].color = Color.YELLOW
+        self[(self.size - 1, 0)].center = 1
 
     def advance(self) -> int:
         count = 0
@@ -205,7 +210,7 @@ class Game:
             return f"Waiting for {self.planning} player{s} to plan moves..."
         return ""
 
-    def initialize(self, count: int = PLAYERS):
+    def initialize(self, size: int = SIZE, count: int = PLAYERS):
         self.players = Player.defaults()
         if count == 1:
             self.players = self.players[:2]
@@ -217,7 +222,7 @@ class Game:
         cells: dict[Color, list[Cell]] = {player.color: [] for player in self.players}
 
         with datafiles.frozen(self):
-            self.board.reset()
+            self.board.reset(size)
             self.board.initialize()
 
             for cell in self.board.cells:

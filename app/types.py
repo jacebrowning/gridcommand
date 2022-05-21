@@ -46,6 +46,8 @@ class Cell:
     left: int = 0
     right: int = 0
 
+    size: int = SIZE
+
     def __post_init__(self):
         if self.color is Color.NONE:
             message = f"Unowned cell {self.point} contains {self.value} unit(s)"
@@ -90,7 +92,7 @@ class Cell:
 
     @property
     def can_move_down(self) -> bool:
-        return self.row < SIZE - 1
+        return self.row < self.size - 1
 
     @property
     def can_move_left(self) -> bool:
@@ -98,7 +100,7 @@ class Cell:
 
     @property
     def can_move_right(self) -> bool:
-        return self.col < SIZE - 1
+        return self.col < self.size - 1
 
     @property
     def moves(self) -> bool:

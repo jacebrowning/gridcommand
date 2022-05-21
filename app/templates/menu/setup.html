@@ -1,0 +1,79 @@
+<div class="d-flex align-items-center">
+    <span class="fs-4 me-2 text-end">Grid:</span>
+    <div class="btn-group">
+        <button
+            id="3x3"
+            class="btn btn-outline-secondary {% if game.board.size == 3 %} active {% endif %}"
+            hx-post="{{ url_for('randomize', code=game.code) }}"
+            hx-vals='{ "grid": 3 }'
+            hx-target="#board"
+            hx-indicator="#spinner">
+            3
+        </button>
+        <button
+            id="4x4"
+            class="btn btn-outline-secondary {% if game.board.size == 4 %} active {% endif %}"
+            hx-post="{{ url_for('randomize', code=game.code) }}"
+            hx-vals='{ "grid": 4 }'
+            hx-target="#board"
+            hx-indicator="#spinner">
+            4
+        </button>
+        <button
+            id="5x5"
+            class="btn btn-outline-secondary {% if game.board.size == 5 %} active {% endif %}"
+            hx-post="{{ url_for('randomize', code=game.code) }}"
+            hx-vals='{ "grid": 5 }'
+            hx-target="#board"
+            hx-indicator="#spinner">
+            5
+        </button>
+    </div>
+</div>
+
+<div class="d-flex align-items-center">
+    <span class="fs-4 me-2 text-end">Players:</span>
+    <div class="btn-group">
+        <button
+            id="two-players"
+            class="btn btn-outline-secondary {% if game.players|length == 2 %} active {% endif %}"
+            hx-post="{{ url_for('randomize', code=game.code) }}"
+            hx-vals='{ "players": 2 }'
+            hx-target="#board"
+            hx-indicator="#spinner">
+            2
+        </button>
+        <button
+            id="three-players"
+            class="btn btn-outline-secondary {% if game.players|length == 3 %} active {% endif %}"
+            hx-post="{{ url_for('randomize', code=game.code) }}"
+            hx-vals='{ "players": 3 }'
+            hx-target="#board"
+            hx-indicator="#spinner">
+            3
+        </button>
+        <button
+            id="four-players"
+            class="btn btn-outline-secondary {% if game.players|length == 4 %} active {% endif %}"
+            hx-post="{{ url_for('randomize', code=game.code) }}"
+            hx-vals='{ "players": 4 }'
+            hx-target="#board"
+            hx-indicator="#spinner">
+            4
+        </button>
+    </div>
+</div>
+
+<div class="btn-group">
+    <button
+        type="button"
+        class="btn btn-outline-secondary"
+        hx-post="{{ url_for('randomize', code=game.code) }}"
+        hx-target="#board"
+        hx-indicator="#spinner">
+        🔀 <span class="d-none d-lg-inline">New Board</span>
+    </button>
+    <a class="btn btn-dark" href="{{ url_for('choose', code=game.code) }}">
+        Start Game
+    </a>
+</div>
