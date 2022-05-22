@@ -1,4 +1,5 @@
 import pytest
+from expecter import expect
 
 from app.enums import Color
 from app.models import Cell, Game
@@ -22,7 +23,7 @@ def game():
 
 def test_fortify(game):
     game.advance()
-    assert game.board.cells == [
+    expect(game.board.cells) == [
         Cell(0, 0, Color.BLUE, 1),
         Cell(0, 1, Color.BLUE, 3),
         Cell(0, 2, Color.NONE, 0),

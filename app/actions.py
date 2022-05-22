@@ -13,16 +13,22 @@ def roll(count: int) -> list[int]:
 
 
 class Performable(Protocol):
+    def __bool__(self):
+        raise NotImplementedError
+
     @property
     def outgoing(self) -> int:
         """Number of units moving from the attack to the defense."""
+        raise NotImplementedError
 
     @property
     def incoming(self) -> int:
         """Number of units moving from the defense to the attack."""
+        raise NotImplementedError
 
     def perform(self):
         """Execute the move until one side is eliminated."""
+        raise NotImplementedError
 
 
 @dataclass
@@ -35,9 +41,6 @@ class Move(Performable):
         if self.direction == "left":
             return f"{self.finish.center}ˣ{self.finish} {self.arrow} {self.outgoing}ˣ{self.start}"
         return f"{self.outgoing}ˣ{self.start} {self.arrow} {self.finish.center}ˣ{self.finish}"
-
-    def __bool__(self):
-        raise NotImplementedError
 
     @property
     def outgoing(self) -> int:
@@ -185,6 +188,12 @@ class Attack(Move):
 
 
 @dataclass
+class AttackWithRetreat(Attack):
+    def __bool__(self):
+        return super().__bool__() and not self.finish.moves
+
+
+@dataclass
 class MassAttack(Performable):
     moves: list[Attack]
     finish: Cell
@@ -226,10 +235,13 @@ class MassAttack(Performable):
 
         if self.outgoing:
             log.info(f"Attack won mass attack: {self.outgoing} persisted")
-            self.finish.color = Color.NONE
+            if not self.finish.value:
+                self.finish.color = Color.NONE
         else:
             log.info(f"Defense won mass attack: {self.finish.center} persisted")
 
         for move in self.moves:
             if not move.start.value:
                 move.start.color = Color.NONE
+
+        log.c(f"{self.finish=} / {self.finish.down=}")

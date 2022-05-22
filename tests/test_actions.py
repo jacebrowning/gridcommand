@@ -82,6 +82,29 @@ def test_march_with_2_cells():
     ]
 
 
+def test_2_attacks_in_sequence():
+    board = Board()
+    board.cells = [
+        Cell(0, 0, Color.BLUE, 1, right=2),
+        Cell(0, 1, Color.RED, 1, right=2),
+        Cell(0, 2, Color.GREEN, 1),
+    ]
+
+    with patch("app.actions.roll", fixed_roll):
+        assert board.advance() == 2
+
+    expect(board.cells) == [
+        Cell(0, 0, Color.BLUE, 1),
+        Cell(
+            0,
+            1,
+            Color.BLUE,
+            2,
+        ),
+        Cell(0, 2, Color.RED, 2),
+    ]
+
+
 def test_mass_attack_with_2_cells_and_win():
     board = Board()
     board.cells = [
@@ -97,6 +120,26 @@ def test_mass_attack_with_2_cells_and_win():
         Cell(0, 0, Color.NONE, 0),
         Cell(0, 1, Color.RED, 2),
         Cell(0, 2, Color.BLUE, 1),
+    ]
+
+
+def test_mass_attack_with_2_cells_and_retreating_enemy():
+    board = Board()
+    board.cells = [
+        Cell(0, 0, Color.BLUE, 0, right=1),
+        Cell(0, 1, Color.RED, 1, down=1),
+        Cell(0, 2, Color.BLUE, 0, left=1),
+        Cell(1, 1, Color.NONE, 0),
+    ]
+
+    with patch("app.actions.roll", fixed_roll):
+        assert board.advance() == 4
+
+    expect(board.cells) == [
+        Cell(0, 0, Color.NONE, 0),
+        Cell(0, 1, Color.BLUE, 2),
+        Cell(0, 2, Color.NONE, 0),
+        Cell(1, 1, Color.RED, 1),
     ]
 
 

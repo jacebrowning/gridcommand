@@ -10,7 +10,7 @@ import datafiles
 import log
 from flask import url_for
 
-from .actions import Attack, BorderClash, Fortification, MassAttack
+from .actions import Attack, AttackWithRetreat, BorderClash, Fortification, MassAttack
 from .constants import EXTRA, FILL, PLAYERS, SHARED, SIZE, UNITS, generate_code
 from .enums import Color, State
 from .types import Cell, Player
@@ -83,7 +83,11 @@ class Board:
     def attacks(self) -> Iterator[Attack]:
         for start in self.cells:
             for direction, finish in self.get_neighbors(start):
-                if move := Attack(start, direction, finish):
+                if move := AttackWithRetreat(start, direction, finish):
+                    yield move
+        for start in self.cells:
+            for direction, finish in self.get_neighbors(start):
+                if move := Attack(start, direction, finish):  # type: ignore
                     yield move
                 else:
                     log.debug(f"Skipped non-attack: {move}")
