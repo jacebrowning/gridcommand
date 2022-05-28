@@ -1,7 +1,7 @@
 <div
     id="board"
     {% if player and player.state == State.WAITING %}
-    hx-get="{{ url_for('player', code=game.code, color=player.color.key) }}?partial=true"
+    hx-get="{{ url_for('player', code=game.code, color=player.color.key, round=game.round) }}?partial=true"
     hx-trigger="every 5s"
     hx-target="#board"
     hx-indicator="#spinner"

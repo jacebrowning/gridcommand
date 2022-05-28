@@ -63,9 +63,9 @@ def choose(code: str):
     return render_template("index.html", game=game)
 
 
-@app.get("/game/<code>/player/<color>/")
-def player(code: str, color: str):
-    game = Game(code)
+@app.get("/game/<code>/player/<color>/<int:round>/")
+def player(code: str, color: str, round: int):
+    game = Game(code, round)
     player = game.get_player(color)
     with datafiles.frozen(player):
         if game.round > player.round:
@@ -78,26 +78,26 @@ def player(code: str, color: str):
     return render_template("index.html", game=game, player=player)
 
 
-@app.post("/game/<code>/player/<color>/_plan/")
-def player_plan(code: str, color: str):
-    game = Game(code)
+@app.post("/game/<code>/player/<color>/<int:round>/_plan/")
+def player_plan(code: str, color: str, round: int):
+    game = Game(code, round)
     player = game.get_player(color)
     if "partial" not in request.args:
         player.state = State.PLANNING
     return render_template("board.html", game=game, player=player)
 
 
-@app.post("/game/<code>/player/<color>/_done/")
-def player_done(code: str, color: str):
-    game = Game(code)
+@app.post("/game/<code>/player/<color>/<int:round>/_done/")
+def player_done(code: str, color: str, round: int):
+    game = Game(code, round)
     player = game.get_player(color)
     player.state = State.WAITING
     return render_template("board.html", game=game, player=player)
 
 
-@app.get("/game/<code>/player/<color>/_next")
-def player_next(code: str, color: str):
-    game = Game(code)
+@app.get("/game/<code>/player/<color>/<int:round>/_next")
+def player_next(code: str, color: str, round: int):
+    game = Game(code, round)
     player = game.get_player(color)
     player.state = State.READY
     if player.round == game.round:
@@ -106,16 +106,16 @@ def player_next(code: str, color: str):
     return redirect(url_for("player", code=game.code, color=player.color.key))
 
 
-@app.post("/game/<code>/_cell/<int:row>/<int:col>/")
-def cell(code: str, row: int, col: int):
-    game = Game(code)
+@app.post("/game/<code>/_cell/<int:round>/<int:row>/<int:col>/")
+def cell(code: str, round: int, row: int, col: int):
+    game = Game(code, round)
     cell = game.board[row, col]
     return render_template("cell.html", game=game, cell=cell, editing=True)
 
 
-@app.post("/game/<code>/_cell/<int:row>/<int:col>/<direction>/")
-def move(code: str, row: int, col: int, direction: str):
-    game = Game(code)
+@app.post("/game/<code>/_cell/<int:round>/<int:row>/<int:col>/<direction>/")
+def move(code: str, round: int, row: int, col: int, direction: str):
+    game = Game(code, round)
     cell = game.board[row, col]
     with datafiles.frozen(cell):
         if direction == "center":

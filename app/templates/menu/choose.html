@@ -8,7 +8,7 @@
     {% for player in game.players %}
     <a
         class="btn btn-{{ player.color.value }} {% if player.state.value and game.choosing or player.autoplay %} btn-outline-{{ player.color.value }} disabled {% endif %} ms-1"
-        href="{{ url_for('player', code=game.code, color=player.color.key) }}">
+        href="{{ url_for('player', code=game.code, color=player.color.key, round=game.round) }}">
         {{ player.color.title }}
     </a>
     {% endfor %}

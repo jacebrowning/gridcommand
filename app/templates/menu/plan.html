@@ -1,6 +1,6 @@
 <div
     class="btn-group"
-    hx-post="{{ url_for('player_plan', code=game.code, color=player.color.key) }}?partial=true"
+    hx-post="{{ url_for('player_plan', code=game.code, color=player.color.key, round=game.round) }}?partial=true"
     hx-trigger="{% if game.choosing %}every 5s{% endif %}"
     hx-target="#board"
     hx-indicator="#spinner">
@@ -13,7 +13,7 @@
         type="button"
         class="btn btn-{{ player.color.value }} {% if game.shared and game.choosing %} disabled {% endif %}"
         id="plan"
-        hx-post="{{ url_for('player_plan', code=game.code, color=player.color.key) }}"
+        hx-post="{{ url_for('player_plan', code=game.code, color=player.color.key, round=game.round) }}"
         hx-target="#board"
         hx-indicator="#spinner">
         Plan Moves

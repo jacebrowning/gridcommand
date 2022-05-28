@@ -162,12 +162,12 @@ class Board:
             player.autoplay = True
 
 
-@datafiles.datafile("../data/games/{self.code}.yml", defaults=True)
+@datafiles.datafile("../data/games/{self.code}/{self.round}.yml", defaults=True)
 class Game:
 
     code: str = field(default_factory=generate_code)
-
     round: int = 0
+
     players: list[Player] = field(default_factory=Player.defaults)
     shared: bool = SHARED
     board: Board = Board()
