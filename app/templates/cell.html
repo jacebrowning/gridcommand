@@ -29,6 +29,7 @@
 {% elif editing or (player and cell.moves and cell.color == player.color) %}
 
 <div class="d-flex flex-column justify-content-between" style="height: 100%">
+    <!-- Up -->
     <div class="text-center">
         {% if cell.can_move_up %}
         <button
@@ -40,11 +41,12 @@
             {{ cell.up }}
         </button>
         {% else %}
-        <span class="py-0 px-3"></span>
+        <span class="py-0 px-3">&nbsp;&nbsp;</span>
         {% endif %}
     </div>
 
     <div class="d-flex justify-content-between align-items-center">
+        <!-- Left -->
         {% if cell.can_move_left %}
         <button
             type="button"
@@ -55,17 +57,24 @@
             {{ cell.left }}
         </button>
         {% else %}
-        <span class="py-2 px-1"></span>
+        <span class="py-2 px-1">&nbsp;&nbsp;</span>
         {% endif %}
 
-        <span
-            class="text-{{ cell.color.value }} fs-3"
+        <!-- Center -->
+        {% if editing %}
+        <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary fs-3"
             hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='center') }}"
             hx-target="closest td"
             hx-indicator="#spinner">
             {{ cell.center }}
-        </span>
+        </button>
+        {% else %}
+        <span class="text-{{ cell.color.value }} fs-3">{{ cell.center }}</span>
+        {% endif %}
 
+        <!-- Right -->
         {% if cell.can_move_right %}
         <button
             type="button"
@@ -76,10 +85,11 @@
             {{ cell.right }}
         </button>
         {% else %}
-        <span class="py-2 px-1"></span>
+        <span class="py-2 px-1">&nbsp;&nbsp;</span>
         {% endif %}
     </div>
 
+    <!-- Down  -->
     <div class="text-center">
         {% if cell.can_move_down %}
         <button
@@ -91,7 +101,7 @@
             {{ cell.down }}
         </button>
         {% else %}
-        <span class="py-0 px-3"></span>
+        <span class="py-0 px-3">&nbsp;&nbsp;</span>
         {% endif %}
     </div>
 </div>
