@@ -78,6 +78,7 @@ run: install .envrc
 .envrc:
 	echo "export SIZE=5" >> $@
 	echo "export PLAYERS=2" >> $@
+	echo "export SHARED=false" >> $@
 	- direnv allow
 
 .PHONY: serve

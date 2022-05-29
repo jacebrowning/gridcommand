@@ -247,6 +247,10 @@ class Game:
                     cell.center += 1
 
     def advance(self) -> int:
+        path = self.datafile.path.parent / self.code / f"{self.round}.yml"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(self.datafile.text)
+
         count = self.board.advance()
         self.round += 1
         for player in self.players:

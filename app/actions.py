@@ -4,6 +4,7 @@ from typing import Protocol
 
 import log
 
+from .constants import TESTING
 from .enums import Color
 from .types import Cell
 
@@ -177,6 +178,8 @@ class Attack(Move):
         if self.outgoing:
             if action != "march":
                 log.info(f"Attack won attack: {self.outgoing} persisted")
+            if TESTING:
+                assert not self.finish.moves
             self.finish.color = self.start.color
             self.finish.center = self.outgoing
             setattr(self.start, self.direction, 0)
