@@ -70,7 +70,7 @@ def player(code: str, color: str):
     with datafiles.frozen(player):
         if game.round > player.round:
             player.round = game.round
-            player.state = State.READY
+            player.state = State.READY if game.round == 1 else State.PLANNING
         if player.autoplay:
             player.state = State.WAITING
     if "partial" in request.args:
@@ -99,7 +99,7 @@ def player_done(code: str, color: str):
 def player_next(code: str, color: str):
     game = Game(code)
     player = game.get_player(color)
-    player.state = State.READY
+    player.state = State.PLANNING
     if player.round == game.round:
         with datafiles.frozen(game):
             game.advance()
