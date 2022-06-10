@@ -55,7 +55,7 @@ else
 	poetry run honcho start --procfile tests/Procfile
 endif
 else
-	poetry run pomace exec tests/e2e.py --headless
+	poetry run pomace exec tests/e2e.py
 endif
 
 .PHONY: dev
