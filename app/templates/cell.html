@@ -1,47 +1,47 @@
 {% if player and player.state == State.WAITING %}
 
-<div class="d-flex flex-column justify-content-between" style="height: 100%">
+<div class="d-flex flex-column justify-content-between content">
     <div class="text-center">
-        <span class="text-{{ cell.color.value }} py-0 px-3 fs-5">
-            {{ cell.up or '' }}
+        <span class="text-{{ cell.color.value }} px-2 py-0">
+            {{ cell.up or ' ' }}
         </span>
     </div>
 
     <div class="d-flex justify-content-between align-items-center">
-        <span class="text-{{ cell.color.value }} py-2 px-1 fs-5">
-            {{ cell.left or '' }}
+        <span class="text-{{ cell.color.value }} px-1 py-0">
+            {{ cell.left or ' ' }}
         </span>
 
-        <span class="text-{{ cell.color.value }} fs-1"> {{ cell.center }} </span>
+        <span class="text-{{ cell.color.value }} py-0"> {{ cell.center }} </span>
 
-        <span class="text-{{ cell.color.value }} py-2 px-1 fs-5">
-            {{ cell.right or '' }}
+        <span class="text-{{ cell.color.value }} px-1 py-0">
+            {{ cell.right or ' ' }}
         </span>
     </div>
 
     <div class="text-center">
-        <span class="text-{{ cell.color.value }} py-0 px-3 fs-5">
-            {{ cell.down or '' }}
+        <span class="text-{{ cell.color.value }} px-2 py-0">
+            {{ cell.down or ' ' }}
         </span>
     </div>
 </div>
 
 {% elif editing or (player and cell.moves and cell.color == player.color) %}
 
-<div class="d-flex flex-column justify-content-between" style="height: 100%">
+<div class="d-flex flex-column justify-content-between content">
     <!-- Up -->
     <div class="text-center">
         {% if cell.can_move_up %}
         <button
             type="button"
-            class="btn btn-sm btn-outline-{{ cell.color.value }} py-0 px-3"
+            class="btn btn-sm btn-outline-{{ cell.color.value }} px-2 py-0"
             hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='up') }}"
             hx-target="closest td"
             hx-indicator="#spinner">
             {{ cell.up }}
         </button>
         {% else %}
-        <span class="py-0 px-3">&nbsp;&nbsp;</span>
+        <span class="px-2 py-0">&nbsp;&nbsp;</span>
         {% endif %}
     </div>
 
@@ -50,42 +50,42 @@
         {% if cell.can_move_left %}
         <button
             type="button"
-            class="btn btn-sm btn-outline-{{ cell.color.value }} py-2 px-1"
+            class="btn btn-sm btn-outline-{{ cell.color.value }} px-1 py-0"
             hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='left') }}"
             hx-target="closest td"
             hx-indicator="#spinner">
             {{ cell.left }}
         </button>
         {% else %}
-        <span class="py-2 px-1">&nbsp;&nbsp;</span>
+        <span class="px-1">&nbsp;&nbsp;</span>
         {% endif %}
 
         <!-- Center -->
         {% if editing %}
         <button
             type="button"
-            class="btn btn-sm btn-outline-secondary fs-3"
+            class="btn btn-sm btn-outline-secondary py-0"
             hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='center') }}"
             hx-target="closest td"
             hx-indicator="#spinner">
             {{ cell.center }}
         </button>
         {% else %}
-        <span class="text-{{ cell.color.value }} fs-3">{{ cell.center }}</span>
+        <span class="text-{{ cell.color.value }}">{{ cell.center }}</span>
         {% endif %}
 
         <!-- Right -->
         {% if cell.can_move_right %}
         <button
             type="button"
-            class="btn btn-sm btn-outline-{{ cell.color.value }} py-2 px-1"
+            class="btn btn-sm btn-outline-{{ cell.color.value }} px-1 py-0"
             hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='right') }}"
             hx-target="closest td"
             hx-indicator="#spinner">
             {{ cell.right }}
         </button>
         {% else %}
-        <span class="py-2 px-1">&nbsp;&nbsp;</span>
+        <span class="px-1">&nbsp;&nbsp;</span>
         {% endif %}
     </div>
 
@@ -94,14 +94,14 @@
         {% if cell.can_move_down %}
         <button
             type="button"
-            class="btn btn-sm btn-outline-{{ cell.color.value }} py-0 px-3"
+            class="btn btn-sm btn-outline-{{ cell.color.value }} px-2 py-0"
             hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='down') }}"
             hx-target="closest td"
             hx-indicator="#spinner">
             {{ cell.down }}
         </button>
         {% else %}
-        <span class="py-0 px-3">&nbsp;&nbsp;</span>
+        <span class="px-2 py-0">&nbsp;&nbsp;</span>
         {% endif %}
     </div>
 </div>
@@ -109,27 +109,22 @@
 {% elif player and player.state == State.PLANNING and player.color == cell.color %}
 
 <div
-    class="d-flex justify-content-center align-items-center"
-    style="height: 100%"
+    class="d-flex justify-content-center align-items-center content"
     hx-post="{{ url_for('cell', code=game.code, row=cell.row, col=cell.col) }}"
     hx-target="closest td"
     hx-indicator="#spinner">
     <button
         type="button"
-        class="btn btn-outline-{{ cell.color.value }} fs-1 px-4 d-none d-md-inline">
-        {{ cell.value }}
-    </button>
-    <button
-        type="button"
-        class="btn btn-outline-{{ cell.color.value }} fs-1 px-3 d-sm-inline d-md-none">
+        class="btn btn-outline-{{ cell.color.value }} fs-2"
+        style="width: 75%; height: 75%">
         {{ cell.value }}
     </button>
 </div>
 
 {% else %}
 
-<div class="d-flex justify-content-center align-items-center" style="height: 100%">
-    <span class="text-{{ cell.color.value }} fs-1">{{ cell.value }}</span>
+<div class="d-flex justify-content-center align-items-center content">
+    <span class="text-{{ cell.color.value }} fs-2">{{ cell.value }}</span>
 </div>
 
 {% endif %}
