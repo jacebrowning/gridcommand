@@ -45,6 +45,10 @@ class Board:
         return int(math.sqrt(len(self.cells)))
 
     @property
+    def width(self) -> str:
+        return f"{100 / self.size}%"
+
+    @property
     def tactical_moves(self) -> Iterator[Fortification]:
         for start in self.cells:
             for direction, finish in self.get_neighbors(start):
