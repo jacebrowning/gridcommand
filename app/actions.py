@@ -246,5 +246,3 @@ class MassAttack(Performable):
         for move in self.moves:
             if not move.start.value:
                 move.start.color = Color.NONE
-
-        log.c(f"{self.finish=} / {self.finish.down=}")
