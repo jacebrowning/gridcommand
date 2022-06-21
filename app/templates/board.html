@@ -1,4 +1,4 @@
-<div
+<div style="max-width: 80vh"
     id="board"
     {% if player and player.state == State.WAITING %}
     hx-get="{{ url_for('player', code=game.code, color=player.color.key) }}?partial=true"
@@ -58,7 +58,4 @@
         }
     </style>
 
-
 </div>
-
-
