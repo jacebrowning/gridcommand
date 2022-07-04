@@ -61,7 +61,6 @@
         {% endif %}
 
         <!-- Center -->
-        {% if editing %}
         <button
             type="button"
             class="btn btn-sm btn-outline-secondary py-0"
@@ -70,9 +69,6 @@
             hx-indicator="#spinner">
             {{ cell.center }}
         </button>
-        {% else %}
-        <span class="text-{{ cell.color.value }}">{{ cell.center }}</span>
-        {% endif %}
 
         <!-- Right -->
         {% if cell.can_move_right %}
