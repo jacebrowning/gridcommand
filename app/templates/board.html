@@ -9,6 +9,10 @@
 
     {% include 'menu.html' %}
 
+    {% if player %}
+    <div class="border border-3 border-{{ player.color.value }} rounded-top"></div>
+    {% endif %}
+
     <table class="table table-bordered border-dark">
         <tbody>
             {% for row in game.board %}

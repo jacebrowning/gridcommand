@@ -11,7 +11,7 @@
     {% endif %}
     <button
         type="button"
-        class="btn btn-{{ player.color.value }} {% if game.shared and game.choosing %} disabled {% endif %}"
+        class="btn btn-dark {% if game.shared and game.choosing %} disabled {% endif %}"
         id="plan"
         hx-post="{{ url_for('player_plan', code=game.code, color=player.color.key) }}"
         hx-target="#board"
