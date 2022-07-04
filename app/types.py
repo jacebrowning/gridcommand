@@ -105,3 +105,19 @@ class Cell:
     @property
     def moves(self) -> bool:
         return any((self.up, self.down, self.left, self.right))
+
+    @property
+    def up_arrow(self) -> str:
+        return f"{self.up} ⇧" if self.up else "&nbsp;&nbsp;&nbsp;"
+
+    @property
+    def down_arrow(self) -> str:
+        return f"{self.down} ⇩" if self.down else "&nbsp;&nbsp;&nbsp;"
+
+    @property
+    def left_arrow(self) -> str:
+        return f"{self.left}<br>⇦" if self.left else "&nbsp;&nbsp;&nbsp;"
+
+    @property
+    def right_arrow(self) -> str:
+        return f"{self.right}<br>⇨" if self.right else "&nbsp;&nbsp;&nbsp;"
