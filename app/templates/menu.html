@@ -21,7 +21,7 @@
 
     <!-- Phase 3 -->
 
-    {% if player.state == State.PLANNING %}
+    {% if game.over %} {% elif player.state == State.PLANNING %}
 
     <!-- Phase 3.2 -->
 
@@ -29,7 +29,7 @@
 
     <!-- Phase 3.3 -->
 
-    {% include "menu/next.html" %} {% elif not game.over %}
+    {% include "menu/next.html" %} {% else %}
 
     <!-- Phase 3.1 -->
 

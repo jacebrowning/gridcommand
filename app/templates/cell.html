@@ -1,4 +1,4 @@
-{% if player and player.state == State.WAITING %}
+{% if player and player.state == State.WAITING or game.over %}
 
 <div class="d-flex flex-column justify-content-between content">
     <div class="text-center">

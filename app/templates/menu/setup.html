@@ -35,6 +35,15 @@
     <span class="fs-4 me-2 text-end">Players:</span>
     <div class="btn-group">
         <button
+            id="one-player"
+            class="btn btn-outline-secondary {% if game.humans|length == 1 %} active {% endif %}"
+            hx-post="{{ url_for('randomize', code=game.code) }}"
+            hx-vals='{ "players": 1 }'
+            hx-target="#board"
+            hx-indicator="#spinner">
+            1
+        </button>
+        <button
             id="two-players"
             class="btn btn-outline-secondary {% if game.humans|length == 2 %} active {% endif %}"
             hx-post="{{ url_for('randomize', code=game.code) }}"

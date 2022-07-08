@@ -3,7 +3,7 @@ import random
 import sys
 
 SIZE = int(os.getenv("SIZE", "4"))  # 3 to 5
-PLAYERS = int(os.getenv("PLAYERS", "2"))  # 2 to 4 (or 1 to autoplay)
+PLAYERS = int(os.getenv("PLAYERS", "2"))  # 1 to 4
 SHARED = os.getenv("SHARED") == "true"
 
 FILL = 2 / 3  # 0.1 to 1.0
