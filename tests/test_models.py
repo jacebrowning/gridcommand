@@ -21,6 +21,11 @@ def game():
     return g
 
 
+def test_humans(game):
+    expect(len(game.players)) == 4
+    expect(len(game.humans)) == 1
+
+
 def test_fortify(game):
     game.advance()
     expect(game.board.cells) == [

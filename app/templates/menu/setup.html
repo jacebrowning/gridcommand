@@ -36,7 +36,7 @@
     <div class="btn-group">
         <button
             id="two-players"
-            class="btn btn-outline-secondary {% if game.players|length == 2 %} active {% endif %}"
+            class="btn btn-outline-secondary {% if game.humans|length == 2 %} active {% endif %}"
             hx-post="{{ url_for('randomize', code=game.code) }}"
             hx-vals='{ "players": 2 }'
             hx-target="#board"
@@ -45,7 +45,7 @@
         </button>
         <button
             id="three-players"
-            class="btn btn-outline-secondary {% if game.players|length == 3 %} active {% endif %}"
+            class="btn btn-outline-secondary {% if game.humans|length == 3 %} active {% endif %}"
             hx-post="{{ url_for('randomize', code=game.code) }}"
             hx-vals='{ "players": 3 }'
             hx-target="#board"
@@ -54,7 +54,7 @@
         </button>
         <button
             id="four-players"
-            class="btn btn-outline-secondary {% if game.players|length == 4 %} active {% endif %}"
+            class="btn btn-outline-secondary {% if game.humans|length == 4 %} active {% endif %}"
             hx-post="{{ url_for('randomize', code=game.code) }}"
             hx-vals='{ "players": 4 }'
             hx-target="#board"
