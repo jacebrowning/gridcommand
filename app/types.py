@@ -14,12 +14,12 @@ class Player:
     autoplay: bool = False
 
     @classmethod
-    def defaults(cls) -> list["Player"]:
+    def defaults(cls, count: int = 4) -> list["Player"]:
         return [
             cls(Color.BLUE),
-            cls(Color.RED),
-            cls(Color.GREEN),
-            cls(Color.YELLOW),
+            cls(Color.RED, autoplay=count <= 1),
+            cls(Color.GREEN, autoplay=count <= 2),
+            cls(Color.YELLOW, autoplay=count <= 3),
         ]
 
     def __post_init__(self):

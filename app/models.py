@@ -180,6 +180,10 @@ class Game:
     def url(self) -> str:
         return url_for("setup", code=self.code, _external=True)
 
+    @property
+    def humans(self) -> list[Player]:
+        return [player for player in self.players if not player.autoplay]
+
     @cached_property
     def choosing(self) -> int:
         return sum(1 for p in self.players if p.state is State.UNKNOWN)
@@ -220,15 +224,10 @@ class Game:
         return ""
 
     def initialize(self, size: int = SIZE, players: int = PLAYERS):
-        self.players = Player.defaults()
-        if players == 1:
-            self.players = self.players[:2]
-            self.players[-1].autoplay = True
-        else:
-            self.players = self.players[:players]
+        self.players = Player.defaults(players)
 
-        units: dict[Color, int] = {player.color: UNITS for player in self.players}
-        cells: dict[Color, list[Cell]] = {player.color: [] for player in self.players}
+        units: dict[Color, int] = {player.color: UNITS for player in self.humans}
+        cells: dict[Color, list[Cell]] = {player.color: [] for player in self.humans}
 
         with datafiles.frozen(self):
             self.board.reset(size)
@@ -236,7 +235,7 @@ class Game:
 
             for cell in self.board.cells:
                 if cell.color is Color.NONE and random.random() < FILL:
-                    player = random.choice(self.players)
+                    player = random.choice(self.humans)
                     cell.color = player.color
                     cell.center = 1
                     units[player.color] -= 1
