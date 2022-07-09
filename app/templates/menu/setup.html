@@ -81,6 +81,8 @@
     hx-indicator="#spinner">
     {% if game.shared %}
     <input class="form-check-input" type="checkbox" value="" id="shared" checked />
+    {% elif game.humans|length == 1 %}
+    <input class="form-check-input" type="checkbox" value="" id="shared" disabled />
     {% else %}
     <input class="form-check-input" type="checkbox" value="" id="shared" />
     {% endif %}

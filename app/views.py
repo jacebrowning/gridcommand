@@ -47,6 +47,8 @@ def randomize(code: str):
     assert game.round == 0
     size = int(request.form.get("size", game.board.size))
     players = int(request.form.get("players", len(game.humans)))
+    if players == 1:
+        game.shared = False
     if "shared" in request.form:
         game.shared = request.form["shared"] == "1"
     else:
