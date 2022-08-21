@@ -710,7 +710,7 @@ dev = ["tox", "pre-commit"]
 
 [[package]]
 name = "pomace"
-version = "0.11.5"
+version = "0.11.6"
 description = "Dynamic page objects for browser automation."
 category = "dev"
 optional = false
@@ -1274,7 +1274,7 @@ docs = ["rst.linker (>=1.9)", "jaraco.packaging (>=9)", "sphinx"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "aaafdc45e73b699879cce06c0d5e5fb2720bb1f68dbce96c0685d0d6876ef269"
+content-hash = "e73a601068ead2133a7d8cef14137563dae0f6268ac65338e946df0a2f6a82d2"
 
 [metadata.files]
 appnope = [
@@ -1757,8 +1757,8 @@ pluggy = [
     {file = "pluggy-1.0.0.tar.gz", hash = "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159"},
 ]
 pomace = [
-    {file = "pomace-0.11.5-py3-none-any.whl", hash = "sha256:f7f92ade539ed729bf118130068a90451870d441702e0ed10b451475d5712af5"},
-    {file = "pomace-0.11.5.tar.gz", hash = "sha256:4ad3fd210e257c6cdab5a970d0809f0581ca15171c5a24546df768dc278599b0"},
+    {file = "pomace-0.11.6-py3-none-any.whl", hash = "sha256:2d96665d2bb9b36e020c589f9b61bf030c4d3aa9fb9eefe2eee406347f4216cd"},
+    {file = "pomace-0.11.6.tar.gz", hash = "sha256:f8f62e810b4916d32e2297e58ae5ef6b0729104eca7da9d8a30ffcb51027d7fb"},
 ]
 prompt-toolkit = [
     {file = "prompt_toolkit-3.0.29-py3-none-any.whl", hash = "sha256:62291dad495e665fca0bda814e342c69952086afb0f4094d0893d357e5c78752"},
