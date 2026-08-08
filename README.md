@@ -10,7 +10,7 @@ Up to four colors share a board. You and your opponents plan moves at the same t
 2. **Pick a color** and claim your starting position.
 3. **Plan** by sending units from each cell toward neighboring cells — reinforce allies, march into empty ground, or strike an enemy.
 4. When everyone is ready, **reveal** the moves, then step through:
-   - **Apply Results** — clashes and captures resolve
+   - **See Results** — clashes and captures resolve
    - **Show Reinforcements** — pending units appear on the grid (`+N` on the strongest cells); about one per three territories held (at least one)
    - **Apply Reinforcements** — those units are placed on their strongest cells first
    - **Start Next Round** — plan again

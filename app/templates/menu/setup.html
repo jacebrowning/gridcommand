@@ -90,6 +90,7 @@
         </div>
     </div>
 
+    {% if game.humans|length > 1 %}
     <div
         class="form-check m-0"
         hx-post="{{ url_for('randomize', code=game.code) }}"
@@ -98,16 +99,16 @@
         hx-indicator="#spinner">
         {% if game.shared %}
         <input class="form-check-input" type="checkbox" value="" id="shared" checked />
-        {% elif game.humans|length == 1 %}
-        <input class="form-check-input" type="checkbox" value="" id="shared" disabled />
         {% else %}
         <input class="form-check-input" type="checkbox" value="" id="shared" />
         {% endif %}
         <label class="form-check-label" for="shared">Shared device</label>
     </div>
+    {% endif %}
 </div>
 
-<div class="btn-group">
+<div class="d-inline-flex gap-2">
+    {% if game.fill %}
     <button
         type="button"
         class="btn btn-outline-secondary"
@@ -116,6 +117,7 @@
         hx-indicator="#spinner">
         🔀 <span class="d-none d-sm-inline">New Board</span>
     </button>
+    {% endif %}
     <a class="btn btn-dark" href="{{ url_for('choose', code=game.code) }}">
         Start Game
     </a>

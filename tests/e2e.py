@@ -8,6 +8,7 @@ pomace.log.info("Creating game")
 page = page.click_new_game()
 page.click_two_players(wait=WAIT)
 page.click_shared_device(wait=WAIT)
+page.click_random_distribution(wait=WAIT)
 page = page.click_new_board(wait=WAIT)
 assert "Start Game" in page
 
@@ -23,7 +24,7 @@ assert "Round 1-1" in page
 
 pomace.log.info("Planning red moves")
 page = page.click_plan_moves(wait=WAIT)
-assert "Done Planning" in page
+assert "Submit Moves" in page
 page = page.click_done_planning(wait=WAIT)
 assert "Waiting" in page
 
@@ -34,7 +35,7 @@ assert "Blue" in page
 pomace.log.info("Planning blue moves")
 page = page.click_blue(wait=WAIT)
 page = page.click_plan_moves(wait=WAIT)
-assert "Done Planning" in page
+assert "Submit Moves" in page
 page = page.click_done_planning(wait=WAIT)
 
 pomace.log.info("Waiting for others")
@@ -44,7 +45,7 @@ for _ in range(10):
         break
 else:
     raise AssertionError("Timed out waiting for others")
-assert "Apply Results" in page
+assert "See Results" in page
 
 pomace.log.info("Applying results")
 page = page.click_next_round(wait=WAIT)

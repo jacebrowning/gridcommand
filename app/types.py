@@ -30,6 +30,10 @@ class Player:
     def __str__(self):
         return self.color.key
 
+    @property
+    def icon(self) -> str:
+        return "🤖" if self.autoplay else "👤"
+
 
 @dataclass(order=True)
 class Cell:
@@ -107,6 +111,16 @@ class Cell:
     @property
     def moves(self) -> bool:
         return any((self.up, self.down, self.left, self.right))
+
+    @property
+    def corner(self) -> str:
+        last = self.size - 1
+        return {
+            (0, 0): "top-0 start-0",
+            (0, last): "top-0 end-0",
+            (last, 0): "bottom-0 start-0",
+            (last, last): "bottom-0 end-0",
+        }.get((self.row, self.col), "")
 
     @property
     def up_arrow(self) -> str:

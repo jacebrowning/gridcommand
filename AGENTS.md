@@ -16,11 +16,23 @@ Implementation: Flask app with YAML game state via [datafiles](https://github.co
 | `make run` | Dev server with livereload on http://127.0.0.1:5000 |
 | `make serve` | Gunicorn (production-style) |
 
+When starting the web server, always `source .envrc` first (sets `SIZE`, `PLAYERS`, `SHARED`):
+
+```bash
+source .envrc && make run
+```
+
 After changing `pyproject.toml` constraints, run `poetry lock` (or `poetry update`) yourself. `make install` uses `poetry lock --no-update` locally and will not bump versions.
 
 ## Validation
 
-After any code change, run the full suite (server must already be up locally):
+For small changes (copy, spacing, docs, isolated helpers with unit coverage), skip e2e:
+
+```bash
+make check && make test-unit
+```
+
+For gameplay, routes, templates that affect flows, or anything that could break the pomace path, run the full suite (server must already be up locally):
 
 ```bash
 make all HEADLESS=true
@@ -32,14 +44,14 @@ Agents always pass `HEADLESS=true`. Humans can omit it to watch the browser.
 
 - Unit tests: `tests/test_*.py` — no server required.
 - E2e: `tests/e2e.py` via pomace/Firefox against `http://localhost:5000` (`WAIT = 0`).
-  - Locally, start the app first (`make run` in another terminal), then `make all` (headed) or `make all HEADLESS=true`.
+  - Locally, start the app first (`source .envrc && make run` in another terminal), then `make all` (headed) or `make all HEADLESS=true`.
   - In CI, `honcho` starts web + e2e from `tests/Procfile` (headless).
 
 ## Layout
 
 - `app/models.py` — `Board` / `Game` (persisted under `data/games/`)
 - `app/autoplay.py` — non-human player AI (random move planning)
-- Turn resolve is four steps: **Apply Results** (tactical + combat), **Show Reinforcements**, **Apply Reinforcements**, then **Start Next Round**
+- Turn resolve is four steps: **See Results** (tactical + combat), **Show Reinforcements**, **Apply Reinforcements**, then **Start Next Round**
 - `app/actions.py` — simultaneous-move resolution (`Attack`, `MassAttack`, etc.)
 - `app/views.py` — Flask routes
 - `app/types.py`, `app/enums.py`, `app/constants.py` — shared types and config

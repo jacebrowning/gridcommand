@@ -122,6 +122,11 @@
 {% else %}
 
 <div class="d-flex justify-content-center align-items-center content">
+    {% if game.round == 0 and cell.corner %}
+    <span class="position-absolute {{ cell.corner }} m-2 fs-4 lh-1">
+        {{ game.get_player(cell.color.key).icon }}
+    </span>
+    {% endif %}
     <span class="text-{{ cell.color.value }} fs-2">
         {{ cell.value }}{% if cell.extra %}<sup class="reinforcement">+{{ cell.extra }}</sup>{% endif %}
     </span>

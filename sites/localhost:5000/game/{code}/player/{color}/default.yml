@@ -23,7 +23,7 @@ actions:
       - mode: text
         value: Switch Player
         index: 0
-        uses: 2
+        uses: 1
   - verb: click
     name: plan_movies
     locators:

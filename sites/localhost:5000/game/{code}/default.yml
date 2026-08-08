@@ -18,6 +18,13 @@ actions:
         index: 0
         uses: 0
   - verb: click
+    name: random_distribution
+    locators:
+      - mode: text
+        value: Random distribution
+        index: 0
+        uses: 2
+  - verb: click
     name: new_board
     locators:
       - mode: text
