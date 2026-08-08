@@ -280,6 +280,57 @@
                     background: rgba(255, 255, 255, 0.06);
                 }
 
+                .gc-shift {
+                    @apply grid h-full w-full grid-cols-3 grid-rows-3 gap-0.5 p-1;
+                }
+
+                .gc-shift-send {
+                    @apply flex flex-col items-center justify-center gap-0 rounded
+                        font-display text-xs font-semibold tabular-nums leading-none
+                        transition active:scale-95 sm:text-sm;
+                    border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+                    background: color-mix(in srgb, currentColor 10%, transparent);
+                    color: inherit;
+                }
+
+                .gc-shift-send:hover {
+                    background: color-mix(in srgb, currentColor 22%, transparent);
+                }
+
+                .gc-shift-send.is-active {
+                    background: color-mix(in srgb, currentColor 28%, transparent);
+                    box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 50%, transparent);
+                }
+
+                .gc-shift-send:disabled {
+                    @apply pointer-events-none opacity-25;
+                }
+
+                .gc-shift-send .gc-icon {
+                    @apply h-3.5 w-3.5 sm:h-4 sm:w-4;
+                }
+
+                .gc-shift-stay {
+                    @apply flex flex-col items-center justify-center gap-0.5 rounded
+                        font-display font-semibold tabular-nums text-neutral-100
+                        transition hover:bg-white/10 active:scale-95;
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    background: rgba(255, 255, 255, 0.06);
+                }
+
+                .gc-shift-stay-label {
+                    @apply text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-neutral-500 sm:text-xs;
+                }
+
+                .gc-shift-arrow {
+                    @apply flex items-center justify-center gap-0.5 font-display text-sm
+                        font-semibold tabular-nums leading-none sm:text-base;
+                }
+
+                .gc-shift-arrow .gc-icon {
+                    @apply h-3.5 w-3.5 sm:h-4 sm:w-4 opacity-80;
+                }
+
                 .htmx-indicator {
                     @apply opacity-0 transition-opacity;
                 }
@@ -294,7 +345,23 @@
                 }
 
                 .reinforcement {
-                    @apply ml-0.5 font-display text-[0.65em] font-bold text-neutral-300;
+                    @apply inline-flex items-center rounded px-1.5 py-0.5
+                        font-display text-sm font-bold leading-none text-ink-950;
+                    background: #e8e8ed;
+                }
+
+                .gc-cell-reinforce {
+                    background: color-mix(in srgb, currentColor 14%, transparent);
+                    box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 35%, transparent);
+                }
+
+                @keyframes gc-reinforce-pulse {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.06); }
+                }
+
+                .gc-cell-reinforce .reinforcement {
+                    animation: gc-reinforce-pulse 1.6s ease-in-out infinite;
                 }
 
                 @keyframes gc-fade-up {

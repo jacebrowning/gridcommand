@@ -132,22 +132,30 @@ def player_next(code: str, color: str):
 def cell(code: str, row: int, col: int):
     game = Game(code)
     cell = game.board[row, col]
-    return render_template("cell.html", game=game, cell=cell, editing=True)
+    player = game.get_player(cell.color.key)
+    return render_template(
+        "cell.html", game=game, cell=cell, player=player, editing=True
+    )
 
 
 @app.post("/game/<code>/_cell/<int:row>/<int:col>/<direction>/")
 def move(code: str, row: int, col: int, direction: str):
     game = Game(code)
     cell = game.board[row, col]
+    player = game.get_player(cell.color.key)
     with datafiles.frozen(cell):
         if direction == "center":
+            if not cell.moves:
+                return render_template("cell.html", game=game, cell=cell, player=player)
             cell.center = cell.center + cell.up + cell.down + cell.left + cell.right
             cell.up = cell.down = cell.left = cell.right = 0
         elif cell.center:
             cell.center -= 1
             value = getattr(cell, direction)
             setattr(cell, direction, value + 1)
-    return render_template("cell.html", game=game, cell=cell, editing=True)
+    return render_template(
+        "cell.html", game=game, cell=cell, player=player, editing=True
+    )
 
 
 if __name__ == "__main__":

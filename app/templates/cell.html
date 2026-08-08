@@ -1,112 +1,147 @@
-{% if player and player.state == State.WAITING or game.over %}
+{% from "icons.html" import chevron %}
 
-<div class="content flex flex-col justify-between p-1 text-{{ cell.color.value }}">
-    <div class="text-center text-xs sm:text-sm">
-        {{ cell.up_arrow|safe }}
+{% if (player and player.state == State.WAITING or game.over) and cell.moves and not game.phase %}
+
+<div class="content gc-shift text-{{ cell.color.value }}">
+    <div></div>
+    <div class="gc-shift-arrow {% if not cell.up %}opacity-20{% endif %}">
+        {% if cell.up %}{{ chevron('up') }}{{ cell.up }}{% endif %}
     </div>
+    <div></div>
 
-    <div class="flex items-center justify-between text-xs sm:text-sm">
-        <span class="px-1">{{ cell.left_arrow|safe }}</span>
-        <span class="font-display text-base font-semibold tabular-nums sm:text-lg">
-            {{ cell.center }}{% if cell.extra %}<sup class="reinforcement">+{{ cell.extra }}</sup>{% endif %}
+    <div class="gc-shift-arrow {% if not cell.left %}opacity-20{% endif %}">
+        {% if cell.left %}{{ chevron('left') }}{{ cell.left }}{% endif %}
+    </div>
+    <div class="flex flex-col items-center justify-center">
+        <span class="font-display text-xl font-semibold tabular-nums sm:text-2xl">
+            {{ cell.center }}
         </span>
-        <span class="px-1">{{ cell.right_arrow|safe }}</span>
+    </div>
+    <div class="gc-shift-arrow {% if not cell.right %}opacity-20{% endif %}">
+        {% if cell.right %}{{ cell.right }}{{ chevron('right') }}{% endif %}
     </div>
 
-    <div class="text-center text-xs sm:text-sm">
-        {{ cell.down_arrow|safe }}
+    <div></div>
+    <div class="gc-shift-arrow {% if not cell.down %}opacity-20{% endif %}">
+        {% if cell.down %}{{ chevron('down') }}{{ cell.down }}{% endif %}
     </div>
+    <div></div>
+</div>
+
+{% elif player and player.state == State.WAITING or game.over %}
+
+<div class="content relative flex items-center justify-center gap-2 text-{{ cell.color.value }} {% if cell.extra %}gc-cell-reinforce{% endif %}">
+    <span class="font-display text-2xl font-semibold tabular-nums sm:text-3xl">
+        {{ cell.value }}
+    </span>
+    {% if cell.extra %}
+    <span class="reinforcement !align-middle">+{{ cell.extra }}</span>
+    {% endif %}
 </div>
 
 {% elif editing or (player and cell.moves and cell.color == player.color) %}
 
-<div class="content gc-cell-owned flex flex-col justify-between p-1 text-{{ cell.color.value }}">
-    <div class="text-center">
-        {% if cell.can_move_up %}
-        <button
-            type="button"
-            class="gc-dir"
-            hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='up') }}"
-            hx-target="closest td"
-            hx-indicator="#spinner">
-            {{ cell.up }}
-        </button>
-        {% else %}
-        <span class="inline-block min-w-[1.5rem]">&nbsp;</span>
-        {% endif %}
-    </div>
+<div class="content gc-cell-owned gc-shift text-{{ cell.color.value }}">
+    <div></div>
+    {% if cell.can_move_up %}
+    <button
+        type="button"
+        class="gc-shift-send {% if cell.up %}is-active{% endif %}"
+        title="Send 1 unit up"
+        {% if not cell.center %}disabled{% endif %}
+        hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='up') }}"
+        hx-target="closest td"
+        hx-indicator="#spinner">
+        {{ chevron('up') }}
+        <span>{{ cell.up }}</span>
+    </button>
+    {% else %}
+    <div></div>
+    {% endif %}
+    <div></div>
 
-    <div class="flex items-center justify-between gap-0.5">
-        {% if cell.can_move_left %}
-        <button
-            type="button"
-            class="gc-dir"
-            hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='left') }}"
-            hx-target="closest td"
-            hx-indicator="#spinner">
-            {{ cell.left }}
-        </button>
-        {% else %}
-        <span class="inline-block min-w-[1.5rem]">&nbsp;</span>
-        {% endif %}
+    {% if cell.can_move_left %}
+    <button
+        type="button"
+        class="gc-shift-send {% if cell.left %}is-active{% endif %}"
+        title="Send 1 unit left"
+        {% if not cell.center %}disabled{% endif %}
+        hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='left') }}"
+        hx-target="closest td"
+        hx-indicator="#spinner">
+        {{ chevron('left') }}
+        <span>{{ cell.left }}</span>
+    </button>
+    {% else %}
+    <div></div>
+    {% endif %}
 
-        <button
-            type="button"
-            class="gc-dir gc-dir-center"
-            hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='center') }}"
-            hx-target="closest td"
-            hx-indicator="#spinner">
-            {{ cell.center }}
-        </button>
+    <button
+        type="button"
+        class="gc-shift-stay"
+        title="Recall sent units, or cancel if none"
+        hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='center') }}"
+        hx-target="closest td"
+        hx-indicator="#spinner">
+        <span class="gc-shift-stay-label">Stay</span>
+        <span class="text-xl tabular-nums sm:text-2xl">{{ cell.center }}</span>
+    </button>
 
-        {% if cell.can_move_right %}
-        <button
-            type="button"
-            class="gc-dir"
-            hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='right') }}"
-            hx-target="closest td"
-            hx-indicator="#spinner">
-            {{ cell.right }}
-        </button>
-        {% else %}
-        <span class="inline-block min-w-[1.5rem]">&nbsp;</span>
-        {% endif %}
-    </div>
+    {% if cell.can_move_right %}
+    <button
+        type="button"
+        class="gc-shift-send {% if cell.right %}is-active{% endif %}"
+        title="Send 1 unit right"
+        {% if not cell.center %}disabled{% endif %}
+        hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='right') }}"
+        hx-target="closest td"
+        hx-indicator="#spinner">
+        <span>{{ cell.right }}</span>
+        {{ chevron('right') }}
+    </button>
+    {% else %}
+    <div></div>
+    {% endif %}
 
-    <div class="text-center">
-        {% if cell.can_move_down %}
-        <button
-            type="button"
-            class="gc-dir"
-            hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='down') }}"
-            hx-target="closest td"
-            hx-indicator="#spinner">
-            {{ cell.down }}
-        </button>
-        {% else %}
-        <span class="inline-block min-w-[1.5rem]">&nbsp;</span>
-        {% endif %}
-    </div>
+    <div></div>
+    {% if cell.can_move_down %}
+    <button
+        type="button"
+        class="gc-shift-send {% if cell.down %}is-active{% endif %}"
+        title="Send 1 unit down"
+        {% if not cell.center %}disabled{% endif %}
+        hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='down') }}"
+        hx-target="closest td"
+        hx-indicator="#spinner">
+        <span>{{ cell.down }}</span>
+        {{ chevron('down') }}
+    </button>
+    {% else %}
+    <div></div>
+    {% endif %}
+    <div></div>
 </div>
 
 {% elif player and player.state == State.PLANNING and player.color == cell.color %}
 
 <div
-    class="content gc-cell-owned flex items-center justify-center p-2 text-{{ cell.color.value }}"
+    class="content gc-cell-owned flex flex-col items-center justify-center gap-1 p-2 text-{{ cell.color.value }}"
     hx-post="{{ url_for('cell', code=game.code, row=cell.row, col=cell.col) }}"
     hx-target="closest td"
     hx-indicator="#spinner">
     <button
         type="button"
-        class="gc-cell-btn font-display text-xl sm:text-2xl"
-        style="width: 75%; height: 75%">
+        class="gc-cell-btn font-display text-2xl sm:text-3xl"
+        style="width: 75%; height: 65%"
+        title="Plan moves from this cell">
         {{ cell.value }}
     </button>
+    <span class="gc-shift-stay-label text-current/70">Send</span>
 </div>
 
 {% else %}
 
-<div class="content relative flex items-center justify-center">
+<div class="content relative flex items-center justify-center {% if cell.extra %}gc-cell-reinforce text-{{ cell.color.value }}{% endif %}">
     {% if game.round == 0 and cell.corner %}
     {% set seat = game.get_player(cell.color.key) %}
     <span
@@ -115,8 +150,11 @@
         <span class="gc-seat text-{{ cell.color.value }} {% if seat.autoplay %}gc-seat-ai{% endif %}"></span>
     </span>
     {% endif %}
-    <span class="text-{{ cell.color.value }} font-display text-xl font-semibold tabular-nums sm:text-2xl">
-        {{ cell.value }}{% if cell.extra %}<sup class="reinforcement">+{{ cell.extra }}</sup>{% endif %}
+    <span class="text-{{ cell.color.value }} flex items-center gap-2 font-display text-2xl font-semibold tabular-nums sm:text-3xl">
+        <span>{{ cell.value }}</span>
+        {% if cell.extra %}
+        <span class="reinforcement !align-middle text-[0.55em]">+{{ cell.extra }}</span>
+        {% endif %}
     </span>
 </div>
 
