@@ -89,7 +89,7 @@ ifndef CI
 	poetry install --no-dev
 endif
 ifndef PYTHONANYWHERE_DOMAIN
-	poetry run gunicorn --workers 4 --bind 0.0.0.0:5000 app.views:app
+	poetry run gunicorn --workers 4 --bind 0.0.0.0:$${PORT:-5000} app.views:app
 endif
 
 # CLEAN
