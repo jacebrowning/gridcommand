@@ -21,7 +21,6 @@ page = page.click_blue(wait=WAIT)
 page = page.click_switch_player(wait=WAIT)
 page = page.click_red(wait=WAIT)
 assert "Round 1" in page
-assert "Step 1" in page
 
 pomace.log.info("Planning red moves")
 page = page.click_plan_moves(wait=WAIT)
@@ -51,25 +50,21 @@ assert "See Results" in page
 pomace.log.info("Applying results")
 page = page.click_next_round(wait=WAIT)
 assert "Round 1" in page
-assert "Step 2" in page
 assert "Show Reinforcements" in page
 
 pomace.log.info("Showing reinforcements")
 page = page.click_next_round(wait=WAIT)
 assert "Round 1" in page
-assert "Step 3" in page
 assert "+1" in page
 assert "Apply Reinforcements" in page
 
 pomace.log.info("Applying reinforcements")
 page = page.click_next_round(wait=WAIT)
 assert "Round 1" in page
-assert "Step 4" in page
 assert "Start Next Round" in page
 
 pomace.log.info("Starting next round")
 page = page.click_next_round(wait=WAIT)
 assert "Round 2" in page
-assert "Step 1" in page
 
 print("\n🎉\n")

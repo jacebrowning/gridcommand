@@ -16,7 +16,7 @@
     {% endif %}
     <button
         type="button"
-        class="gc-btn-primary {% if game.shared and game.choosing %} disabled {% endif %}"
+        class="gc-btn-primary shrink-0 whitespace-nowrap {% if game.shared and game.choosing %} disabled {% endif %}"
         id="plan"
         hx-post="{{ url_for('player_plan', code=game.code, color=player.color.key) }}"
         hx-target="#board"

@@ -77,7 +77,7 @@ run: install .envrc
 	done; \
 
 .envrc:
-	echo "export SIZE=5" >> $@
+	echo "export SIZE=4" >> $@
 	echo "export PLAYERS=1" >> $@
 	echo "export SHARED=false" >> $@
 	- direnv allow

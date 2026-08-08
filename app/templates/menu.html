@@ -29,32 +29,20 @@
     {% include "menu/choose.html" %}
 </nav>
 {% else %}
-<nav class="gc-hud border-l-4 border-{{ player.color.value }}" aria-label="Round controls">
-    <div class="gc-hud-row gap-x-6">
-        <div class="flex shrink-0 items-center gap-2.5">
+{% from "icons.html" import person %}
+<nav
+    class="gc-hud border-{{ player.color.value }}"
+    aria-label="Round controls">
+    <div class="flex items-center gap-2">
+        <div class="flex shrink-0 items-center">
             <span class="gc-player-chip text-{{ player.color.value }}">
-                <span class="gc-seat"></span>
+                {{ person() }}
                 {{ player.color.title }}
             </span>
-            <p class="gc-label whitespace-nowrap">
-                Round {{ game.round }}
-                <span class="text-neutral-600">·</span>
-                Step {{ game.step }}
-            </p>
         </div>
 
-        <p class="min-w-0 flex-1 text-center font-display text-lg font-semibold tracking-wide text-neutral-100 sm:text-xl">
-            {% if game.over %}
-            Game Over
-            {% elif game.phase == "results" %}
-            Results
-            {% elif game.phase == "reinforcements" %}
-            Reinforcements
-            {% elif game.phase == "reinforce" %}
-            Next Round
-            {% else %}
-            {{ player.state.title }}
-            {% endif %}
+        <p class="gc-label min-w-0 flex-1 truncate text-center whitespace-nowrap">
+            Round {{ game.round }}
         </p>
 
         <div class="flex shrink-0 flex-wrap items-center justify-end gap-2">

@@ -26,12 +26,8 @@
     </div>
 
     <div class="mt-3 flex min-h-[1.25rem] items-center justify-between gap-3">
-        <p class="text-sm text-neutral-500">
-            {% if player and player.state == State.PLANNING and not game.message %}
-            Tap your cell, then send units to neighbors. Stay recalls them.
-            {% elif game.message %}
-            {{ game.message }}
-            {% endif %}
+        <p class="min-w-0 flex-1 text-sm text-neutral-500" role="status">
+            {% if game.message %}{{ game.message }}{% endif %}
         </p>
         <div
             class="spinner-border htmx-indicator"
@@ -40,6 +36,11 @@
             aria-label="Loading"></div>
     </div>
 
+    {% if player and player.state == State.WAITING and not game.over and not game.phase and debug %}
+    <div class="gc-debug-moves mt-4 rounded-lg border border-white/10 bg-ink-950/60 p-3 font-mono text-xs text-neutral-400">
+        {% include "moves.html" %}
+    </div>
+    {% endif %}
 
     <style>
         td {

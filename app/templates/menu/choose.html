@@ -1,20 +1,21 @@
-<div class="flex w-full flex-wrap items-center justify-between gap-x-3 gap-y-2">
-    <span class="gc-label">Choose color</span>
-    <div class="flex flex-wrap items-center gap-2">
+{% from "icons.html" import computer, person %}
+<div class="flex w-full flex-wrap items-center justify-between gap-x-2 gap-y-2">
+    <span class="gc-label shrink-0">Choose color</span>
+    <div class="flex flex-nowrap items-center gap-1.5">
         {% for player in game.players %}
         {% set taken = player.autoplay or (player.state.value and game.choosing) %}
         {% if taken %}
         <span
-            class="gc-btn border-{{ player.color.value }} bg-transparent text-{{ player.color.value }} pointer-events-none opacity-45"
+            class="gc-btn !gap-1.5 !px-2.5 !py-1.5 border-{{ player.color.value }} bg-transparent text-{{ player.color.value }} pointer-events-none opacity-45"
             title="{{ player.color.title }}{% if player.autoplay %} — computer{% else %} — taken{% endif %}">
-            <span class="gc-seat {% if player.autoplay %}gc-seat-ai{% endif %} text-{{ player.color.value }}"></span>
+            {% if player.autoplay %}{{ computer() }}{% else %}{{ person() }}{% endif %}
             {{ player.color.title }}
         </span>
         {% else %}
         <a
-            class="btn-{{ player.color.value }}"
+            class="btn-{{ player.color.value }} !gap-1.5 !px-2.5 !py-1.5"
             href="{{ url_for('player', code=game.code, color=player.color.key) }}">
-            <span class="gc-seat bg-ink-950/40"></span>
+            {{ person() }}
             {{ player.color.title }}
         </a>
         {% endif %}

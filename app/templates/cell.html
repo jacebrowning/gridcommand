@@ -1,31 +1,21 @@
-{% from "icons.html" import chevron %}
+{% from "icons.html" import chevron, computer, person %}
 
 {% if (player and player.state == State.WAITING or game.over) and cell.moves and not game.phase %}
 
 <div class="content gc-shift text-{{ cell.color.value }}">
-    <div></div>
-    <div class="gc-shift-arrow {% if not cell.up %}opacity-20{% endif %}">
-        {% if cell.up %}{{ chevron('up') }}{{ cell.up }}{% endif %}
+    <div class="gc-shift-arrow gc-shift-send-up {% if not cell.up %}opacity-20{% endif %}">
+        {% if cell.up %}{{ chevron('up') }}<span>{{ cell.up }}</span>{% endif %}
     </div>
-    <div></div>
-
-    <div class="gc-shift-arrow {% if not cell.left %}opacity-20{% endif %}">
-        {% if cell.left %}{{ chevron('left') }}{{ cell.left }}{% endif %}
+    <div class="gc-shift-arrow gc-shift-send-left {% if not cell.left %}opacity-20{% endif %}">
+        {% if cell.left %}{{ chevron('left') }}<span>{{ cell.left }}</span>{% endif %}
     </div>
-    <div class="flex flex-col items-center justify-center">
-        <span class="font-display text-xl font-semibold tabular-nums sm:text-2xl">
-            {{ cell.center }}
-        </span>
+    <div class="gc-shift-center">{{ cell.center }}</div>
+    <div class="gc-shift-arrow gc-shift-send-right {% if not cell.right %}opacity-20{% endif %}">
+        {% if cell.right %}<span>{{ cell.right }}</span>{{ chevron('right') }}{% endif %}
     </div>
-    <div class="gc-shift-arrow {% if not cell.right %}opacity-20{% endif %}">
-        {% if cell.right %}{{ cell.right }}{{ chevron('right') }}{% endif %}
+    <div class="gc-shift-arrow gc-shift-send-down {% if not cell.down %}opacity-20{% endif %}">
+        {% if cell.down %}<span>{{ cell.down }}</span>{{ chevron('down') }}{% endif %}
     </div>
-
-    <div></div>
-    <div class="gc-shift-arrow {% if not cell.down %}opacity-20{% endif %}">
-        {% if cell.down %}{{ chevron('down') }}{{ cell.down }}{% endif %}
-    </div>
-    <div></div>
 </div>
 
 {% elif player and player.state == State.WAITING or game.over %}
@@ -42,11 +32,10 @@
 {% elif editing or (player and cell.moves and cell.color == player.color) %}
 
 <div class="content gc-cell-owned gc-shift text-{{ cell.color.value }}">
-    <div></div>
     {% if cell.can_move_up %}
     <button
         type="button"
-        class="gc-shift-send {% if cell.up %}is-active{% endif %}"
+        class="gc-shift-send gc-shift-send-up {% if cell.up %}is-active{% endif %}"
         title="Send 1 unit up"
         {% if not cell.center %}disabled{% endif %}
         hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='up') }}"
@@ -56,14 +45,13 @@
         <span>{{ cell.up }}</span>
     </button>
     {% else %}
-    <div></div>
+    <div class="gc-shift-send-up"></div>
     {% endif %}
-    <div></div>
 
     {% if cell.can_move_left %}
     <button
         type="button"
-        class="gc-shift-send {% if cell.left %}is-active{% endif %}"
+        class="gc-shift-send gc-shift-send-left {% if cell.left %}is-active{% endif %}"
         title="Send 1 unit left"
         {% if not cell.center %}disabled{% endif %}
         hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='left') }}"
@@ -73,7 +61,7 @@
         <span>{{ cell.left }}</span>
     </button>
     {% else %}
-    <div></div>
+    <div class="gc-shift-send-left"></div>
     {% endif %}
 
     <button
@@ -83,14 +71,13 @@
         hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='center') }}"
         hx-target="closest td"
         hx-indicator="#spinner">
-        <span class="gc-shift-stay-label">Stay</span>
-        <span class="text-xl tabular-nums sm:text-2xl">{{ cell.center }}</span>
+        {{ cell.center }}
     </button>
 
     {% if cell.can_move_right %}
     <button
         type="button"
-        class="gc-shift-send {% if cell.right %}is-active{% endif %}"
+        class="gc-shift-send gc-shift-send-right {% if cell.right %}is-active{% endif %}"
         title="Send 1 unit right"
         {% if not cell.center %}disabled{% endif %}
         hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='right') }}"
@@ -100,14 +87,13 @@
         {{ chevron('right') }}
     </button>
     {% else %}
-    <div></div>
+    <div class="gc-shift-send-right"></div>
     {% endif %}
 
-    <div></div>
     {% if cell.can_move_down %}
     <button
         type="button"
-        class="gc-shift-send {% if cell.down %}is-active{% endif %}"
+        class="gc-shift-send gc-shift-send-down {% if cell.down %}is-active{% endif %}"
         title="Send 1 unit down"
         {% if not cell.center %}disabled{% endif %}
         hx-post="{{ url_for('move', code=game.code, row=cell.row, col=cell.col, direction='down') }}"
@@ -117,15 +103,14 @@
         {{ chevron('down') }}
     </button>
     {% else %}
-    <div></div>
+    <div class="gc-shift-send-down"></div>
     {% endif %}
-    <div></div>
 </div>
 
 {% elif player and player.state == State.PLANNING and player.color == cell.color %}
 
 <div
-    class="content gc-cell-owned flex flex-col items-center justify-center gap-1 p-2 text-{{ cell.color.value }}"
+    class="content gc-cell-owned flex items-center justify-center p-2 text-{{ cell.color.value }}"
     hx-post="{{ url_for('cell', code=game.code, row=cell.row, col=cell.col) }}"
     hx-target="closest td"
     hx-indicator="#spinner">
@@ -136,7 +121,6 @@
         title="Plan moves from this cell">
         {{ cell.value }}
     </button>
-    <span class="gc-shift-stay-label text-current/70">Send</span>
 </div>
 
 {% else %}
@@ -147,7 +131,13 @@
     <span
         class="absolute m-1.5 {{ cell.corner }} sm:m-2"
         title="{{ seat.color.title }}{% if seat.autoplay %} (computer){% endif %}">
-        <span class="gc-seat text-{{ cell.color.value }} {% if seat.autoplay %}gc-seat-ai{% endif %}"></span>
+        <span class="text-{{ cell.color.value }}">
+            {% if seat.autoplay %}
+            {{ computer('h-4 w-4 sm:h-5 sm:w-5') }}
+            {% else %}
+            {{ person('h-4 w-4 sm:h-5 sm:w-5') }}
+            {% endif %}
+        </span>
     </span>
     {% endif %}
     <span class="text-{{ cell.color.value }} flex items-center gap-2 font-display text-2xl font-semibold tabular-nums sm:text-3xl">

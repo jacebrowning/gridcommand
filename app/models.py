@@ -260,7 +260,7 @@ class Game:
     @property
     def message(self) -> str:
         if self.round == 0:
-            return ""
+            return "Choose options for a new game..."
         if self.over:
             return f"{self.over} player wins!"
         if self.choosing:
@@ -269,6 +269,8 @@ class Game:
         if self.planning:
             s = "" if self.planning == 1 else "s"
             return f"Waiting for {self.planning} player{s} to plan moves..."
+        if not self.phase:
+            return "All players have submitted moves!"
         return ""
 
     def initialize(self, size: int = SIZE, players: int = PLAYERS):
