@@ -1,6 +1,6 @@
 Tactical Moves:
 
-<ul>
+<ul class="gc-debug-cols">
     {% for move in game.board.tactical_moves %}
     <li>{{ move }}</li>
     {% else %}
@@ -30,7 +30,7 @@ Mass Attacks:
 
 Attacks:
 
-<ul>
+<ul class="gc-debug-cols">
     {% for move in game.board.attacks %}
     <li>{{ move }}</li>
     {% else %}

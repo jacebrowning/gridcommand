@@ -364,10 +364,35 @@
                     animation: gc-reinforce-pulse 1.6s ease-in-out infinite;
                 }
 
-                @keyframes gc-fade-up {
-                    from { opacity: 0; transform: translateY(10px); }
-                    to { opacity: 1; transform: translateY(0); }
+                .gc-debug-moves ul {
+                    @apply mb-5;
                 }
+
+                .gc-debug-moves ul:last-of-type {
+                    @apply mb-0;
+                }
+
+                .gc-debug-cols {
+                    columns: 1;
+                }
+
+                @media (min-width: 640px) {
+                    .gc-debug-cols {
+                        columns: 2;
+                        column-gap: 1.5rem;
+                    }
+                }
+
+                @media (min-width: 1024px) {
+                    .gc-debug-cols {
+                        columns: 3;
+                    }
+                }
+
+                .gc-debug-cols li {
+                    break-inside: avoid;
+                }
+
                 @keyframes gc-grid-pulse {
                     0%, 100% { opacity: 0.35; }
                     50% { opacity: 0.7; }
