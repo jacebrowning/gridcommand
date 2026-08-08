@@ -174,7 +174,7 @@ class Game:
     round: int = 0
     players: list[Player] = field(default_factory=Player.defaults)
     shared: bool = SHARED
-    board: Board = Board()
+    board: Board = field(default_factory=Board)
 
     @cached_property
     def url(self) -> str:

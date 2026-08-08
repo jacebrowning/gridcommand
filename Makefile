@@ -1,8 +1,7 @@
-.PHONY: all
-all: install
+.DEFAULT_GOAL := install
 
-.PHONY: ci
-ci: check test
+.PHONY: all
+all: check test ## Run all tasks that determine CI status
 
 # INSTALL
 

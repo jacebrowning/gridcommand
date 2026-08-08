@@ -217,6 +217,10 @@ class MassAttack(Performable):
             count += move.outgoing
         return count
 
+    @property
+    def incoming(self) -> int:
+        return 0
+
     def perform(self):
         log.info(f"Performing mass attack: {self}")
         while self.outgoing and self.finish.center:
