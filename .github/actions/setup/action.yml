@@ -1,0 +1,21 @@
+name: setup
+description: Install system and project dependencies
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.10"
+
+    - uses: Gr1N/setup-poetry@v7
+
+    - uses: actions/cache@v2
+      with:
+        path: .venv
+        key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+
+    - name: Install dependencies
+      shell: bash
+      run: make install
