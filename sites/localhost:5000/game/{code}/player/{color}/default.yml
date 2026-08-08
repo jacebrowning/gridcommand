@@ -20,10 +20,10 @@ actions:
   - verb: click
     name: switch_player
     locators:
-      - mode: text
-        value: Switch Player
+      - mode: id
+        value: switch
         index: 0
-        uses: 1
+        uses: 2
   - verb: click
     name: plan_movies
     locators:

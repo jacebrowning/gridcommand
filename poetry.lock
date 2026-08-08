@@ -1590,13 +1590,13 @@ testing = ["coverage", "pytest", "pytest-benchmark"]
 
 [[package]]
 name = "pomace"
-version = "0.12.13"
-description = "Dynamic page objects for browser automation."
+version = "0.12.14a1"
+description = "Dynamic page objects for browser end-to-end testing."
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "pomace-0.12.13-py3-none-any.whl", hash = "sha256:628822aa7de86dc7eb3511e37f2d8906b511390b28eaa79e37afba466513114e"},
-    {file = "pomace-0.12.13.tar.gz", hash = "sha256:a8d191e1f86b8b825d0a6d8e243020e5e28780062f43077ae09f6eb69a740599"},
+    {file = "pomace-0.12.14a1-py3-none-any.whl", hash = "sha256:6c54da624fc2e035970da8696c2214fe4621daa034e2a37964eb70323362007c"},
+    {file = "pomace-0.12.14a1.tar.gz", hash = "sha256:7415ea41d4a72aa9a1cb5f59fc9efe763e8674e23fff8a4620c0a4eb2791bed8"},
 ]
 
 [package.dependencies]
@@ -2650,4 +2650,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "35c6eef57ca56e75f151a8e7138527db0bf2aa086cf215d23001090a9f9a44c0"
+content-hash = "15554e36ba8f5935395770097ca36c8c348174d97b9b448f111e12688f99f07d"

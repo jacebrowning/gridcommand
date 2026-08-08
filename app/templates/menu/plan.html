@@ -5,7 +5,10 @@
     hx-target="#board"
     hx-indicator="#spinner">
     {% if game.shared %}
-    <a class="btn btn-outline-secondary" href="{{ url_for('choose', code=game.code) }}">
+    <a
+        class="btn btn-outline-secondary"
+        id="switch"
+        href="{{ url_for('choose', code=game.code) }}">
         ⇄ <span class="d-none d-md-inline">Switch Player</span>
     </a>
     {% endif %}
