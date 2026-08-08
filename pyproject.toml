@@ -19,7 +19,7 @@ minilog = "^2.1"
 gunicorn = "^23"
 werkzeug = ">=2.3.7,<3"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 
 black = "^22.3.0"
 isort = "^5.10.1"
@@ -36,7 +36,7 @@ pytest-watch = "^4.2.0"
 pomace = "^0.12.14"
 
 livereload = "^2.7"
-honcho = "^1.1.0"
+honcho = "^2.0"
 
 [tool.black]
 
