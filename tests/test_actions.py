@@ -25,7 +25,7 @@ def test_fortification_with_1_cell():
         Cell(0, 1, Color.BLUE, 1),
     ]
 
-    assert board.advance() == 1
+    assert board.apply_tactical() == 1
 
     expect(board.cells) == [
         Cell(0, 0, Color.BLUE, 1),
@@ -41,7 +41,7 @@ def test_fortification_with_2_cells():
         Cell(0, 2, Color.BLUE, 1, left=1),
     ]
 
-    assert board.advance() == 2
+    assert board.apply_tactical() == 2
 
     expect(board.cells) == [
         Cell(0, 0, Color.BLUE, 1),

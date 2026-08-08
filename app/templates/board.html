@@ -2,7 +2,7 @@
     id="board"
     {% if player and player.state == State.WAITING %}
     hx-get="{{ url_for('player', code=game.code, color=player.color.key) }}?partial=true"
-    hx-trigger="every 5s"
+    hx-trigger="every 2s"
     hx-target="#board"
     hx-indicator="#spinner"
     {% endif %}>
@@ -39,7 +39,27 @@
         </div>
     </div>
 
-    {% if player and player.state == State.WAITING and not game.over and debug %}
+    {% if game.round == 0 %}
+    <div class="d-flex flex-wrap align-items-center gap-3 mt-2">
+        <span class="text-muted">Human colors:</span>
+        {% for p in game.humans %}
+        <span class="text-{{ p.color.value }} text-nowrap">
+            {{ p.color.icon }} {{ p.color.title }}
+        </span>
+        {% endfor %}
+        {% if game.humans|length < game.players|length %}
+        <div class="vr"></div>
+        <span class="text-muted">Computer colors:</span>
+        {% for p in game.players if p.autoplay %}
+        <span class="text-{{ p.color.value }} text-nowrap">
+            {{ p.color.icon }} {{ p.color.title }}
+        </span>
+        {% endfor %}
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if player and player.state == State.WAITING and not game.over and not game.phase and debug %}
     <div class="border font-monospace mt-3 pt-3 px-3">{% include "moves.html" %}</div>
     {% endif %}
 

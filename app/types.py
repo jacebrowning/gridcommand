@@ -12,6 +12,7 @@ class Player:
     round: int = 0
     state: State = State.UNKNOWN
     autoplay: bool = False
+    autoplay_until: float = 0.0
 
     @classmethod
     def defaults(cls, count: int = 4) -> list["Player"]:
@@ -45,6 +46,7 @@ class Cell:
     down: int = 0
     left: int = 0
     right: int = 0
+    extra: int = 0
 
     size: int = SIZE
 

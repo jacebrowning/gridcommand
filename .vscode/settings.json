@@ -40,5 +40,6 @@
         "**/__pycache__/": true,
         ".cache/": true,
         ".venv/": true
-    }
+    },
+    "djlint.showInstallError": false
 }

@@ -12,7 +12,9 @@
             {{ cell.left_arrow|safe }}
         </span>
 
-        <span class="text-{{ cell.color.value }} fs-5 py-0"> {{ cell.center }} </span>
+        <span class="text-{{ cell.color.value }} fs-5 py-0">
+            {{ cell.center }}{% if cell.extra %}<sup class="reinforcement">+{{ cell.extra }}</sup>{% endif %}
+        </span>
 
         <span class="text-{{ cell.color.value }} px-1 py-0">
             {{ cell.right_arrow|safe }}
@@ -120,7 +122,9 @@
 {% else %}
 
 <div class="d-flex justify-content-center align-items-center content">
-    <span class="text-{{ cell.color.value }} fs-2">{{ cell.value }}</span>
+    <span class="text-{{ cell.color.value }} fs-2">
+        {{ cell.value }}{% if cell.extra %}<sup class="reinforcement">+{{ cell.extra }}</sup>{% endif %}
+    </span>
 </div>
 
 {% endif %}

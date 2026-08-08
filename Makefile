@@ -53,6 +53,8 @@ ifdef HONCHO_PROCESS_NAME
 else
 	poetry run honcho start --procfile tests/Procfile
 endif
+else ifdef HEADLESS
+	poetry run pomace exec tests/e2e.py --headless
 else
 	poetry run pomace exec tests/e2e.py
 endif
@@ -76,7 +78,7 @@ run: install .envrc
 
 .envrc:
 	echo "export SIZE=5" >> $@
-	echo "export PLAYERS=2" >> $@
+	echo "export PLAYERS=1" >> $@
 	echo "export SHARED=false" >> $@
 	- direnv allow
 

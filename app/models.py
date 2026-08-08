@@ -1,5 +1,6 @@
 import math
 import random
+import time
 from contextlib import suppress
 from dataclasses import dataclass, field
 from functools import cached_property
@@ -10,6 +11,7 @@ import datafiles
 import log
 from flask import url_for
 
+from . import autoplay
 from .actions import Attack, AttackWithRetreat, BorderClash, Fortification, MassAttack
 from .constants import EXTRA, FILL, PLAYERS, SHARED, SIZE, UNITS, generate_code
 from .enums import Color, State
@@ -132,6 +134,16 @@ class Board:
         self[(self.size - 1, 0)].color = Color.YELLOW
         self[(self.size - 1, 0)].center = 1
 
+    def apply_tactical(self) -> int:
+        count = 0
+        for move in self.tactical_moves:
+            move.perform()
+            count += 1
+
+        s = "" if count == 1 else "s"
+        log.info(f"Applied {count} tactical move{s}")
+        return count
+
     def advance(self) -> int:
         count = 0
         for move in chain(
@@ -148,20 +160,46 @@ class Board:
         log.info(f"Applied {count} move{s}")
         return count
 
-    def fortify(self, player: Player):
+    def reinforcement_count(self, player: Player) -> int:
+        cells = list(self.get_cells(player.color))
+        if not cells:
+            return 0
+        return max(1, int(len(cells) * EXTRA))
+
+    def plan_reinforcements(self, player: Player) -> int:
+        """Mark pending reinforcement units on cells without applying them yet."""
         cells = list(self.get_cells(player.color))
         cells.sort(key=lambda x: x.value, reverse=True)
-        if any(cells):
-            extra = max(1, int(len(cells) * EXTRA))
+        for cell in cells:
+            cell.extra = 0
+        extra = self.reinforcement_count(player)
+        if extra:
             s = "" if extra == 1 else "s"
-            log.info(f"Fortifying {player} with {extra} unit{s}")
-            while extra:
+            log.info(f"Planning {extra} reinforcement{s} for {player}")
+            remaining = extra
+            while remaining:
                 for cell in cells:
-                    if extra:
-                        log.info(f"+1 {cell}")
-                        cell.center += 1
-                        extra -= 1
-        elif not player.autoplay:
+                    if remaining:
+                        cell.extra += 1
+                        remaining -= 1
+            return extra
+        if not player.autoplay:
+            log.info(f"{player.color.title} player eliminated")
+            player.autoplay = True
+        return 0
+
+    def fortify(self, player: Player):
+        cells = list(self.get_cells(player.color))
+        pending = sum(cell.extra for cell in cells)
+        if pending:
+            s = "" if pending == 1 else "s"
+            log.info(f"Fortifying {player} with {pending} unit{s}")
+            for cell in cells:
+                if cell.extra:
+                    log.info(f"+{cell.extra} {cell}")
+                    cell.center += cell.extra
+                    cell.extra = 0
+        elif not player.autoplay and not cells:
             log.info(f"{player.color.title} player eliminated")
             player.autoplay = True
 
@@ -174,6 +212,8 @@ class Game:
     round: int = 0
     players: list[Player] = field(default_factory=Player.defaults)
     shared: bool = SHARED
+    fill: bool = False
+    phase: str = ""
     board: Board = field(default_factory=Board)
 
     @cached_property
@@ -184,17 +224,15 @@ class Game:
     def humans(self) -> list[Player]:
         return [player for player in self.players if not player.autoplay]
 
-    @cached_property
+    @property
     def choosing(self) -> int:
         return sum(1 for p in self.players if p.state is State.UNKNOWN)
 
-    @cached_property
+    @property
     def planning(self) -> int:
         count = 0
         for player in self.players:
-            if player.autoplay:
-                pass
-            elif player.state is not State.WAITING:
+            if player.state is not State.WAITING:
                 log.info(f"Waiting for {player} to plan their moves")
                 count += 1
             elif player.round < self.round:
@@ -208,6 +246,16 @@ class Game:
         if len(remaining) == 1:
             return remaining[0].color.title
         return ""
+
+    @property
+    def step(self) -> int:
+        if self.phase == "reinforce":
+            return 4
+        if self.phase == "reinforcements":
+            return 3
+        if self.phase == "results":
+            return 2
+        return 1
 
     @property
     def message(self) -> str:
@@ -226,16 +274,16 @@ class Game:
     def initialize(self, size: int = SIZE, players: int = PLAYERS):
         self.players = Player.defaults(players)
 
-        units: dict[Color, int] = {player.color: UNITS for player in self.humans}
-        cells: dict[Color, list[Cell]] = {player.color: [] for player in self.humans}
+        units: dict[Color, int] = {player.color: UNITS for player in self.players}
+        cells: dict[Color, list[Cell]] = {player.color: [] for player in self.players}
 
         with datafiles.frozen(self):
             self.board.reset(size)
             self.board.initialize()
 
             for cell in self.board.cells:
-                if cell.color is Color.NONE and random.random() < FILL:
-                    player = random.choice(self.humans)
+                if self.fill and cell.color is Color.NONE and random.random() < FILL:
+                    player = random.choice(self.players)
                     cell.color = player.color
                     cell.center = 1
                     units[player.color] -= 1
@@ -249,16 +297,78 @@ class Game:
                     cell = random.choice(cells[color])
                     cell.center += 1
 
-    def advance(self) -> int:
+    def _humans_done_planning(self) -> bool:
+        for player in self.players:
+            if player.autoplay:
+                continue
+            if player.state is not State.WAITING or player.round < self.round:
+                return False
+        return True
+
+    def tick_autoplay(self, *, force: bool = False) -> None:
+        """Schedule or finish computer moves in seat order around the table."""
+        if not force and (
+            self.round < 1 or self.choosing or not self._humans_done_planning()
+        ):
+            return
+        now = time.time()
+        humans = len(self.humans)
+        computers = [player for player in self.players if player.autoplay]
+        for position, player in enumerate(computers):
+            if player.round >= self.round:
+                continue
+            if force:
+                self._complete_autoplay(player)
+                continue
+            if not player.autoplay_until:
+                autoplay.schedule(player, position=position, humans=humans, now=now)
+                if not autoplay.due(player, now=now):
+                    continue
+            elif not autoplay.due(player, now=now):
+                continue
+            self._complete_autoplay(player)
+
+    def _complete_autoplay(self, player: Player) -> None:
+        cells = list(self.board.get_cells(player.color))
+        autoplay.plan(cells, player)
+        player.state = State.WAITING
+        player.round = self.round
+        player.autoplay_until = 0.0
+
+    def show_results(self) -> int:
+        """Resolve all planned moves (tactical + combat)."""
         path = self.datafile.path.parent / self.code / f"{self.round}.yml"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(self.datafile.text)
 
+        self.tick_autoplay(force=True)
         count = self.board.advance()
-        self.round += 1
+        self.phase = "results"
+        return count
+
+    def show_reinforcements(self) -> None:
+        """Mark pending reinforcements on the board after results are shown."""
+        if self.phase != "results":
+            self.show_results()
+        for player in self.players:
+            self.board.plan_reinforcements(player)
+        self.phase = "reinforcements"
+
+    def reinforce(self) -> None:
+        """Grant reinforcement units after they have been shown."""
+        if self.phase != "reinforcements":
+            self.show_reinforcements()
         for player in self.players:
             self.board.fortify(player)
-        return count
+        self.phase = "reinforce"
+
+    def advance(self) -> int:
+        if self.phase != "reinforce":
+            self.reinforce()
+
+        self.round += 1
+        self.phase = ""
+        return 0
 
     def get_player(self, color: str) -> Player:
         _color = Color[color.upper()]

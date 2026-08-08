@@ -52,6 +52,8 @@ def randomize(code: str):
     if "shared" in request.form:
         game.shared = request.form["shared"] == "1"
     else:
+        if "fill" in request.form:
+            game.fill = request.form["fill"] == "1"
         game.initialize(size, players)
     return render_template("board.html", game=game)
 
@@ -69,12 +71,11 @@ def choose(code: str):
 def player(code: str, color: str):
     game = Game(code)
     player = game.get_player(color)
-    with datafiles.frozen(player):
-        if game.round > player.round:
+    with datafiles.frozen(game):
+        if not player.autoplay and game.round > player.round:
             player.round = game.round
             player.state = State.READY if game.round == 1 else State.PLANNING
-        if player.autoplay:
-            player.state = State.WAITING
+        game.tick_autoplay()
     if "partial" in request.args:
         return render_template("board.html", game=game, player=player)
     return render_template("index.html", game=game, player=player)
@@ -86,6 +87,8 @@ def player_plan(code: str, color: str):
     player = game.get_player(color)
     if "partial" not in request.args:
         player.state = State.PLANNING
+    with datafiles.frozen(game):
+        game.tick_autoplay()
     return render_template("board.html", game=game, player=player)
 
 
@@ -94,6 +97,8 @@ def player_done(code: str, color: str):
     game = Game(code)
     player = game.get_player(color)
     player.state = State.WAITING
+    with datafiles.frozen(game):
+        game.tick_autoplay()
     return render_template("board.html", game=game, player=player)
 
 
@@ -101,10 +106,22 @@ def player_done(code: str, color: str):
 def player_next(code: str, color: str):
     game = Game(code)
     player = game.get_player(color)
-    player.state = State.PLANNING
     if player.round == game.round:
         with datafiles.frozen(game):
-            game.advance()
+            if not game.phase:
+                game.show_results()
+                player.state = State.WAITING
+            elif game.phase == "results":
+                game.show_reinforcements()
+                player.state = State.WAITING
+            elif game.phase == "reinforcements":
+                game.reinforce()
+                player.state = State.WAITING
+            else:
+                game.advance()
+                player.state = State.PLANNING
+    else:
+        player.state = State.PLANNING
     return redirect(url_for("player", code=game.code, color=player.color.key))
 
 
