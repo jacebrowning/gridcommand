@@ -1,15 +1,23 @@
-<div
-    class="d-flex align-items-center"
-    hx-get="{{ url_for('choose', code=game.code) }}?partial=true"
-    hx-trigger="{% if game.choosing %}every 5s{% endif %}"
-    hx-target="#board"
-    hx-indicator="#spinner">
-    <span class="fs-4 me-2 text-end">Player:</span>
-    {% for player in game.players %}
-    <a
-        class="btn btn-{{ player.color.value }} {% if player.autoplay or (player.state.value and game.choosing) %} btn-outline-{{ player.color.value }} disabled {% endif %} ms-1"
-        href="{{ url_for('player', code=game.code, color=player.color.key) }}">
-        {{ player.color.title }}
-    </a>
-    {% endfor %}
+<div class="flex w-full flex-wrap items-center justify-between gap-x-3 gap-y-2">
+    <span class="gc-label">Choose color</span>
+    <div class="flex flex-wrap items-center gap-2">
+        {% for player in game.players %}
+        {% set taken = player.autoplay or (player.state.value and game.choosing) %}
+        {% if taken %}
+        <span
+            class="gc-btn border-{{ player.color.value }} bg-transparent text-{{ player.color.value }} pointer-events-none opacity-45"
+            title="{{ player.color.title }}{% if player.autoplay %} — computer{% else %} — taken{% endif %}">
+            <span class="gc-seat {% if player.autoplay %}gc-seat-ai{% endif %} text-{{ player.color.value }}"></span>
+            {{ player.color.title }}
+        </span>
+        {% else %}
+        <a
+            class="btn-{{ player.color.value }}"
+            href="{{ url_for('player', code=game.code, color=player.color.key) }}">
+            <span class="gc-seat bg-ink-950/40"></span>
+            {{ player.color.title }}
+        </a>
+        {% endif %}
+        {% endfor %}
+    </div>
 </div>

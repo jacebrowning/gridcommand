@@ -116,10 +116,10 @@ class Cell:
     def corner(self) -> str:
         last = self.size - 1
         return {
-            (0, 0): "top-0 start-0",
-            (0, last): "top-0 end-0",
-            (last, 0): "bottom-0 start-0",
-            (last, last): "bottom-0 end-0",
+            (0, 0): "top-0 left-0",
+            (0, last): "top-0 right-0",
+            (last, 0): "bottom-0 left-0",
+            (last, last): "bottom-0 right-0",
         }.get((self.row, self.col), "")
 
     @property

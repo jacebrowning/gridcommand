@@ -27,17 +27,21 @@ actions:
   - verb: click
     name: new_board
     locators:
-      - mode: text
-        value: New Board
+      - mode: id
+        value: new-board
         index: 0
         uses: 2
   - verb: click
     name: start_game
     locators:
-      - mode: css
-        value: .btn-dark
+      - mode: id
+        value: start-game
         index: 0
         uses: 2
+      - mode: text
+        value: Start Game
+        index: 0
+        uses: 1
   - verb: click
     name: two_players
     locators:

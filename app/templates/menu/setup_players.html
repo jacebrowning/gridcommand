@@ -1,0 +1,60 @@
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+    <div class="flex items-center gap-1.5">
+        <span class="gc-label">Players</span>
+        <div class="gc-toggle">
+            <button
+                id="one-player"
+                class="{% if game.humans|length == 1 %} active {% endif %}"
+                hx-post="{{ url_for('randomize', code=game.code) }}"
+                hx-vals='{ "players": 1 }'
+                hx-target="#board"
+                hx-indicator="#spinner">
+                1
+            </button>
+            <button
+                id="two-players"
+                class="{% if game.humans|length == 2 %} active {% endif %}"
+                hx-post="{{ url_for('randomize', code=game.code) }}"
+                hx-vals='{ "players": 2 }'
+                hx-target="#board"
+                hx-indicator="#spinner">
+                2
+            </button>
+            <button
+                id="three-players"
+                class="{% if game.humans|length == 3 %} active {% endif %}"
+                hx-post="{{ url_for('randomize', code=game.code) }}"
+                hx-vals='{ "players": 3 }'
+                hx-target="#board"
+                hx-indicator="#spinner">
+                3
+            </button>
+            <button
+                id="four-players"
+                class="{% if game.humans|length == 4 %} active {% endif %}"
+                hx-post="{{ url_for('randomize', code=game.code) }}"
+                hx-vals='{ "players": 4 }'
+                hx-target="#board"
+                hx-indicator="#spinner">
+                4
+            </button>
+        </div>
+    </div>
+
+    <label
+        class="gc-check {% if game.humans|length == 1 %}pointer-events-none opacity-40{% endif %}"
+        {% if game.humans|length > 1 %}
+        hx-post="{{ url_for('randomize', code=game.code) }}"
+        hx-vals='{ "shared": {{ 0 if game.shared else 1 }} }'
+        hx-target="#board"
+        hx-indicator="#spinner"
+        {% endif %}>
+        <input
+            type="checkbox"
+            value=""
+            id="shared"
+            {% if game.shared and game.humans|length > 1 %}checked{% endif %}
+            {% if game.humans|length == 1 %}disabled{% endif %} />
+        <span>Shared device</span>
+    </label>
+</div>

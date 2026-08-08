@@ -4,25 +4,322 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
-            crossorigin="anonymous" />
+            href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap"
+            rel="stylesheet" />
+
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            ink: {
+                                950: "#0e0e10",
+                                900: "#161618",
+                                800: "#1f1f23",
+                                700: "#2a2a30",
+                                600: "#3a3a42",
+                            },
+                            signal: {
+                                DEFAULT: "#c4c4cc",
+                                dim: "#9a9aa3",
+                                glow: "#e8e8ed",
+                            },
+                            faction: {
+                                primary: "#6b9de8",
+                                danger: "#e07074",
+                                success: "#5cbf94",
+                                warning: "#d4b85a",
+                                dark: "#9a9aa3",
+                            },
+                        },
+                        fontFamily: {
+                            display: ['"Chakra Petch"', "sans-serif"],
+                            body: ['"Barlow"', "sans-serif"],
+                        },
+                        boxShadow: {
+                            panel: "0 0 0 1px rgba(255, 255, 255, 0.08), 0 18px 50px rgba(0,0,0,0.5)",
+                        },
+                    },
+                },
+            }
+        </script>
+
+        <style type="text/tailwindcss">
+            @layer base {
+                html {
+                    @apply h-full;
+                }
+                body {
+                    @apply min-h-full font-body text-neutral-300 antialiased;
+                    background-color: #0e0e10;
+                    background-image:
+                        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+                        radial-gradient(ellipse at top, rgba(255, 255, 255, 0.04), transparent 55%),
+                        radial-gradient(ellipse at bottom, rgba(0, 0, 0, 0.35), transparent 50%);
+                    background-size: 28px 28px, 28px 28px, 100% 100%, 100% 100%;
+                    background-attachment: fixed;
+                }
+            }
+
+            @layer components {
+                .gc-shell {
+                    @apply mx-auto w-full max-w-3xl px-3 py-4 sm:px-4 sm:py-6;
+                }
+
+                .gc-icon {
+                    @apply inline-block h-4 w-4 shrink-0 align-middle;
+                }
+
+                .gc-seat {
+                    @apply block h-2.5 w-2.5 rounded-[2px] bg-current
+                        shadow-[0_0_0_1px_rgba(255,255,255,0.2)];
+                }
+
+                .gc-seat-ai {
+                    @apply bg-transparent border-[1.5px] border-current shadow-none;
+                }
+
+                .gc-player-chip {
+                    @apply inline-flex items-center gap-2 rounded-md px-2.5 py-1
+                        font-display text-sm font-semibold tracking-wide;
+                    border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+                    background: color-mix(in srgb, currentColor 12%, transparent);
+                }
+
+                .gc-panel {
+                    @apply rounded-xl border border-white/10 bg-ink-900/85 p-4 shadow-panel backdrop-blur-md sm:p-5;
+                }
+
+                .gc-hud {
+                    @apply mb-3 space-y-3 rounded-lg border border-white/10 bg-ink-900/70 px-3 py-2.5 backdrop-blur-sm sm:mb-4 sm:space-y-4 sm:px-3.5;
+                }
+
+                .gc-hud-row {
+                    @apply flex w-full flex-wrap items-center justify-between gap-x-4 gap-y-2 sm:flex-nowrap;
+                }
+
+                .gc-title {
+                    @apply font-display text-3xl font-bold tracking-wide text-neutral-100 sm:text-4xl;
+                }
+
+                .gc-sub {
+                    @apply text-sm leading-relaxed text-neutral-500 sm:text-base;
+                }
+
+                .gc-label {
+                    @apply font-display text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500;
+                }
+
+                .gc-btn {
+                    @apply inline-flex items-center justify-center gap-2 rounded-md border border-transparent
+                        px-3.5 py-2 font-display text-sm font-semibold tracking-wide transition
+                        focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400/50
+                        disabled:pointer-events-none disabled:opacity-40;
+                }
+
+                .gc-btn-primary {
+                    @apply gc-btn border-neutral-400/30 bg-neutral-200 text-ink-950 hover:bg-white;
+                }
+
+                .gc-btn-secondary {
+                    @apply gc-btn border-white/10 bg-ink-800 text-neutral-200 hover:border-white/20 hover:bg-ink-700;
+                }
+
+                .gc-btn-ghost {
+                    @apply gc-btn border-white/15 bg-transparent text-neutral-300 hover:border-white/30 hover:text-neutral-100;
+                }
+
+                .gc-btn-dark {
+                    @apply gc-btn border-white/10 bg-neutral-200 text-ink-950 hover:bg-white;
+                }
+
+                .gc-input {
+                    @apply w-full rounded-md border border-white/10 bg-ink-950/80 px-3 py-2
+                        font-display text-sm tracking-wider text-neutral-100 placeholder:text-neutral-600
+                        focus:border-neutral-400/40 focus:outline-none focus:ring-2 focus:ring-neutral-400/20;
+                }
+
+                .gc-toggle {
+                    @apply inline-flex overflow-hidden rounded-md border border-white/15;
+                }
+
+                .gc-toggle > button {
+                    @apply min-w-[2.5rem] border-r border-white/10 bg-ink-800 px-3 py-1.5
+                        font-display text-sm font-semibold text-neutral-400 last:border-r-0
+                        hover:bg-ink-700;
+                }
+
+                .gc-toggle > button.active {
+                    @apply bg-neutral-200/15 text-neutral-100;
+                }
+
+                .gc-check {
+                    @apply flex cursor-pointer items-center gap-2 text-sm text-neutral-400;
+                }
+
+                .gc-check input {
+                    @apply h-4 w-4 rounded border-white/20 bg-ink-950 text-neutral-300
+                        focus:ring-neutral-400/30;
+                    accent-color: #c4c4cc;
+                }
+
+                /* Faction colors — Color.value maps to Bootstrap-era names */
+                .text-primary { color: #6b9de8; }
+                .text-danger { color: #e07074; }
+                .text-success { color: #5cbf94; }
+                .text-warning { color: #d4b85a; }
+                .text-dark { color: #9a9aa3; }
+                .text-muted { color: #73737a; }
+                .text-secondary { color: #73737a; }
+
+                .border-primary { border-color: #6b9de8; }
+                .border-danger { border-color: #e07074; }
+                .border-success { border-color: #5cbf94; }
+                .border-warning { border-color: #d4b85a; }
+                .border-dark { border-color: #475569; }
+
+                .btn-primary,
+                .btn-danger,
+                .btn-success,
+                .btn-warning,
+                .btn-dark,
+                .btn-secondary,
+                .btn-outline-primary,
+                .btn-outline-danger,
+                .btn-outline-success,
+                .btn-outline-warning,
+                .btn-outline-secondary,
+                .btn-outline-dark {
+                    @apply gc-btn;
+                }
+
+                .btn-primary {
+                    @apply border-faction-primary/40 bg-faction-primary text-ink-950 hover:brightness-110;
+                }
+                .btn-danger {
+                    @apply border-faction-danger/40 bg-faction-danger text-ink-950 hover:brightness-110;
+                }
+                .btn-success {
+                    @apply border-faction-success/40 bg-faction-success text-ink-950 hover:brightness-110;
+                }
+                .btn-warning {
+                    @apply border-faction-warning/40 bg-faction-warning text-ink-950 hover:brightness-110;
+                }
+                .btn-dark, .btn-secondary {
+                    @apply gc-btn-dark;
+                }
+
+                .btn-outline-primary {
+                    @apply border-faction-primary/50 bg-faction-primary/10 text-faction-primary hover:bg-faction-primary/20;
+                }
+                .btn-outline-danger {
+                    @apply border-faction-danger/50 bg-faction-danger/10 text-faction-danger hover:bg-faction-danger/20;
+                }
+                .btn-outline-success {
+                    @apply border-faction-success/50 bg-faction-success/10 text-faction-success hover:bg-faction-success/20;
+                }
+                .btn-outline-warning {
+                    @apply border-faction-warning/50 bg-faction-warning/10 text-faction-warning hover:bg-faction-warning/20;
+                }
+                .btn-outline-secondary, .btn-outline-dark {
+                    @apply gc-btn-ghost;
+                }
+
+                .btn-sm {
+                    @apply px-2 py-0.5 text-xs;
+                }
+
+                .btn.disabled,
+                .btn:disabled,
+                a.disabled {
+                    @apply pointer-events-none opacity-40;
+                }
+
+                .gc-board {
+                    @apply w-full overflow-hidden rounded-lg border border-white/15 bg-ink-950/70;
+                }
+
+                .gc-board table {
+                    @apply w-full border-collapse table-fixed;
+                }
+
+                .gc-board td {
+                    @apply border border-white/10 p-0 align-middle;
+                    background:
+                        linear-gradient(rgba(255,255,255,0.02), rgba(255,255,255,0.02));
+                }
+
+                .gc-cell-btn {
+                    @apply flex h-full w-full items-center justify-center rounded-md
+                        bg-black/20 font-display font-semibold
+                        transition hover:bg-white/10 active:scale-95;
+                    border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+                }
+
+                .gc-cell-owned {
+                    background: color-mix(in srgb, currentColor 8%, transparent);
+                }
+
+                .gc-dir {
+                    @apply inline-flex min-w-[1.5rem] items-center justify-center rounded
+                        px-1 py-0.5 font-display text-xs font-semibold tabular-nums
+                        transition hover:brightness-125 active:scale-95;
+                    border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
+                    background: color-mix(in srgb, currentColor 12%, transparent);
+                    color: inherit;
+                }
+
+                .gc-dir-center {
+                    @apply min-w-[1.75rem] text-neutral-200;
+                    border-color: rgba(255, 255, 255, 0.18);
+                    background: rgba(255, 255, 255, 0.06);
+                }
+
+                .htmx-indicator {
+                    @apply opacity-0 transition-opacity;
+                }
+                .htmx-request .htmx-indicator,
+                .htmx-request.htmx-indicator {
+                    @apply opacity-100;
+                }
+
+                .spinner-border {
+                    @apply inline-block h-4 w-4 animate-spin rounded-full
+                        border-2 border-slate-500 border-r-transparent;
+                }
+
+                .reinforcement {
+                    @apply ml-0.5 font-display text-[0.65em] font-bold text-neutral-300;
+                }
+
+                @keyframes gc-fade-up {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes gc-grid-pulse {
+                    0%, 100% { opacity: 0.35; }
+                    50% { opacity: 0.7; }
+                }
+                .gc-copied {
+                    @apply border-neutral-400/40 text-neutral-100;
+                }
+                .gc-hero-grid {
+                    animation: gc-grid-pulse 4s ease-in-out infinite;
+                }
+            }
+        </style>
 
         <title>Grid Command</title>
     </head>
     <body>
-        <div class="container">
-            <div class="row justify-content-center">
-                {% block content %}{% endblock %}
-            </div>
+        <div class="gc-shell">
+            {% block content %}{% endblock %}
         </div>
-
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-            crossorigin="anonymous"></script>
 
         <script
             src="https://unpkg.com/htmx.org@1.7.0"
@@ -31,9 +328,34 @@
             defer></script>
 
         <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.10/dist/clipboard.min.js"></script>
-
         <script>
-            new ClipboardJS(".btn")
+            ;(function () {
+                let clipboard = null
+
+                function flashCopied(btn) {
+                    const label = btn.dataset.label || btn.textContent.trim()
+                    btn.dataset.label = label
+                    btn.textContent = "Copied!"
+                    btn.classList.add("gc-copied")
+                    clearTimeout(btn._copiedTimer)
+                    btn._copiedTimer = setTimeout(() => {
+                        btn.textContent = btn.dataset.label
+                        btn.classList.remove("gc-copied")
+                    }, 1500)
+                }
+
+                function bindClipboard() {
+                    if (clipboard) clipboard.destroy()
+                    clipboard = new ClipboardJS("[data-clipboard-text]")
+                    clipboard.on("success", (e) => {
+                        flashCopied(e.trigger)
+                        e.clearSelection()
+                    })
+                }
+
+                bindClipboard()
+                document.body.addEventListener("htmx:afterSwap", bindClipboard)
+            })()
         </script>
     </body>
 </html>

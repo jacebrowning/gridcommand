@@ -1,37 +1,73 @@
-<div class="d-flex flex-wrap justify-content-between align-items-center py-4 gap-2">
-    <div class="d-flex align-items-center fs-2 text-nowrap me-2">
-        {% if game.over %}Game Over {% elif game.round and not game.choosing %} Round {{
-        game.round }}-{{ game.step }}{% if player and not player.autoplay %}: {{ player.state.title }}
-        {% endif %} {% else %} Code: {{ game.code }}
-        <button class="btn btn-outline-dark ms-2" data-clipboard-text="{{ game.url }}">
-            📋 Copy URL
-        </button>
-        {% endif %}
+{% if game.round == 0 %}
+<nav class="gc-hud" aria-label="Game setup">
+    <div class="gc-hud-row">
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="gc-label">Game code</span>
+            <span class="font-display text-lg font-semibold tracking-[0.2em] text-neutral-100 sm:text-xl">{{ game.code }}</span>
+            <button
+                type="button"
+                class="gc-btn-ghost !px-3 !py-1.5 text-sm"
+                data-clipboard-text="{{ game.url }}">
+                Copy URL
+            </button>
+        </div>
+        {% include "menu/setup_players.html" %}
     </div>
+    <div class="gc-hud-row">
+        {% include "menu/setup_board.html" %}
+        <a id="start-game" class="gc-btn-primary !px-3.5 !py-1.5" href="{{ url_for('choose', code=game.code) }}">Start Game</a>
+    </div>
+</nav>
+{% elif not player %}
+<nav
+    class="gc-hud"
+    aria-label="Choose color"
+    hx-get="{{ url_for('choose', code=game.code) }}?partial=true"
+    hx-trigger="{% if game.choosing %}every 5s{% endif %}"
+    hx-target="#board"
+    hx-indicator="#spinner">
+    {% include "menu/choose.html" %}
+</nav>
+{% else %}
+<nav class="gc-hud border-l-4 border-{{ player.color.value }}" aria-label="Round controls">
+    <div class="gc-hud-row gap-x-6">
+        <div class="flex shrink-0 items-center gap-2.5">
+            <span class="gc-player-chip text-{{ player.color.value }}">
+                <span class="gc-seat"></span>
+                {{ player.color.title }}
+            </span>
+            <p class="gc-label whitespace-nowrap">
+                Round {{ game.round }}
+                <span class="text-neutral-600">·</span>
+                Step {{ game.step }}
+            </p>
+        </div>
 
-    {% if game.round == 0 %}
+        <p class="min-w-0 flex-1 text-center font-display text-lg font-semibold tracking-wide text-neutral-100 sm:text-xl">
+            {% if game.over %}
+            Game Over
+            {% elif game.phase == "results" %}
+            Results
+            {% elif game.phase == "reinforcements" %}
+            Reinforcements
+            {% elif game.phase == "reinforce" %}
+            Next Round
+            {% else %}
+            {{ player.state.title }}
+            {% endif %}
+        </p>
 
-    <!-- Phase 1 -->
-
-    {% include "menu/setup.html" %} {% elif not player %}
-
-    <!-- Phase 2 -->
-
-    {% include "menu/choose.html"%} {% else %}
-
-    <!-- Phase 3 -->
-
-    {% if game.over %} {% elif player.state == State.PLANNING %}
-
-    <!-- Phase 3.2 -->
-
-    {% include "menu/done.html" %} {% elif player.state == State.WAITING %}
-
-    <!-- Phase 3.3 -->
-
-    {% include "menu/next.html" %} {% else %}
-
-    <!-- Phase 3.1 -->
-
-    {% include "menu/plan.html" %} {% endif %} {% endif %}
-</div>
+        <div class="flex shrink-0 flex-wrap items-center justify-end gap-2">
+            {% if not game.over %}
+                {% if player.state == State.PLANNING %}
+                {% include "menu/done.html" %}
+                {% elif player.state == State.WAITING %}
+                {% include "menu/next.html" %}
+                {% else %}
+                {% include "menu/plan.html" %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</nav>
+{% endif %}

@@ -1,0 +1,16 @@
+{# Inline SVG icons — stroke uses currentColor so buttons can tint them #}
+{% macro shuffle(class='') -%}
+<svg class="gc-icon {{ class }}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+        d="M4 7h2.5l3 5-3 5H4M20 7h-2.5l-3 5M14.5 7H20M4 17h2.5M14.5 17l3-5 3 5h-3.5" />
+    <path stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+        d="M18 4l3 3-3 3M18 14l3 3-3 3" />
+</svg>
+{%- endmacro %}
+
+{% macro swap(class='') -%}
+<svg class="gc-icon {{ class }}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+        d="M7 8h11M15 5l3 3-3 3M17 16H6M9 13l-3 3 3 3" />
+</svg>
+{%- endmacro %}

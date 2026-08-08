@@ -26,7 +26,10 @@ def create():
         game = Game.objects.get_or_none(code)
         if not game:
             log.error(f"No such game: {code}")
-            return redirect(url_for("index"))
+            return render_template(
+                "index.html",
+                error=f"No game found for code {code}",
+            )
     else:
         game = Game()
         game.initialize()

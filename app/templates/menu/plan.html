@@ -1,20 +1,22 @@
 <div
-    class="btn-group"
+    class="flex flex-wrap items-center gap-2"
     hx-post="{{ url_for('player_plan', code=game.code, color=player.color.key) }}?partial=true"
     hx-trigger="{% if game.choosing %}every 5s{% endif %}"
     hx-target="#board"
     hx-indicator="#spinner">
     {% if game.shared %}
+    {% from "icons.html" import swap %}
     <a
-        class="btn btn-outline-secondary"
+        class="gc-btn-ghost"
         id="switch"
         href="{{ url_for('choose', code=game.code) }}">
-        ⇄ <span class="d-none d-md-inline">Switch Player</span>
+        {{ swap() }}
+        <span class="hidden md:inline">Switch Player</span>
     </a>
     {% endif %}
     <button
         type="button"
-        class="btn btn-dark {% if game.shared and game.choosing %} disabled {% endif %}"
+        class="gc-btn-primary {% if game.shared and game.choosing %} disabled {% endif %}"
         id="plan"
         hx-post="{{ url_for('player_plan', code=game.code, color=player.color.key) }}"
         hx-target="#board"

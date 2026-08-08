@@ -1,0 +1,66 @@
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+    <div class="flex items-center gap-1.5">
+        <span class="gc-label">Size</span>
+        <div class="gc-toggle">
+            <button
+                id="3x3"
+                class="{% if game.board.size == 3 %} active {% endif %}"
+                hx-post="{{ url_for('randomize', code=game.code) }}"
+                hx-vals='{ "size": 3 }'
+                hx-target="#board"
+                hx-indicator="#spinner">
+                3
+            </button>
+            <button
+                id="4x4"
+                class="{% if game.board.size == 4 %} active {% endif %}"
+                hx-post="{{ url_for('randomize', code=game.code) }}"
+                hx-vals='{ "size": 4 }'
+                hx-target="#board"
+                hx-indicator="#spinner">
+                4
+            </button>
+            <button
+                id="5x5"
+                class="{% if game.board.size == 5 %} active {% endif %}"
+                hx-post="{{ url_for('randomize', code=game.code) }}"
+                hx-vals='{ "size": 5 }'
+                hx-target="#board"
+                hx-indicator="#spinner">
+                5
+            </button>
+        </div>
+    </div>
+
+    <div class="flex items-center gap-1.5">
+        <label
+            class="gc-check"
+            hx-post="{{ url_for('randomize', code=game.code) }}"
+            hx-vals='{ "fill": {{ 0 if game.fill else 1 }} }'
+            hx-target="#board"
+            hx-indicator="#spinner">
+            {% if game.fill %}
+            <input type="checkbox" value="" id="fill" checked />
+            {% else %}
+            <input type="checkbox" value="" id="fill" />
+            {% endif %}
+            <span>Random distribution</span>
+        </label>
+
+        {% from "icons.html" import shuffle %}
+        <button
+            type="button"
+            id="new-board"
+            class="gc-btn-ghost !px-2 !py-1 text-neutral-400 hover:text-neutral-100 {% if not game.fill %}pointer-events-none opacity-40{% endif %}"
+            title="Shuffle board"
+            aria-label="Shuffle board"
+            {% if not game.fill %}disabled{% endif %}
+            {% if game.fill %}
+            hx-post="{{ url_for('randomize', code=game.code) }}"
+            hx-target="#board"
+            hx-indicator="#spinner"
+            {% endif %}>
+            {{ shuffle() }}
+        </button>
+    </div>
+</div>

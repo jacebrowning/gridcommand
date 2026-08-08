@@ -1,4 +1,4 @@
-<div style="max-width: 80vh"
+<div class="mx-auto w-full max-w-[min(100%,80vh)] gc-animate-in"
     id="board"
     {% if player and player.state == State.WAITING %}
     hx-get="{{ url_for('player', code=game.code, color=player.color.key) }}?partial=true"
@@ -9,38 +9,36 @@
 
     {% include 'menu.html' %}
 
-    {% if player %}
-    <div class="border border-3 border-{{ player.color.value }} rounded-top"></div>
-    {% endif %}
-
-    <table class="table table-bordered border-dark">
-        <tbody>
-            {% for row in game.board %}
-            <tr>
-                {% for cell in row %}
-                <td>
-                    {% if cell %} {% include "cell.html" %} {% endif %}
-                </td>
+    <div class="gc-board">
+        <table>
+            <tbody>
+                {% for row in game.board %}
+                <tr>
+                    {% for cell in row %}
+                    <td>
+                        {% if cell %} {% include "cell.html" %} {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
                 {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 
-    <div class="d-flex justify-content-between align-items-center">
-        <div class="text-muted">
-            {{ game.message }}
-        </div>
+    <div class="mt-3 flex min-h-[1.25rem] items-center justify-between gap-3">
+        <p class="text-sm text-neutral-500">
+            {% if game.message %}{{ game.message }}{% endif %}
+        </p>
         <div
-            class="spinner-border spinner-border-sm text-secondary htmx-indicator"
+            class="spinner-border htmx-indicator"
             role="status"
             id="spinner">
-            <span class="visually-hidden">Loading...</span>
+            <span class="sr-only">Loading...</span>
         </div>
     </div>
 
     {% if player and player.state == State.WAITING and not game.over and not game.phase and debug %}
-    <div class="border font-monospace mt-3 pt-3 px-3">{% include "moves.html" %}</div>
+    <div class="mt-4 rounded-lg border border-white/10 bg-ink-950/60 p-3 font-mono text-xs text-neutral-400">{% include "moves.html" %}</div>
     {% endif %}
 
     <style>

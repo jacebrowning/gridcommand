@@ -9,7 +9,7 @@ packages = [{ include = "app" }]
 
 [tool.poetry.dependencies]
 
-python = "^3.9"
+python = "^3.10"
 
 flask = "^2.1"
 
@@ -33,7 +33,7 @@ pytest-expecter = "*"
 pytest-random = "*"
 pytest-cov = "*"
 pytest-watch = "^4.2.0"
-pomace = "^0.12.14a1"
+pomace = "^0.12.14"
 
 livereload = "^2.7"
 honcho = "^1.1.0"
