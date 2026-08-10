@@ -1,4 +1,4 @@
-<div class="mx-auto w-full max-w-[min(100%,80vh)] gc-animate-in"
+<div class="mx-auto w-full sm:max-w-[min(100%,80vh)] gc-animate-in"
     id="board"
     {% if player and player.state == State.WAITING %}
     hx-get="{{ url_for('player', code=game.code, color=player.color.key) }}?partial=true"
@@ -25,7 +25,7 @@
         </table>
     </div>
 
-    <div class="mt-3 flex min-h-[1.25rem] items-center justify-between gap-3">
+    <div class="mt-3 flex min-h-[1.25rem] items-center justify-between gap-3 px-3 sm:px-0">
         <p class="min-w-0 flex-1 text-sm text-neutral-500" role="status">
             {% if game.message %}{{ game.message }}{% endif %}
         </p>
@@ -36,8 +36,8 @@
             aria-label="Loading"></div>
     </div>
 
-    {% if player and player.state == State.WAITING and not game.over and not game.phase and debug %}
-    <div class="gc-debug-moves mt-4 rounded-lg border border-white/10 bg-ink-950/60 p-3 font-mono text-xs text-neutral-400">
+    {% if player and player.state == State.WAITING and not game.over and not game.phase %}
+    <div class="gc-debug-moves mt-4 rounded-lg border border-white/10 bg-ink-950/60 p-3 font-mono text-xs text-neutral-400 mx-3 sm:mx-0">
         {% include "moves.html" %}
     </div>
     {% endif %}

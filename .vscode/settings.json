@@ -1,7 +1,12 @@
 {
-    "python.formatting.provider": "black",
-    "python.linting.mypyEnabled": true,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true
+    },
     "editor.formatOnSave": true,
+    "pylint.args": [
+        "--disable=C"
+    ],
     "cSpell.words": [
         "ABCDEFGHJKLMNPQRTUVXYZ",
         "addopts",

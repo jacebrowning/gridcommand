@@ -72,7 +72,7 @@
 
             @layer components {
                 .gc-shell {
-                    @apply mx-auto w-full max-w-3xl px-3 py-4 sm:px-4 sm:py-6;
+                    @apply mx-auto w-full max-w-3xl px-0 py-2 sm:px-4 sm:py-6;
                 }
 
                 .gc-icon {
@@ -91,7 +91,7 @@
                 }
 
                 .gc-hud {
-                    @apply mb-3 space-y-3 rounded-lg border border-white/10 bg-ink-900/70 px-3 py-2.5 backdrop-blur-sm sm:mb-4 sm:space-y-4 sm:px-3.5;
+                    @apply mx-3 mb-3 space-y-3 rounded-lg border border-white/10 bg-ink-900/70 px-3 py-2.5 backdrop-blur-sm sm:mx-0 sm:mb-4 sm:space-y-4 sm:px-3.5;
                 }
 
                 .gc-hud-row {
@@ -236,7 +236,7 @@
                 }
 
                 .gc-board {
-                    @apply w-full overflow-hidden rounded-lg border border-white/15 bg-ink-950/70;
+                    @apply w-full overflow-hidden rounded-none border-x-0 border-y border-white/15 bg-ink-950/70 sm:rounded-lg sm:border;
                 }
 
                 .gc-board table {
