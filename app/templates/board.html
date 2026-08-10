@@ -36,7 +36,7 @@
             aria-label="Loading"></div>
     </div>
 
-    {% if player and player.state == State.WAITING and not game.over and not game.phase %}
+    {% if debug and player and player.state == State.WAITING and not game.over and not game.phase %}
     <div class="gc-debug-moves mt-4 rounded-lg border border-white/10 bg-ink-950/60 p-3 font-mono text-xs text-neutral-400 mx-3 sm:mx-0">
         {% include "moves.html" %}
     </div>
