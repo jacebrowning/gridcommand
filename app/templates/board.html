@@ -1,6 +1,6 @@
 <div class="mx-auto w-full sm:max-w-[min(100%,80vh)] gc-animate-in"
     id="board"
-    {% if player and player.state == State.WAITING %}
+    {% if player and (player.state == State.WAITING or player not in game.living) %}
     hx-get="{{ url_for('player', code=game.code, color=player.color.key) }}?partial=true"
     hx-trigger="every 2s"
     hx-target="#board"

@@ -1,7 +1,6 @@
 import pytest
 from expecter import expect
 
-from app.constants import UNITS
 from app.enums import Color, State
 from app.models import Cell, Game
 
@@ -25,6 +24,47 @@ def game():
 def test_humans(game):
     expect(len(game.players)) == 4
     expect(len(game.humans)) == 1
+
+
+def test_living_excludes_players_with_no_cells(game):
+    expect([p.color for p in game.living]) == [Color.BLUE]
+
+    game.board.cells.append(Cell(1, 0, Color.RED, 1))
+    expect([p.color for p in game.living]) == [Color.BLUE, Color.RED]
+
+
+def test_show_results_eliminates_players_with_no_cells(game):
+    game.round = 1
+    for player in game.players:
+        player.state = State.WAITING
+        player.round = 1
+    red = game.get_player("red")
+    expect(red.autoplay) == True
+
+    blue = game.get_player("blue")
+    # Wipe blue's cells through combat-equivalent board state
+    for cell in list(game.board.get_cells(Color.BLUE)):
+        cell.color = Color.NONE
+        cell.center = 0
+
+    game.show_results()
+
+    expect(blue.autoplay) == True
+    expect(blue.state) == State.WAITING
+    expect(blue in game.living) == False
+
+
+def test_humans_done_planning_skips_dead_humans(game):
+    game.round = 1
+    blue = game.get_player("blue")
+    blue.autoplay = False
+    blue.state = State.PLANNING
+    blue.round = 1
+    for cell in list(game.board.get_cells(Color.BLUE)):
+        cell.color = Color.NONE
+        cell.center = 0
+
+    expect(game._humans_done_planning()) == True
 
 
 def test_fortify(game):
@@ -65,7 +105,7 @@ def test_initialize_gives_all_players_equal_units():
     for player in game.players:
         owned = list(game.board.get_cells(player.color))
         expect(len(owned)) >= 1
-        expect(sum(cell.value for cell in owned)) == UNITS
+        expect(sum(cell.value for cell in owned)) == game.board.size * 4
 
 
 def test_initialize_corners_only_when_fill_disabled():
@@ -78,7 +118,19 @@ def test_initialize_corners_only_when_fill_disabled():
     for player in game.players:
         cells = list(game.board.get_cells(player.color))
         expect(len(cells)) == 1
-        expect(cells[0].value) == UNITS
+        expect(cells[0].value) == 16
+
+
+def test_initialize_starting_units_scale_with_board_size():
+    game = Game()
+    game.fill = False
+    game.initialize(size=3, players=2)
+    for player in game.players:
+        expect(sum(cell.value for cell in game.board.get_cells(player.color))) == 12
+
+    game.initialize(size=5, players=2)
+    for player in game.players:
+        expect(sum(cell.value for cell in game.board.get_cells(player.color))) == 20
 
 
 def test_planning_includes_computer_players():
@@ -137,3 +189,23 @@ def test_tick_autoplay_finishes_computers_after_delay():
         for cell in autoplay_cells
     ]
     expect(after) == before
+
+
+def test_tick_advances_phases_when_only_computers_remain(game):
+    game.round = 1
+    game.phase = "results"
+    for player in game.players:
+        player.autoplay = True
+        player.state = State.WAITING
+        player.round = 1
+    game.board.cells.append(Cell(1, 0, Color.RED, 2))
+
+    game.tick()
+    expect(game.phase) == "reinforcements"
+
+    game.tick()
+    expect(game.phase) == "reinforce"
+
+    game.tick()
+    expect(game.phase) == ""
+    expect(game.round) == 2

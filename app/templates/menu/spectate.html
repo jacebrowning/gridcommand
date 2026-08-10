@@ -1,0 +1,10 @@
+{% if game.shared %}
+{% from "icons.html" import swap %}
+<a
+    class="gc-btn-ghost"
+    id="switch"
+    href="{{ url_for('choose', code=game.code) }}">
+    {{ swap() }}
+    <span class="hidden md:inline">Switch Player</span>
+</a>
+{% endif %}

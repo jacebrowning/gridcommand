@@ -13,7 +13,7 @@ from flask import url_for
 
 from . import autoplay
 from .actions import Attack, AttackWithRetreat, BorderClash, Fortification, MassAttack
-from .constants import EXTRA, FILL, PLAYERS, SHARED, SIZE, UNITS, generate_code
+from .constants import EXTRA, FILL, PLAYERS, SHARED, SIZE, generate_code
 from .enums import Color, State
 from .types import Cell, Player
 
@@ -225,13 +225,17 @@ class Game:
         return [player for player in self.players if not player.autoplay]
 
     @property
+    def living(self) -> list[Player]:
+        return [p for p in self.players if any(self.board.get_cells(p.color))]
+
+    @property
     def choosing(self) -> int:
         return sum(1 for p in self.players if p.state is State.UNKNOWN)
 
     @property
     def planning(self) -> int:
         count = 0
-        for player in self.players:
+        for player in self.living:
             if player.state is not State.WAITING:
                 log.info(f"Waiting for {player} to plan their moves")
                 count += 1
@@ -240,9 +244,9 @@ class Game:
                 count += 1
         return count
 
-    @cached_property
+    @property
     def over(self) -> str:
-        remaining = [p for p in self.players if any(self.board.get_cells(p.color))]
+        remaining = self.living
         if len(remaining) == 1:
             return remaining[0].color.title
         return ""
@@ -276,7 +280,7 @@ class Game:
     def initialize(self, size: int = SIZE, players: int = PLAYERS):
         self.players = Player.defaults(players)
 
-        units: dict[Color, int] = {player.color: UNITS for player in self.players}
+        units: dict[Color, int] = {player.color: size * 4 for player in self.players}
         cells: dict[Color, list[Cell]] = {player.color: [] for player in self.players}
 
         with datafiles.frozen(self):
@@ -300,12 +304,22 @@ class Game:
                     cell.center += 1
 
     def _humans_done_planning(self) -> bool:
-        for player in self.players:
-            if player.autoplay:
+        for player in self.humans:
+            if not any(self.board.get_cells(player.color)):
                 continue
             if player.state is not State.WAITING or player.round < self.round:
                 return False
         return True
+
+    def _eliminate_dead_players(self) -> None:
+        for player in self.players:
+            if any(self.board.get_cells(player.color)):
+                continue
+            if not player.autoplay:
+                log.info(f"{player.color.title} player eliminated")
+                player.autoplay = True
+            player.state = State.WAITING
+            player.round = self.round
 
     def tick_autoplay(self, *, force: bool = False) -> None:
         """Schedule or finish computer moves in seat order around the table."""
@@ -330,6 +344,24 @@ class Game:
                 continue
             self._complete_autoplay(player)
 
+    def tick(self) -> None:
+        """Progress computer turns; when no humans remain, advance resolve phases."""
+        if self.round < 1 or self.over:
+            return
+        self.tick_autoplay()
+        if any(not player.autoplay for player in self.living):
+            return
+        if self.planning:
+            return
+        if not self.phase:
+            self.show_results()
+        elif self.phase == "results":
+            self.show_reinforcements()
+        elif self.phase == "reinforcements":
+            self.reinforce()
+        elif self.phase == "reinforce":
+            self.advance()
+
     def _complete_autoplay(self, player: Player) -> None:
         cells = list(self.board.get_cells(player.color))
         autoplay.plan(cells, player)
@@ -345,6 +377,7 @@ class Game:
 
         self.tick_autoplay(force=True)
         count = self.board.advance()
+        self._eliminate_dead_players()
         self.phase = "results"
         return count
 

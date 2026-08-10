@@ -7,7 +7,7 @@ PLAYERS = int(os.getenv("PLAYERS", "2"))  # 1 to 4
 SHARED = os.getenv("SHARED") == "true"
 
 FILL = 2 / 3  # 0.1 to 1.0
-UNITS = SIZE * 4  # 1 to 10
+UNITS = SIZE * 4  # scales with board size in Game.initialize
 EXTRA = 1 / 3  # 0.0 to 1.0
 
 LETTERS = "ABCDEFGHJKLMNPQRTUVXYZ"

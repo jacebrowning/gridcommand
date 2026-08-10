@@ -40,7 +40,7 @@ page = page.click_done_planning(wait=WAIT)
 
 pomace.log.info("Waiting for others")
 for _ in range(10):
-    page = pomace.visit(page.url, delay=WAIT)
+    page = pomace.visit(page.url, delay=0.5)
     if "to plan moves" not in page:
         break
 else:

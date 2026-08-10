@@ -47,7 +47,9 @@
 
         <div class="flex shrink-0 flex-wrap items-center justify-end gap-2">
             {% if not game.over %}
-                {% if player.state == State.PLANNING %}
+                {% if player not in game.living %}
+                {% include "menu/spectate.html" %}
+                {% elif player.state == State.PLANNING %}
                 {% include "menu/done.html" %}
                 {% elif player.state == State.WAITING %}
                 {% include "menu/next.html" %}

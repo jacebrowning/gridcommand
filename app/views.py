@@ -75,10 +75,17 @@ def player(code: str, color: str):
     game = Game(code)
     player = game.get_player(color)
     with datafiles.frozen(game):
-        if not player.autoplay and game.round > player.round:
+        alive = any(game.board.get_cells(player.color))
+        if not alive:
+            if not player.autoplay:
+                log.info(f"{player.color.title} player eliminated")
+                player.autoplay = True
+            player.state = State.WAITING
+            player.round = game.round
+        elif not player.autoplay and game.round > player.round:
             player.round = game.round
             player.state = State.READY if game.round == 1 else State.PLANNING
-        game.tick_autoplay()
+        game.tick()
     if "partial" in request.args:
         return render_template("board.html", game=game, player=player)
     return render_template("index.html", game=game, player=player)
@@ -91,7 +98,7 @@ def player_plan(code: str, color: str):
     if "partial" not in request.args:
         player.state = State.PLANNING
     with datafiles.frozen(game):
-        game.tick_autoplay()
+        game.tick()
     return render_template("board.html", game=game, player=player)
 
 
@@ -101,7 +108,7 @@ def player_done(code: str, color: str):
     player = game.get_player(color)
     player.state = State.WAITING
     with datafiles.frozen(game):
-        game.tick_autoplay()
+        game.tick()
     return render_template("board.html", game=game, player=player)
 
 

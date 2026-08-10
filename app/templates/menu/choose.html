@@ -2,7 +2,7 @@
 <div class="flex w-full flex-wrap items-center justify-between gap-x-2 gap-y-2">
     <span class="gc-label shrink-0">Choose color</span>
     <div class="flex flex-nowrap items-center gap-1.5">
-        {% for player in game.players %}
+        {% for player in game.living %}
         {% set taken = player.autoplay or (player.state.value and game.choosing) %}
         {% if taken %}
         <span
