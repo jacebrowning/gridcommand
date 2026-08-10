@@ -51,7 +51,7 @@ Agents always pass `HEADLESS=true`. Humans can omit it to watch the browser.
 
 - `app/models.py` — `Board` / `Game` (persisted under `data/games/`)
 - `app/autoplay.py` — non-human player AI (random move planning)
-- Turn resolve is four steps: **See Results** (tactical + combat), **Show Reinforcements**, **Apply Reinforcements**, then **Start Next Round**
+- Turn resolve is three steps: **Show Results** (tactical + combat), **Show Reinforcements**, then **Start Next Round** (applies reinforcements)
 - `app/actions.py` — simultaneous-move resolution (`Attack`, `MassAttack`, etc.)
 - `app/views.py` — Flask routes
 - `app/types.py`, `app/enums.py`, `app/constants.py` — shared types and config

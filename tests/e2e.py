@@ -45,7 +45,7 @@ for _ in range(10):
         break
 else:
     raise AssertionError("Timed out waiting for others")
-assert "See Results" in page
+assert "Show Results" in page
 
 pomace.log.info("Applying results")
 page = page.click_next_round(wait=WAIT)
@@ -56,11 +56,6 @@ pomace.log.info("Showing reinforcements")
 page = page.click_next_round(wait=WAIT)
 assert "Round 1" in page
 assert "+1" in page
-assert "Apply Reinforcements" in page
-
-pomace.log.info("Applying reinforcements")
-page = page.click_next_round(wait=WAIT)
-assert "Round 1" in page
 assert "Start Next Round" in page
 
 pomace.log.info("Starting next round")

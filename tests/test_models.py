@@ -1,3 +1,5 @@
+import random
+
 import pytest
 from expecter import expect
 
@@ -70,7 +72,7 @@ def test_humans_done_planning_skips_dead_humans(game):
 def test_fortify(game):
     game.advance()
     expect(game.board.cells) == [
-        Cell(0, 0, Color.BLUE, 1),
+        Cell(0, 0, Color.BLUE, 2),
         Cell(0, 1, Color.BLUE, 3),
         Cell(0, 2, Color.NONE, 0),
         Cell(0, 3, Color.BLUE, 4),
@@ -97,6 +99,33 @@ def test_show_reinforcements_previews_counts(game):
     expect(game.board.cells[3].extra) == 1
 
 
+def test_reinforcement_count_scales_with_territories(game):
+    expect(game.board.reinforcement_count(game.players[0])) == 3  # 6 blue cells
+
+    game.board.cells = [
+        Cell(0, 0, Color.BLUE, 1),
+        Cell(0, 1, Color.BLUE, 1),
+        Cell(0, 2, Color.BLUE, 1),
+        Cell(0, 3, Color.BLUE, 1),
+    ]
+    expect(game.board.reinforcement_count(game.players[0])) == 2
+
+    game.board.cells = [
+        Cell(0, 0, Color.BLUE, 1),
+        Cell(0, 1, Color.BLUE, 1),
+        Cell(0, 2, Color.BLUE, 1),
+        Cell(0, 3, Color.BLUE, 1),
+        Cell(0, 4, Color.BLUE, 1),
+    ]
+    expect(game.board.reinforcement_count(game.players[0])) == 2
+
+    game.board.cells = [Cell(0, 0, Color.BLUE, 1)]
+    expect(game.board.reinforcement_count(game.players[0])) == 1
+
+    game.board.cells = []
+    expect(game.board.reinforcement_count(game.players[0])) == 0
+
+
 def test_initialize_gives_all_players_equal_units():
     game = Game()
     game.initialize(players=2)
@@ -105,7 +134,19 @@ def test_initialize_gives_all_players_equal_units():
     for player in game.players:
         owned = list(game.board.get_cells(player.color))
         expect(len(owned)) >= 1
-        expect(sum(cell.value for cell in owned)) == game.board.size * 4
+        expect(sum(cell.value for cell in owned)) == game.board.size * 3
+
+
+def test_initialize_fill_gives_each_player_at_least_two_cells():
+    game = Game()
+    game.fill = True
+    for seed in range(20):
+        random.seed(seed)
+        game.initialize(size=3, players=4)
+        for player in game.players:
+            owned = list(game.board.get_cells(player.color))
+            expect(len(owned)) >= 2
+            expect(sum(cell.value for cell in owned)) == 9
 
 
 def test_initialize_corners_only_when_fill_disabled():
@@ -118,7 +159,7 @@ def test_initialize_corners_only_when_fill_disabled():
     for player in game.players:
         cells = list(game.board.get_cells(player.color))
         expect(len(cells)) == 1
-        expect(cells[0].value) == 16
+        expect(cells[0].value) == 12
 
 
 def test_initialize_starting_units_scale_with_board_size():
@@ -126,11 +167,11 @@ def test_initialize_starting_units_scale_with_board_size():
     game.fill = False
     game.initialize(size=3, players=2)
     for player in game.players:
-        expect(sum(cell.value for cell in game.board.get_cells(player.color))) == 12
+        expect(sum(cell.value for cell in game.board.get_cells(player.color))) == 9
 
     game.initialize(size=5, players=2)
     for player in game.players:
-        expect(sum(cell.value for cell in game.board.get_cells(player.color))) == 20
+        expect(sum(cell.value for cell in game.board.get_cells(player.color))) == 15
 
 
 def test_planning_includes_computer_players():
@@ -202,9 +243,6 @@ def test_tick_advances_phases_when_only_computers_remain(game):
 
     game.tick()
     expect(game.phase) == "reinforcements"
-
-    game.tick()
-    expect(game.phase) == "reinforce"
 
     game.tick()
     expect(game.phase) == ""

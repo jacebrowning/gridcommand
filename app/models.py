@@ -253,9 +253,7 @@ class Game:
 
     @property
     def step(self) -> int:
-        if self.phase == "reinforce":
-            return 4
-        if self.phase == "reinforcements":
+        if self.phase in {"reinforcements", "reinforce"}:
             return 3
         if self.phase == "results":
             return 2
@@ -280,7 +278,7 @@ class Game:
     def initialize(self, size: int = SIZE, players: int = PLAYERS):
         self.players = Player.defaults(players)
 
-        units: dict[Color, int] = {player.color: size * 4 for player in self.players}
+        units: dict[Color, int] = {player.color: size * 3 for player in self.players}
         cells: dict[Color, list[Cell]] = {player.color: [] for player in self.players}
 
         with datafiles.frozen(self):
@@ -288,15 +286,27 @@ class Game:
             self.board.initialize()
 
             for cell in self.board.cells:
-                if self.fill and cell.color is Color.NONE and random.random() < FILL:
-                    player = random.choice(self.players)
-                    cell.color = player.color
-                    cell.center = 1
-                    units[player.color] -= 1
-                    cells[player.color].append(cell)
-                elif cell.color in cells:
+                if cell.color in cells:
                     units[cell.color] -= 1
                     cells[cell.color].append(cell)
+
+            if self.fill:
+                empty = [cell for cell in self.board.cells if cell.color is Color.NONE]
+                random.shuffle(empty)
+                for player in self.players:
+                    while len(cells[player.color]) < 2 and empty:
+                        cell = empty.pop()
+                        cell.color = player.color
+                        cell.center = 1
+                        units[player.color] -= 1
+                        cells[player.color].append(cell)
+                for cell in empty:
+                    if random.random() < FILL:
+                        player = random.choice(self.players)
+                        cell.color = player.color
+                        cell.center = 1
+                        units[player.color] -= 1
+                        cells[player.color].append(cell)
 
             for color, count in units.items():
                 for _ in range(count):
@@ -357,14 +367,12 @@ class Game:
             self.show_results()
         elif self.phase == "results":
             self.show_reinforcements()
-        elif self.phase == "reinforcements":
-            self.reinforce()
-        elif self.phase == "reinforce":
+        elif self.phase in {"reinforcements", "reinforce"}:
             self.advance()
 
     def _complete_autoplay(self, player: Player) -> None:
         cells = list(self.board.get_cells(player.color))
-        autoplay.plan(cells, player)
+        autoplay.plan(cells, player, board=self.board.cells)
         player.state = State.WAITING
         player.round = self.round
         player.autoplay_until = 0.0

@@ -13,7 +13,7 @@
         class="gc-btn-primary shrink-0 whitespace-nowrap {% if game.choosing or game.planning %} disabled {% endif %}"
         href="{{ url_for('player_next', code=game.code, color=player.color.key) }}"
         id="next">
-        {% if game.phase == "reinforce" %}Start Next Round{% elif game.phase == "reinforcements" %}Apply Reinforcements{% elif game.phase == "results" %}Show Reinforcements{% else %}See Results{% endif %}
+        {% if game.phase == "reinforcements" or game.phase == "reinforce" %}Start Next Round{% elif game.phase == "results" %}Show Reinforcements{% else %}Show Results{% endif %}
     </a>
     {% endif %}
 </div>

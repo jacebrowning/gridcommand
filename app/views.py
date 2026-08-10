@@ -124,9 +124,6 @@ def player_next(code: str, color: str):
             elif game.phase == "results":
                 game.show_reinforcements()
                 player.state = State.WAITING
-            elif game.phase == "reinforcements":
-                game.reinforce()
-                player.state = State.WAITING
             else:
                 game.advance()
                 player.state = State.PLANNING
