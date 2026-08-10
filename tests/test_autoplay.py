@@ -7,6 +7,53 @@ from app.enums import Color, State
 from app.types import Cell, Player
 
 
+def test_plan_coordinates_mass_attack_on_weak_enemy():
+    # Two RED stacks adjacent to one BLUE; combined surplus can overwhelm.
+    cells = [
+        Cell(0, 0, Color.RED, 3, size=2),
+        Cell(0, 1, Color.BLUE, 2, size=2),
+        Cell(1, 0, Color.NONE, 0, size=2),
+        Cell(1, 1, Color.RED, 3, size=2),
+    ]
+    player = Player(Color.RED, autoplay=True)
+
+    autoplay.plan([cells[0], cells[3]], player, board=cells)
+
+    expect(cells[0].right) >= 1
+    expect(cells[3].up) >= 1
+    expect(cells[0].right + cells[3].up) >= 3
+
+
+def test_plan_skips_mass_attack_without_superiority():
+    cells = [
+        Cell(0, 0, Color.RED, 2, size=2),
+        Cell(0, 1, Color.BLUE, 4, size=2),
+        Cell(1, 0, Color.NONE, 0, size=2),
+        Cell(1, 1, Color.RED, 2, size=2),
+    ]
+    player = Player(Color.RED, autoplay=True)
+
+    autoplay.plan([cells[0], cells[3]], player, board=cells)
+
+    # Surplus is only 1+1=2 against defense 4 — no coordinated strike.
+    expect(cells[0].right + cells[3].up) < 3
+
+
+def test_commit_mass_attacks_requires_two_supporters():
+    cells = [
+        Cell(0, 0, Color.RED, 5, size=2),
+        Cell(0, 1, Color.BLUE, 1, size=2),
+        Cell(1, 0, Color.NONE, 0, size=2),
+        Cell(1, 1, Color.NONE, 0, size=2),
+    ]
+    grid = autoplay._grid(cells)
+
+    moved = autoplay._commit_mass_attacks([cells[0]], Color.RED, grid)
+
+    expect(moved) == 0
+    expect(cells[0].right) == 0
+
+
 def test_plan_moves_units_with_board_context():
     cells = [
         Cell(0, 0, Color.RED, 3, size=2),

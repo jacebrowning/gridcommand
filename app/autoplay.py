@@ -31,6 +31,9 @@ REVERSE = {
     "right": "left",
 }
 
+# Attack with at least this many more units than the defender.
+ATTACK_MARGIN = 1
+
 
 def plan(
     cells: list[Cell],
@@ -38,9 +41,11 @@ def plan(
     *,
     board: Optional[list[Cell]] = None,
 ) -> int:
-    """Commit units toward useful adjacent cells for an autoplay player."""
+    """Commit units for an autoplay player (mass attacks, then local plans)."""
     grid = _grid(board if board is not None else cells)
     count = 0
+    if board is not None:
+        count += _commit_mass_attacks(cells, player.color, grid)
     for cell in cells:
         count += _plan_cell(cell, player.color, grid)
     count -= _cancel_opposing_transfers(cells, grid)
@@ -59,6 +64,15 @@ def _neighbor(
 ) -> Optional[Cell]:
     dr, dc = DELTA[direction]
     return grid.get((cell.row + dr, cell.col + dc))
+
+
+def _direction_toward(start: Cell, finish: Cell) -> Optional[str]:
+    dr = finish.row - start.row
+    dc = finish.col - start.col
+    for direction, (adr, adc) in DELTA.items():
+        if (dr, dc) == (adr, adc):
+            return direction
+    return None
 
 
 def _reachable(cell: Cell) -> list[str]:
@@ -88,6 +102,101 @@ def _threatened_by_larger(
     return False
 
 
+def _surplus(cell: Cell) -> int:
+    """Units that can move while keeping a garrison when possible."""
+    if cell.center <= 1:
+        return 0
+    return cell.center - 1
+
+
+def _send(cell: Cell, direction: str, amount: int) -> int:
+    sent = 0
+    for _ in range(amount):
+        if cell.center <= 0:
+            break
+        cell.center -= 1
+        setattr(cell, direction, getattr(cell, direction) + 1)
+        sent += 1
+    return sent
+
+
+def _commit_mass_attacks(
+    cells: list[Cell], color: Color, grid: dict[tuple[int, int], Cell]
+) -> int:
+    """Coordinate 2+ stacks into one enemy when combined force is superior."""
+    owned = {(cell.row, cell.col) for cell in cells}
+    enemies = [
+        cell
+        for cell in grid.values()
+        if cell.color not in {Color.NONE, color} and cell.value > 0
+    ]
+
+    targets: list[tuple[tuple[int, int, int], Cell, list[tuple[Cell, str, int]]]] = []
+    for enemy in enemies:
+        supporters: list[tuple[Cell, str, int]] = []
+        for direction in DELTA:
+            neighbor = _neighbor(grid, enemy, direction)
+            if neighbor is None or (neighbor.row, neighbor.col) not in owned:
+                continue
+            toward = _direction_toward(neighbor, enemy)
+            if toward is None:
+                continue
+            available = _surplus(neighbor)
+            if available:
+                supporters.append((neighbor, toward, available))
+        if len(supporters) < 2:
+            continue
+        total = sum(available for _, _, available in supporters)
+        need = enemy.value + ATTACK_MARGIN
+        if total < need:
+            continue
+        # Prefer weaker enemies with more overlapping force.
+        priority = (enemy.value, -total, -len(supporters))
+        targets.append((priority, enemy, supporters))
+
+    targets.sort(key=lambda item: item[0])
+    moved = 0
+    for _, enemy, supporters in targets:
+        need = enemy.value + ATTACK_MARGIN
+        live = []
+        for cell, direction, _ in supporters:
+            available = _surplus(cell)
+            if available:
+                live.append((cell, direction, available))
+        if len(live) < 2:
+            continue
+        total = sum(available for _, _, available in live)
+        if total < need:
+            continue
+
+        remaining = need
+        # Ensure at least two directions participate (mass attack).
+        for cell, direction, _ in live[:2]:
+            if remaining <= 0:
+                break
+            if cell.center <= 1:
+                continue
+            sent = _send(cell, direction, 1)
+            remaining -= sent
+            moved += sent
+
+        while remaining > 0:
+            progress = False
+            for cell, direction, _ in live:
+                if remaining <= 0:
+                    break
+                if cell.center <= 1:
+                    continue
+                sent = _send(cell, direction, 1)
+                if sent:
+                    remaining -= sent
+                    moved += sent
+                    progress = True
+            if not progress:
+                break
+    return moved
+
+
 def _score(
     cell: Cell,
     direction: str,
@@ -96,31 +205,30 @@ def _score(
     grid: dict[tuple[int, int], Cell],
     *,
     retreat: bool = False,
+    territories: int = 1,
 ) -> float:
     committed = getattr(cell, direction)
 
     if neighbor.color is Color.NONE:
-        # Claim empty ground; a couple units are usually enough.
+        # Claim empty ground; economy spike at 4 cells makes early expands critical.
         if committed >= 3:
             score = 1.0
         else:
             score = 12.0 - committed * 3.0
+        if territories < 4:
+            score += 8.0
         return score + 10.0 if retreat else score
 
     if neighbor.color is color:
-        # Never swap units with a friendly cell that is already sending back.
         if getattr(neighbor, REVERSE[direction]):
             return 0.0
-        # Don't drain into equal/stronger allies — reinforce weaker cells instead.
         if not retreat and neighbor.value >= cell.value:
             return 0.0
         threats = _enemy_adjacent(grid, neighbor, color)
         weakness = max(0, 4 - neighbor.value)
         score = 4.0 + threats * 4.0 + weakness * 2.0 - committed * 0.5
-        # Lone units prefer consolidating into allies over standing ground.
         return score + 14.0 if retreat else score
 
-    # Enemy: only attack with numerical superiority; even fights are too risky.
     defense = neighbor.value
     if retreat and defense > cell.center:
         return 0.0
@@ -128,11 +236,15 @@ def _score(
     max_force = committed + cell.center
     if max_force <= defense:
         return 0.0
+    # Only finish attacks that keep numerical superiority.
     if next_force <= defense:
         return 10.0 + (max_force - defense)
+    if next_force < defense + ATTACK_MARGIN:
+        return 0.0
     if next_force > defense + 2:
         return 0.5
-    return 16.0 + (next_force - defense)
+    # Prefer hitting weaker enemies (income denial + easier wins).
+    return 16.0 + (next_force - defense) + max(0, 5 - defense)
 
 
 def _cancel_opposing_transfers(
@@ -159,6 +271,14 @@ def _cancel_opposing_transfers(
     return cancelled
 
 
+def _pick_direction(options: list[tuple[str, Cell]], weights: list[float]) -> str:
+    best = max(weights)
+    tied = [
+        direction for (direction, _), weight in zip(options, weights) if weight == best
+    ]
+    return random.choice(tied)
+
+
 def _plan_cell(cell: Cell, color: Color, grid: dict[tuple[int, int], Cell]) -> int:
     if not cell.center:
         return 0
@@ -170,7 +290,6 @@ def _plan_cell(cell: Cell, color: Color, grid: dict[tuple[int, int], Cell]) -> i
             options.append((direction, neighbor))
 
     if not options:
-        # No board context: fall back to edge-aware random moves.
         directions = _reachable(cell)
         if not directions:
             return 0
@@ -181,28 +300,34 @@ def _plan_cell(cell: Cell, color: Color, grid: dict[tuple[int, int], Cell]) -> i
             setattr(cell, direction, getattr(cell, direction) + 1)
         return moving
 
+    territories = sum(1 for c in grid.values() if c.color is color)
     retreat = (
         cell.center == 1
         and _threatened_by_larger(grid, cell, color)
         and random.random() < 0.8
     )
-    # Hold territory unless deliberately retreating from a larger enemy.
     keep = 0 if retreat else 1
     moved = 0
 
     while cell.center > keep:
         weights = [
             max(
-                _score(cell, direction, neighbor, color, grid, retreat=retreat),
+                _score(
+                    cell,
+                    direction,
+                    neighbor,
+                    color,
+                    grid,
+                    retreat=retreat,
+                    territories=territories,
+                ),
                 0.0,
             )
             for direction, neighbor in options
         ]
         if not any(weights):
             break
-        direction = random.choices(
-            [direction for direction, _ in options], weights=weights, k=1
-        )[0]
+        direction = _pick_direction(options, weights)
         cell.center -= 1
         setattr(cell, direction, getattr(cell, direction) + 1)
         moved += 1
