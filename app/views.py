@@ -84,7 +84,7 @@ def player(code: str, color: str):
             player.round = game.round
         elif not player.autoplay and game.round > player.round:
             player.round = game.round
-            player.state = State.READY if game.round == 1 else State.PLANNING
+            player.state = State.READY
         game.tick()
     if "partial" in request.args:
         return render_template("board.html", game=game, player=player)
@@ -126,9 +126,9 @@ def player_next(code: str, color: str):
                 player.state = State.WAITING
             else:
                 game.advance()
-                player.state = State.PLANNING
+                player.state = State.READY
     else:
-        player.state = State.PLANNING
+        player.state = State.READY
     return redirect(url_for("player", code=game.code, color=player.color.key))
 
 

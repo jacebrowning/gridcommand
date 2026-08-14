@@ -61,5 +61,6 @@ assert "Start Next Round" in page
 pomace.log.info("Starting next round")
 page = page.click_next_round(wait=WAIT)
 assert "Round 2" in page
+assert "Plan Moves" in page
 
 print("\n🎉\n")
