@@ -72,7 +72,7 @@
 
             @layer components {
                 .gc-shell {
-                    @apply mx-auto w-full max-w-3xl px-0 py-2 sm:px-4 sm:py-6;
+                    @apply mx-auto flex min-h-dvh w-full max-w-3xl flex-col overflow-x-hidden px-0 py-2 sm:px-4 sm:py-4;
                 }
 
                 .gc-icon {
@@ -91,7 +91,7 @@
                 }
 
                 .gc-hud {
-                    @apply mx-3 mb-3 space-y-3 rounded-lg border border-white/10 bg-ink-900/70 px-3 py-2.5 backdrop-blur-sm sm:mx-0 sm:mb-4 sm:space-y-4 sm:px-3.5;
+                    @apply mx-3 mb-3 shrink-0 space-y-3 rounded-lg border border-white/10 bg-ink-900/70 px-3 py-2.5 backdrop-blur-sm sm:mx-0 sm:mb-3 sm:w-0 sm:min-w-full sm:space-y-4 sm:px-3.5;
                 }
 
                 .gc-hud-row {
@@ -235,12 +235,33 @@
                     @apply pointer-events-none opacity-40;
                 }
 
+                .gc-board-frame {
+                    @apply mx-auto flex w-full flex-col;
+                }
+
+                .gc-board-stage {
+                    @apply flex w-full items-start justify-center;
+                }
+
+                .gc-play-column {
+                    @apply flex flex-col;
+                    width: min(100%, calc(100dvh - 9.5rem));
+                }
+
                 .gc-board {
-                    @apply w-full overflow-hidden rounded-none border-x-0 border-y border-white/15 bg-ink-950/70 sm:rounded-lg sm:border;
+                    @apply w-full shrink-0 overflow-hidden rounded-none border-x-0 border-y border-white/15 bg-ink-950/70 sm:rounded-lg sm:border;
                 }
 
                 .gc-board table {
                     @apply w-full border-collapse table-fixed;
+                }
+
+                .gc-status {
+                    @apply mx-3 mt-2 flex min-h-[1.25rem] shrink-0 items-center justify-between gap-3 sm:mx-0 sm:mt-3 sm:w-0 sm:min-w-full;
+                }
+
+                .gc-debug-moves {
+                    @apply mx-3 mt-4 rounded-lg border border-white/10 bg-ink-950/60 p-3 font-mono text-xs text-neutral-400 sm:mx-0;
                 }
 
                 .gc-board td {

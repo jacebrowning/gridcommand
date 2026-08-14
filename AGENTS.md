@@ -52,10 +52,21 @@ Agents always pass `HEADLESS=true`. Humans can omit it to watch the browser.
 - `app/models.py` — `Board` / `Game` (persisted under `data/games/`)
 - `app/autoplay.py` — non-human player AI (random move planning)
 - Turn resolve is three steps: **Show Results** (tactical + combat), **Show Reinforcements**, then **Start Next Round** (applies reinforcements)
+- After **Start Next Round**, players return to `State.READY` so the **Plan Moves…** button shows (ellipsis marks that planning is a follow-on step)
 - `app/actions.py` — simultaneous-move resolution (`Attack`, `MassAttack`, etc.)
 - `app/views.py` — Flask routes
 - `app/types.py`, `app/enums.py`, `app/constants.py` — shared types and config
 - `sites/` — pomace page models for e2e
+
+## UI chrome (board view)
+
+Player bar (HUD), grid, and status message are the main in-game stack (`.gc-play-column` in `board.html` / styles in `base.html`):
+
+- All three must **fit vertically** in the viewport (no page scroll for that stack). Size the square grid from the remaining space (`min(100%, calc(100dvh - …))` on `.gc-play-column`); keep cells square via the `td:after { margin-top: 100% }` trick in `board.html`.
+- Debug move lists sit **below the status bar** in normal flow and must not shrink or rescale the grid. It is fine if debug content extends past the bottom of the screen. Do not use a viewport-tall spacer stage that leaves a gap above debug.
+- Top-align the stack (do **not** vertically center game pages).
+- From `sm` and up, all three share the **same width**.
+- On small screens the grid goes **full-bleed**; keep **horizontal padding** (`mx-3`) on the player bar and status so they are not edge-to-edge.
 
 ## Conventions
 
