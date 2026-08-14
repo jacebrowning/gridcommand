@@ -2,30 +2,48 @@
 
 {% if (player and player.state == State.WAITING or game.over) and cell.moves and not game.phase %}
 
-<div class="content gc-shift text-{{ cell.color.value }}">
-    <div class="gc-shift-arrow gc-shift-send-up {% if not cell.up %}opacity-20{% endif %}">
-        {% if cell.up %}{{ chevron('up') }}<span>{{ cell.up }}</span>{% endif %}
+<div class="content gc-moves-readout text-{{ cell.color.value }} {% if cell.up or cell.down or cell.left or cell.right %}gc-cell-moves{% endif %}">
+    <div class="gc-moves-readout-up">
+        {% if cell.up %}
+        <span class="gc-move-badge" title="{{ cell.up }} up">
+            {{ chevron('up') }}{{ cell.up }}
+        </span>
+        {% endif %}
     </div>
-    <div class="gc-shift-arrow gc-shift-send-left {% if not cell.left %}opacity-20{% endif %}">
-        {% if cell.left %}{{ chevron('left') }}<span>{{ cell.left }}</span>{% endif %}
+    <div class="gc-moves-readout-left">
+        {% if cell.left %}
+        <span class="gc-move-badge" title="{{ cell.left }} left">
+            {{ chevron('left') }}{{ cell.left }}
+        </span>
+        {% endif %}
     </div>
-    <div class="gc-shift-center">{{ cell.center }}</div>
-    <div class="gc-shift-arrow gc-shift-send-right {% if not cell.right %}opacity-20{% endif %}">
-        {% if cell.right %}<span>{{ cell.right }}</span>{{ chevron('right') }}{% endif %}
+    <span class="gc-moves-readout-stay font-display font-semibold tabular-nums">
+        {{ cell.center }}
+    </span>
+    <div class="gc-moves-readout-right">
+        {% if cell.right %}
+        <span class="gc-move-badge" title="{{ cell.right }} right">
+            {{ cell.right }}{{ chevron('right') }}
+        </span>
+        {% endif %}
     </div>
-    <div class="gc-shift-arrow gc-shift-send-down {% if not cell.down %}opacity-20{% endif %}">
-        {% if cell.down %}<span>{{ cell.down }}</span>{{ chevron('down') }}{% endif %}
+    <div class="gc-moves-readout-down">
+        {% if cell.down %}
+        <span class="gc-move-badge" title="{{ cell.down }} down">
+            {{ cell.down }}{{ chevron('down') }}
+        </span>
+        {% endif %}
     </div>
 </div>
 
 {% elif player and player.state == State.WAITING or game.over %}
 
-<div class="content relative flex items-center justify-center gap-2 text-{{ cell.color.value }} {% if cell.extra %}gc-cell-reinforce{% endif %}">
+<div class="content relative flex items-center justify-center text-{{ cell.color.value }} {% if cell.extra %}gc-cell-reinforce{% endif %}">
     <span class="font-display text-2xl font-semibold tabular-nums sm:text-3xl">
         {{ cell.value }}
     </span>
     {% if cell.extra %}
-    <span class="reinforcement !align-middle">+{{ cell.extra }}</span>
+    <span class="reinforcement absolute right-1 top-1 sm:right-1.5 sm:top-1.5">+{{ cell.extra }}</span>
     {% endif %}
 </div>
 
@@ -140,12 +158,12 @@
         </span>
     </span>
     {% endif %}
-    <span class="text-{{ cell.color.value }} flex items-center gap-2 font-display text-2xl font-semibold tabular-nums sm:text-3xl">
-        <span>{{ cell.value }}</span>
-        {% if cell.extra %}
-        <span class="reinforcement !align-middle text-[0.55em]">+{{ cell.extra }}</span>
-        {% endif %}
+    <span class="text-{{ cell.color.value }} font-display text-2xl font-semibold tabular-nums sm:text-3xl">
+        {{ cell.value }}
     </span>
+    {% if cell.extra %}
+    <span class="reinforcement absolute right-1 top-1 text-[0.55em] sm:right-1.5 sm:top-1.5">+{{ cell.extra }}</span>
+    {% endif %}
 </div>
 
 {% endif %}
